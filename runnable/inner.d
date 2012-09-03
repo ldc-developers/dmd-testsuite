@@ -762,9 +762,13 @@ class C24  {
                 foo();
             }
         };
-	printf("bar.this = %p\n", this);
-	printf("  i.this = %p\n", (cast(void**)i)[2]);
-	assert(*cast(void**)&c24 == (cast(void**)i)[2]);
+        version (DigitalMars)
+        {
+            // This test is specific to DMD's nested context layout.
+            printf("bar.this = %p\n", this);
+            printf("  i.this = %p\n", (cast(void**)i)[2]);
+            assert(*cast(void**)&c24 == (cast(void**)i)[2]);
+        }
         return i;
     }
 }
