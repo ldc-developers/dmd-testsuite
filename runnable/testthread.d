@@ -25,6 +25,9 @@ class Foo
 	version (OSX)
 	{
 	}
+    else version (LDC)
+    {
+    }
 	else
 	    printf("thread ptr=%p, %p &tlsx = %p %p\n", t, &_tlsstart, &tlsx, &_tlsend);
         x = 3;
