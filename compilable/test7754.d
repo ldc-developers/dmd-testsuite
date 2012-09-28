@@ -1,5 +1,5 @@
 // PERMUTE_ARGS:
-// REQUIRED_ARGS: -H -Hdtest_results/compilable
+// REQUIRED_ARGS: -H -Hd${RESULTS_DIR}/compilable
 // POST_SCRIPT: compilable/extra-files/test7754-postscript.sh
 // REQUIRED_ARGS: -d
 

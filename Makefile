@@ -72,7 +72,7 @@ else
     SHELL=/bin/bash
 endif
 QUIET=@
-export RESULTS_DIR=test_results
+export RESULTS_DIR=./test_results
 export MODEL=32
 
 ifeq ($(OS),win32)
@@ -126,20 +126,20 @@ $(addsuffix .sh.out,$(addprefix $(RESULTS_DIR)/runnable/,$(DISABLED_SH_TESTS))):
 	$(QUIET) echo " ... $@ - disabled"
 
 $(RESULTS_DIR)/runnable/%.d.out: runnable/%.d $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test $(DMD)
-	$(QUIET) ./$(RESULTS_DIR)/d_do_test $(<D) $* d
+	$(QUIET) $(RESULTS_DIR)/d_do_test $(<D) $* d
 
 $(RESULTS_DIR)/runnable/%.sh.out: runnable/%.sh $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test $(DMD)
 	$(QUIET) echo " ... $(<D)/$*.sh"
 	$(QUIET) ./$(<D)/$*.sh
 
 $(RESULTS_DIR)/compilable/%.d.out: compilable/%.d $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test $(DMD)
-	$(QUIET) ./$(RESULTS_DIR)/d_do_test $(<D) $* d
+	$(QUIET) $(RESULTS_DIR)/d_do_test $(<D) $* d
 
 $(RESULTS_DIR)/fail_compilation/%.d.out: fail_compilation/%.d $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test $(DMD)
-	$(QUIET) ./$(RESULTS_DIR)/d_do_test $(<D) $* d
+	$(QUIET) $(RESULTS_DIR)/d_do_test $(<D) $* d
 
 $(RESULTS_DIR)/fail_compilation/%.html.out: fail_compilation/%.html $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test $(DMD)
-	$(QUIET) ./$(RESULTS_DIR)/d_do_test $(<D) $* html
+	$(QUIET) $(RESULTS_DIR)/d_do_test $(<D) $* html
 
 quick:
 	$(MAKE) ARGS="" run_tests
