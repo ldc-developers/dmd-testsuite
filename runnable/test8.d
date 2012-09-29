@@ -792,7 +792,9 @@ int foo42(const(char) *x, ...)
 {
     va_list ap;
 
-    version(X86) va_start!(typeof(x))(ap, x); else va_start(ap, __va_argsave);
+    version(LDC) va_start!(typeof(x))(ap, x);
+    else version(X86) va_start!(typeof(x))(ap, x);
+    else va_start(ap, __va_argsave);
     printf("&x = %p, ap = %p\n", &x, ap);
 
     int i;

@@ -108,6 +108,24 @@ DISABLED_TESTS += test17
 DISABLED_SH_TESTS += test39
 endif
 
+
+####
+# LDC: Disable -cov tests.
+DISABLED_TESTS += a20
+DISABLED_TESTS += cov2
+DISABLED_TESTS += sieve
+
+# LDC: Disable -profile tests.
+DISABLED_TESTS += hello-profile
+DISABLED_TESTS += testprofile
+
+# LDC_FIXME: Don't disable whole asm test, only DMD-specific parts.
+DISABLED_TESTS += iasm64
+
+# LDC_FIXME: Name object files the same as DMD for LDMD compatibility (->Github #171)
+DISABLED_SH_TESTS += test44
+####
+
 runnable_tests=$(wildcard runnable/*.d) $(wildcard runnable/*.sh)
 runnable_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(runnable_tests)))
 

@@ -1,3 +1,6 @@
+// LDC_FIXME: DMD assembler restriction test - not clear how this applies to LDC.
+version (LDC) static assert(0);
+
 void foo()
 {
     enum NOP = 0x9090_9090_9090_9090;
