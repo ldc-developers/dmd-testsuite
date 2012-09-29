@@ -119,7 +119,8 @@ DISABLED_TESTS += sieve
 DISABLED_TESTS += hello-profile
 DISABLED_TESTS += testprofile
 
-# LDC_FIXME: Don't disable whole asm test, only DMD-specific parts.
+# LDC_FIXME: Don't disable whole asm tests, only DMD-specific parts.
+DISABLED_TESTS += iasm
 DISABLED_TESTS += iasm64
 
 # LDC_FIXME: Name object files the same as DMD for LDMD compatibility (->Github #171)
