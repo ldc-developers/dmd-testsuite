@@ -10,7 +10,15 @@ void testArrayInit() {
     assert(c.array == [1, 2, 3, 4]);
 }
 
+void testArrayPtrAssign() {
+    float4 c = 1, d = 0;
+    d.array[0] = 1;
+    d.ptr[1] = 2;
+    assert((c + d).array == [2, 3, 1, 1]);
+}
+
 void main() {
     testSplatInit();
     testArrayInit();
+    testArrayPtrAssign();
 }
