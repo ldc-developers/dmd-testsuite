@@ -1,11 +1,15 @@
 // PERMUTE_ARGS:
 // EXECUTE_ARGS: 1000
 
+// time_t might actually be larger here than it really is on the host system,
+// but it should not matter.
+alias long time_t;
+
 extern(C)
 {
     int printf(const char*, ...);
     int sscanf(const char*, const char*, ...);
-    int time(int*);
+    int time(time_t*);
 }
 
 const int LONG_TIME=4000;
@@ -16,7 +20,7 @@ int q;
 
 int main(char[][] args)
 {
-	int startime, endtime;
+	time_t startime, endtime;
 	int i;
 
 	if (args.length == 2) {
