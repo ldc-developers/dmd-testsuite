@@ -7,18 +7,16 @@ import core.exception : OutOfMemoryError;
 
 /*******************************************/
 
+// Prevent dead store elimination of the allocations.
+void[] dummy;
+
 void test1()
 {
-  version (none)
-  {
-  }
-  else
-  {
     printf("This should not take a while\n");
     try
     {
-	long[] l = new long[ptrdiff_t.max];
-	assert(0);
+        dummy = new long[ptrdiff_t.max];
+        assert(0);
     }
     catch (OutOfMemoryError o)
     {
@@ -27,14 +25,13 @@ void test1()
     printf("This may take a while\n");
     try
     {
-	byte[] b = new byte[size_t.max / 3];
-	version (Windows)
-	    assert(0);
+        dummy = new byte[size_t.max / 3];
+        version (Windows)
+            assert(0);
     }
     catch (OutOfMemoryError o)
     {
     }
-  }
 }
 
 /*******************************************/
