@@ -674,7 +674,7 @@ int foo45(int i)
 
 void test45()
 {
-   version (Windows)  // this test fails in -release because asserts will be removed
+   version (Win32)  // this test fails in -release because asserts will be removed
    {
    assert(foo45(0)==2);
    try{
@@ -5229,6 +5229,232 @@ void test8423()
 }
 
 /***************************************************/
+class Foo8496
+{
+public:
+    void foo(uint value)
+    {
+        ubyte size = value < (0x7fU << 0 ) ? 1 :
+                     value < (0x7fU << 14) ? 2 :
+                                             3;
+        import std.stdio;
+        writeln(size);
+	assert(size == 2);
+    }
+}
+
+void test8496()
+{
+    Foo8496 f = new Foo8496();
+    f.foo(1000000);
+}
+
+/***************************************************/
+
+long foo8840() { return 4; }
+
+int bar8840(long g) { assert(g == 4); return printf("%llx\n", g); }
+
+void test8840()
+{
+    long f1 = foo8840();    
+    long f2 = foo8840();
+
+    long f = (f1 < f2 ? f1 : f2);
+    int len = (f == 0 ? 0 : bar8840(f));
+}
+
+/***************************************************/
+
+struct S8889
+{
+    real f;
+    int i;
+}
+
+void test8889()
+{
+}
+
+/***************************************************/
+
+struct S8870
+{
+    float x = 0;
+    float y = 0;
+    float z = 0;
+    float w = 0;
+}
+
+void test8870()
+{
+    S8870 r1 = S8870(1,2,3,4);
+    S8870 r2 = S8870(5,6,7,8);
+
+    foo8870(r1, r2, false, 1);
+    bar8870(r1, r2, false, 1);
+}
+
+//extern (C)
+void foo8870(S8870 t1, S8870 t2, bool someBool, float finalFloat)
+{
+    printf("t1: %g %g %g %g\n", t1.x, t1.y, t1.z, t1.w);
+    printf("t2: %g %g %g %g\n", t2.x, t2.y, t2.z, t2.w);
+    printf("someBool: %d\n", someBool);
+    printf("finalFloat: %g\n", finalFloat);
+
+    assert(t1.x == 1 && t1.y == 2 && t1.z == 3 && t1.w == 4);
+    assert(t2.x == 5 && t2.y == 6 && t2.z == 7 && t2.w == 8);
+    assert(someBool == false);
+    assert(finalFloat == 1);
+}
+
+extern (C)
+void bar8870(S8870 t1, S8870 t2, bool someBool, float finalFloat)
+{
+    printf("t1: %g %g %g %g\n", t1.x, t1.y, t1.z, t1.w);
+    printf("t2: %g %g %g %g\n", t2.x, t2.y, t2.z, t2.w);
+    printf("someBool: %d\n", someBool);
+    printf("finalFloat: %g\n", finalFloat);
+
+    assert(t1.x == 1 && t1.y == 2 && t1.z == 3 && t1.w == 4);
+    assert(t2.x == 5 && t2.y == 6 && t2.z == 7 && t2.w == 8);
+    assert(someBool == false);
+    assert(finalFloat == 1);
+}
+
+/***************************************************/
+
+struct S247 { size_t length; size_t ptr; }
+
+S247 foo247()
+{
+    S247 f;
+    f.length = 7;
+    f.ptr = 8;
+    return f;
+}
+
+void test247()
+{
+    S247 f;
+    f = foo247();
+    assert(f.length == 7);
+    assert(f.ptr == 8);
+}
+
+/***************************************************/
+// 8340
+
+void test8340(){
+    byte[] ba = [1,2,3,4,5];
+    short[] sa = [1,2,3,4,5];
+    int[] ia = [1,2,3,4,5];
+    long[] la = [1,2,3,4,5];
+
+    ba[2] *= -1;
+    sa[2] *= -1;
+    ia[2] *= -1;
+    la[2] *= -1;
+
+    assert(ba == [1,2,-3,4,5]);
+    assert(sa == [1,2,-3,4,5]);
+    assert(ia == [1,2,-3,4,5]);
+    assert(la == [1,2,-3,4,5]);
+}
+
+/***************************************************/
+// 8376
+
+void test8376() {
+    int i = 0;
+    int[2] a;
+    a[1]=1;
+    while(!a[0]){
+        if(a[i]) continue;
+        a[i] = 1;
+    }
+}
+
+/***************************************************/
+
+// Don't call, compile only
+void test8987(){
+    int last = 0;
+    int count = 0;
+    int d;
+
+    for (int x = 0; count < 100; x++){
+        d = 3;
+
+        while (x / d)
+	    d += 2;
+
+        if (x & d) {
+            last = x;
+            count++;
+        }
+    }
+
+    printf("Last: %d\n", last);
+}
+
+/***************************************************/
+// 8796
+
+int* wrong8796(int* p)
+{
+    *p++ = 1;
+    return p;
+}
+
+void test8796()
+{
+    int[3] arr;
+    int* q = arr.ptr;
+    q = wrong8796(q);
+    assert(q != arr.ptr);
+}
+
+/***************************************************/
+// 9171
+
+ulong bitcomb9171(ulong v)
+{
+    if(v)
+    {
+        ulong result;
+        if(v & 1)
+        {
+            auto r = bitcomb9171(v >> 1);
+	    printf("r=%016llx\n", r);
+
+            auto z = ((r & (r-1) ^ r));
+	    check9171("str", z>>1);
+//	    printf("z=%016llx\n", z>>1);
+            return r;
+        }
+        else
+        {
+            auto fb = v & (v-1) ^ v;
+            result = (fb >> 1) | (v ^ fb);
+        }
+        return result;
+    }
+    return 0;
+}
+
+void check9171(const char *s, ulong v)
+{
+    assert(v == 0x80000000);
+}
+
+void test9171()
+{
+    bitcomb9171(0b1110000000000000010000000000000000000000000000000001);
+}
+
+/***************************************************/
 
 int main()
 {
@@ -5492,6 +5718,15 @@ int main()
     test246();
     test8454();
     test8423();
+    test8496();
+    test8840();
+    test8889();
+    test8870();
+    test247();
+    test8340();
+    test8376();
+    test8796();
+    test9171();
 
     writefln("Success");
     return 0;

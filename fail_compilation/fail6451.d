@@ -1,4 +1,8 @@
-version(DigitalMars)
+version(Win64)
+{
+    static assert(0);
+}
+else version(DigitalMars)
 {
     version(X86_64)
     {

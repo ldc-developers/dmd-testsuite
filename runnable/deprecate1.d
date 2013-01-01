@@ -1,4 +1,5 @@
 // REQUIRED_ARGS: -d
+// PERMUTE_ARGS: -dw
 
 // Test cases using deprecated features
 module deprecate1;
@@ -53,17 +54,6 @@ void test10()
     b = 0_1_2_3_4_;
     printf("b = %d\n", b);
     assert(b == 668);
-}
-
-/**************************************
-        backslash literals
-**************************************/
-
-// from lexer.d
-void lexerTest7()
-{
-    auto str = \xDB;
-    assert(str.length == 1);
 }
 
 /**************************************
@@ -1268,7 +1258,6 @@ int main()
 {
     test2();
     test5();
-    lexerTest7();
     test10();
     test19();
     test33();

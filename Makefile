@@ -31,12 +31,17 @@
 #                        default: the make variable ARGS (see below)
 #
 #   POST_SCRIPT:         name of script to execute after test run
+#                        note: arguments to the script may be included after the name.
+#                              additionally, the name of the file that contains the output
+#                              of the compile/link/run steps is added as the last parameter.
 #                        default: (none)
 #
 #   REQUIRED_ARGS:       arguments to add to the $(DMD) command line
 #                        default: (none)
+#                        note: the make variable REQUIRED_ARGS is also added to the $(DMD)
+#                              command line (see below)
 #
-#  DISABLED:             text describing why the test is disabled (if empty, the test is
+#   DISABLED:            text describing why the test is disabled (if empty, the test is
 #                        considered to be enabled).
 #                        default: (none, enabled)
 
@@ -57,11 +62,17 @@ ifeq (,$(OS))
     endif
 else
     ifeq (Windows_NT,$(OS))
-	OS:=win32
-    else
-        ifeq (Win_32,$(OS))
-	    OS:=win32
+        ifeq ($(findstring WOW64, $(shell uname)),WOW64)
+            OS:=win64
+        else
+            OS:=win32
         endif
+    endif
+    ifeq (Win_32,$(OS))
+	OS:=win32
+    endif
+    ifeq (Win_64,$(OS))
+	OS:=win64
     endif
 endif
 export OS
@@ -74,8 +85,9 @@ endif
 QUIET=@
 export RESULTS_DIR=./test_results
 export MODEL=32
+export REQUIRED_ARGS=
 
-ifeq ($(OS),win32)
+ifeq ($(findstring win,$(OS)),win)
 export ARGS=-inline -release -g -O -unittest
 export DMD=../src/dmd.exe
 export EXE=.exe
@@ -108,7 +120,6 @@ DISABLED_TESTS += test17
 DISABLED_SH_TESTS += test39
 endif
 
-
 ####
 # LDC: Disable -cov tests.
 DISABLED_TESTS += a20
@@ -126,6 +137,13 @@ DISABLED_TESTS += iasm64
 # LDC_FIXME: Name object files the same as DMD for LDMD compatibility (->Github #171)
 DISABLED_SH_TESTS += test44
 ####
+
+ifeq ($(OS),win64)
+DISABLED_TESTS += testargtypes
+DISABLED_TESTS += testxmm
+
+DISABLED_SH_TESTS += test39
+endif
 
 runnable_tests=$(wildcard runnable/*.d) $(wildcard runnable/*.sh)
 runnable_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(runnable_tests)))
@@ -168,7 +186,7 @@ clean:
 	$(QUIET)if [ -e $(RESULTS_DIR) ]; then rm -rf $(RESULTS_DIR); fi
 
 $(RESULTS_DIR)/.created:
-	@echo Creating output directory: $(RESULTS_DIR) 
+	@echo Creating output directory: $(RESULTS_DIR)
 	$(QUIET)if [ ! -d $(RESULTS_DIR) ]; then mkdir $(RESULTS_DIR); fi
 	$(QUIET)if [ ! -d $(RESULTS_DIR)/runnable ]; then mkdir $(RESULTS_DIR)/runnable; fi
 	$(QUIET)if [ ! -d $(RESULTS_DIR)/compilable ]; then mkdir $(RESULTS_DIR)/compilable; fi
@@ -197,5 +215,7 @@ start_fail_compilation_tests: $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test
 
 $(RESULTS_DIR)/d_do_test: d_do_test.d $(RESULTS_DIR)/.created
 	@echo "Building d_do_test tool"
+	@echo "OS: $(OS)"
+	$(QUIET)$(DMD) -m$(MODEL) -unittest -run d_do_test.d -unittest
 	$(QUIET)$(DMD) -m$(MODEL) -od$(RESULTS_DIR) -of$(RESULTS_DIR)$(DSEP)d_do_test d_do_test.d
 
