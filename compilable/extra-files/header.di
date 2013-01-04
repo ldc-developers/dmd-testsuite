@@ -158,7 +158,9 @@ class xFoo : iFoo
 }
 class Foo3
 {
-	this(int a, ...);
+	this(int a, ...)
+	{
+	}
 	this(int* a)
 	{
 	}
