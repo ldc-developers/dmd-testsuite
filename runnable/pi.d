@@ -1,16 +1,8 @@
 // PERMUTE_ARGS:
 // EXECUTE_ARGS: 1000
 
-// time_t might actually be larger here than it really is on the host system,
-// but it should not matter.
-alias long time_t;
-
-extern(C)
-{
-    int printf(const char*, ...);
-    int sscanf(const char*, const char*, ...);
-    int time(time_t*);
-}
+import core.stdc.stdio;
+import core.stdc.time;
 
 const int LONG_TIME=4000;
 
@@ -64,7 +56,7 @@ int main(char[][] args)
 	for (i = 1; i <= q; i++)
 	printf("%d",cast(int)(p[i]));
 	printf("\n");
-	printf("%ld seconds to compute pi with a precision of %d digits.\n",endtime-startime,q);
+	printf("%lld seconds to compute pi with a precision of %d digits.\n", cast(long)(endtime-startime),q);
 
 	return 0;
 }

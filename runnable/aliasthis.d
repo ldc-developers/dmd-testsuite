@@ -405,6 +405,27 @@ struct Derived2787
 }
 
 /***********************************/
+// 5679
+
+void test5679()
+{
+    class Foo {}
+
+    class Base
+    {
+        @property Foo getFoo() { return null; }
+    }
+    class Derived : Base
+    {
+        alias getFoo this;
+    }
+
+    Derived[] dl;
+    Derived d = new Derived();
+    dl ~= d; // Error: cannot append type alias_test.Base to type Derived[]
+}
+
+/***********************************/
 // 6508
 
 void test6508()
@@ -859,6 +880,16 @@ void test8169()
 }
 
 /***************************************************/
+// 9177
+
+struct S9177
+{
+    int foo(int){ return 0; }
+    alias foo this;
+}
+pragma(msg, is(S9177 : int));
+
+/***************************************************/
 
 int main()
 {
@@ -875,6 +906,7 @@ int main()
     test6736();
     test2777a();
     test2777b();
+    test5679();
     test6508();
     test6369a();
     test6369b();
