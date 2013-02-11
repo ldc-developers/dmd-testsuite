@@ -3223,10 +3223,18 @@ int bug2931_2()
   { for (int j = 0; j < 3; j++)
     {
 	printf("[%d][%d] = %d\n", j, i, v.p.val[j][i]);
+version (LDC)
+{
+    // See the discussion at DMD Bugzilla issue 9425.
+    assert(v.p.val[j][i] == 67);
+}
+else
+{
 	if (i == 0 && j == 0)
 	    assert(v.p.val[j][i] == 67);
 	else
 	    assert(v.p.val[j][i] == 0);
+}
     }
   }
   printf("v.zoom = %d\n", v.zoom);
