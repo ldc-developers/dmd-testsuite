@@ -391,7 +391,7 @@ int main(string[] args)
                         (testArgs.mode == TestMode.RUN ? test_app_dmd : objfile),
                         (testArgs.mode == TestMode.RUN ? "" : "-c "),
                         join(testArgs.sources, " "));
-                version(Windows) command ~= " -map nul.map";
+                version (LDC) {} else version(Windows) command ~= " -map nul.map";
 
                 compile_output = execute(fThisRun, command, testArgs.mode != TestMode.FAIL_COMPILE, result_path);
             }
@@ -411,7 +411,7 @@ int main(string[] args)
                 {
                     // link .o's into an executable
                     string command = format("%s -m%s %s -od%s -of%s %s", envData.dmd, envData.model, envData.required_args, output_dir, test_app_dmd, join(toCleanup, " "));
-                    version(Windows) command ~= " -map nul.map";
+                    version (LDC) {} else version(Windows) command ~= " -map nul.map";
 
                     execute(fThisRun, command, true, result_path);
                 }
