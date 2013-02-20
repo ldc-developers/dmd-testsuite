@@ -908,6 +908,17 @@ void bug7546()
 
 /*************************************/
 
+version (DigitalMars)
+{
+    version (Windows) version = RealPacked;
+    else version (linux) version = Real4ByteAligned;
+}
+else version (LDC)
+{
+    version (Windows) version = Real4ByteAligned;
+    else version (linux) version = Real4ByteAligned;
+}
+
 real poly_asm(real x, real[] A)
 in
 {
@@ -917,7 +928,7 @@ body
 {
     version (D_InlineAsm_X86)
     {
-	version (linux)
+	version (Real4ByteAligned)
 	{
 	asm     // assembler by W. Bright
 	{
