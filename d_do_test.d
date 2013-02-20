@@ -256,6 +256,11 @@ string execute(ref File f, string command, bool expectpass, string result_path)
     auto filename = genTempFilename(result_path);
     scope(exit) removeIfExists(filename);
 
+    version (Windows)
+    {
+        command = command.replace("${RESULTS_DIR}", result_path);
+    }
+
     auto rc = system(command ~ " > " ~ filename ~ " 2>&1");
 
     string output = readText(filename);
