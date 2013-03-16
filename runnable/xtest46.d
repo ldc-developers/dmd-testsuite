@@ -4926,6 +4926,10 @@ void test7150()
 /***************************************************/
 // 7159
 
+version (LDC) {
+    // The cast to void* is supposed to be illegal, see
+    // http://d.puremagic.com/issues/show_bug.cgi?id=9735.
+} else {
 class HomeController7159 {
     void* foo() {
         return cast(void*)&HomeController7159.displayDefault;
@@ -4933,6 +4937,7 @@ class HomeController7159 {
     auto displayDefault() {
         return 1;
     }
+}
 }
 
 /***************************************************/
