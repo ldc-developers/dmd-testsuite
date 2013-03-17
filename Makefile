@@ -141,6 +141,10 @@ DISABLED_TESTS += bug9010
 DISABLED_TESTS += hello-profile
 DISABLED_TESTS += testprofile
 
+# LDC: This test checks for a number of error messages, of which we only report
+# the first one. Not a bug.
+DISABLED_FAIL_TESTS += fail9418
+
 # LDC_FIXME: Don't disable whole asm tests, only DMD-specific parts.
 DISABLED_TESTS += iasm
 DISABLED_TESTS += iasm64
@@ -169,6 +173,9 @@ fail_compilation_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(fai
 all: run_tests
 
 $(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/runnable/,$(DISABLED_TESTS))): $(RESULTS_DIR)/.created
+	$(QUIET) echo " ... $@ - disabled"
+
+$(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/fail_compilation/,$(DISABLED_FAIL_TESTS))): $(RESULTS_DIR)/.created
 	$(QUIET) echo " ... $@ - disabled"
 
 $(addsuffix .sh.out,$(addprefix $(RESULTS_DIR)/runnable/,$(DISABLED_SH_TESTS))): $(RESULTS_DIR)/.created
