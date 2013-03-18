@@ -145,6 +145,10 @@ DISABLED_TESTS += testprofile
 # the first one. Not a bug.
 DISABLED_FAIL_TESTS += fail9418
 
+# LDC_FIXME: We don't detect the escaping of the stack value because the
+# returned expression is not rewritten to a SymOffExp.
+DISABLED_FAIL_TESTS += fail141
+
 # LDC_FIXME: Don't disable whole asm tests, only DMD-specific parts.
 DISABLED_TESTS += iasm
 DISABLED_TESTS += iasm64
