@@ -160,6 +160,9 @@ DISABLED_SH_TESTS += test44
 # LDC: -transition/-vtls not supported yet.
 DISABLED_COMPILE_TESTS += sw_transition_field
 DISABLED_COMPILE_TESTS += sw_transition_tls
+
+# LDC: Our diagnostic is different, might be worth revisiting at some point though.
+DISABLED_FAIL_TESTS += diag6717
 ####
 
 ifeq ($(OS),win64)
