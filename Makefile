@@ -156,6 +156,10 @@ DISABLED_TESTS += iasm64
 
 # LDC_FIXME: Name object files the same as DMD for LDMD compatibility (->Github #171)
 DISABLED_SH_TESTS += test44
+
+# LDC: -transition/-vtls not supported yet.
+DISABLED_COMPILE_TESTS += sw_transition_field
+DISABLED_COMPILE_TESTS += sw_transition_tls
 ####
 
 ifeq ($(OS),win64)
@@ -178,6 +182,9 @@ fail_compilation_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(fai
 all: run_tests
 
 $(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/runnable/,$(DISABLED_TESTS))): $(RESULTS_DIR)/.created
+	$(QUIET) echo " ... $@ - disabled"
+
+$(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/compilable/,$(DISABLED_COMPILE_TESTS))): $(RESULTS_DIR)/.created
 	$(QUIET) echo " ... $@ - disabled"
 
 $(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/fail_compilation/,$(DISABLED_FAIL_TESTS))): $(RESULTS_DIR)/.created
