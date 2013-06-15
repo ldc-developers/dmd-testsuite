@@ -398,7 +398,7 @@ void test9348()
     assert(F!0 !in [new Object():1]);
 }
 
-
+/+ LDC_FIXME: See discussion at D-Programming-Language/dmd#2175.
 /***************************************************/
 // 9987
 
@@ -417,3 +417,4 @@ static if (is(object.ModuleInfo == class))
     static assert(__traits(classInstanceSize, object.ModuleInfo) !=
                   __traits(classInstanceSize, ModuleInfo));
 }
++/
