@@ -629,14 +629,10 @@ int main()
     test5();
     test6();
     test7();
-
-    // LDC_FIXME: Exception chaining not correctly implemented yet.
-    version (LDC) {} else {
     bug1513();
     doublecollide();
     collideMixed();
     multicollide();
-    }
     test9568();
 
     test8();
