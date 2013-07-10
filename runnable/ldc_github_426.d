@@ -10,7 +10,7 @@ struct DestroyMe
     }
 }
 
-void main()
+void test1()
 {
     dtor = 0;
     try {
@@ -24,4 +24,38 @@ void main()
         foreach (item; lvalue) {}
     } catch {}
     assert(dtor == 1);
+}
+
+/******************************************/
+
+struct DoNotDestroyMe
+{
+    ~this()
+    {
+        assert(0);
+    }
+}
+
+DoNotDestroyMe doNotDestroyMe()
+{
+    throw new Exception("Here we go!");
+    return DoNotDestroyMe();
+}
+
+void fun(E)(lazy E exp)
+{
+    try {
+      exp();
+    } catch {}
+}
+
+void test2()
+{
+    fun(doNotDestroyMe());
+}
+
+void main()
+{
+    test1();
+    test2();
 }
