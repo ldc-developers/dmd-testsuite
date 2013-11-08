@@ -27,6 +27,7 @@ void usage()
           "      ARGS:          set to execute all combinations of\n"
           "      REQUIRED_ARGS: arguments always passed to the compiler\n"
           "      DMD:           compiler to use, ex: ../src/dmd\n"
+          "      CC:            C++ compiler to use, ex: dmc, g++\n"
           "      OS:            win32, win64, linux, freebsd, osx\n"
           "      RESULTS_DIR:   base directory for test results\n"
           "   windows vs non-windows portability env vars:\n"
@@ -50,6 +51,7 @@ struct TestArgs
     bool     compileSeparately;
     string   executeArgs;
     string[] sources;
+    string[] cppSources;
     string   permuteArgs;
     string   compileOutput;
     string   postScript;
@@ -69,6 +71,8 @@ struct EnvData
     string obj;
     string exe;
     string os;
+    string compiler;
+    string ccompiler;
     string model;
     string required_args;
 }
@@ -118,14 +122,14 @@ bool findOutputParameter(string file, string token, out string result, string se
         enum embed_sep = "---";
 
         auto n = std.string.indexOf(file[istart .. $], embed_sep);
-        enforce(n != -1);
+        enforce(n != -1, "invalid TEST_OUTPUT format");
         istart += n + embed_sep.length;
         while (file[istart] == '-') ++istart;
         if (file[istart] == '\r') ++istart;
         if (file[istart] == '\n') ++istart;
 
         auto iend = std.string.indexOf(file[istart .. $], embed_sep);
-        enforce(iend != -1);
+        enforce(iend != -1, "invalid TEST_OUTPUT format");
         iend += istart;
 
         result ~= file[istart .. iend];
@@ -143,6 +147,13 @@ bool findOutputParameter(string file, string token, out string result, string se
     return found;
 }
 
+void replaceResultsDir(ref string arguments, const ref EnvData envData)
+{
+    // Bash would expand this automatically on Posix, but we need to manually
+    // perform the replacement for Windows compatibility.
+    arguments = replace(arguments, "${RESULTS_DIR}", envData.results_dir);
+}
+
 void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_file, const ref EnvData envData)
 {
     string file = cast(string)std.file.read(input_file);
@@ -150,6 +161,7 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     findTestParameter(file, "REQUIRED_ARGS", testArgs.requiredArgs);
     if(envData.required_args.length)
         testArgs.requiredArgs ~= " " ~ envData.required_args;
+    replaceResultsDir(testArgs.requiredArgs, envData);
 
     if (! findTestParameter(file, "PERMUTE_ARGS", testArgs.permuteArgs))
     {
@@ -160,6 +172,7 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
         if(!findTestParameter(file, "unittest", unittestJunk))
             testArgs.permuteArgs = replace(testArgs.permuteArgs, "-unittest", "");
     }
+    replaceResultsDir(testArgs.permuteArgs, envData);
 
     // win(32|64) doesn't support pic, nor does freebsd/64 currently
     if (envData.os == "win32" || envData.os == "win64" || envData.os == "freebsd")
@@ -173,6 +186,7 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     testArgs.permuteArgs = strip(replace(testArgs.permuteArgs, "  ", " "));
 
     findTestParameter(file, "EXECUTE_ARGS", testArgs.executeArgs);
+    replaceResultsDir(testArgs.executeArgs, envData);
 
     string extraSourcesStr;
     findTestParameter(file, "EXTRA_SOURCES", extraSourcesStr);
@@ -180,6 +194,13 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     // prepend input_dir to each extra source file
     foreach(s; split(extraSourcesStr))
         testArgs.sources ~= input_dir ~ "/" ~ s;
+
+    string extraCppSourcesStr;
+    findTestParameter(file, "EXTRA_CPP_SOURCES", extraCppSourcesStr);
+    testArgs.cppSources = [];
+    // prepend input_dir to each extra source file
+    foreach(s; split(extraCppSourcesStr))
+        testArgs.cppSources ~= s;
 
     // swap / with $SEP
     if (envData.sep && envData.sep != "/")
@@ -343,6 +364,8 @@ int main(string[] args)
     envData.exe           = getenv("EXE");
     envData.os            = getenv("OS");
     envData.dmd           = replace(getenv("DMD"), "/", envData.sep);
+    envData.compiler      = "dmd"; //should be replaced for other compilers
+    envData.ccompiler     = getenv("CC");
     envData.model         = getenv("MODEL");
     envData.required_args = getenv("REQUIRED_ARGS");
 
@@ -364,8 +387,70 @@ int main(string[] args)
             return 1;
     }
 
+    if (envData.ccompiler.empty)
+    {
+        switch (envData.os)
+        {
+            case "win32": envData.ccompiler = "dmc"; break;
+            case "win64": envData.ccompiler = `\"Program Files (x86)"\"Microsoft Visual Studio 10.0"\VC\bin\amd64\cl.exe`; break;
+            default:      envData.ccompiler = "g++"; break;
+        }
+    }
     gatherTestParameters(testArgs, input_dir, input_file, envData);
 
+    //prepare cpp extra sources
+    if (testArgs.cppSources.length)
+    {
+        switch (envData.compiler)
+        {
+            case "dmd":
+                if(envData.os != "win32" && envData.os != "win64")
+                   testArgs.requiredArgs ~= " -L-lstdc++";
+                break;
+            case "ldc":
+                testArgs.requiredArgs ~= " -L-lstdc++";
+                break;
+            case "gdc":
+                testArgs.requiredArgs ~= "-Xlinker -lstdc++";
+                break;
+            default:
+                writeln("unknown compiler: "~envData.compiler);
+                return 1;
+        }
+        foreach (cur; testArgs.cppSources)
+        {
+            auto curSrc = input_dir ~ envData.sep ~"extra-files" ~ envData.sep ~ cur;
+            auto curObj = output_dir ~ envData.sep ~ cur ~ envData.obj;
+            string command = envData.ccompiler;
+            if (envData.compiler == "dmd")
+            {
+                if (envData.os == "win32")
+                {
+                    command ~= " -c "~curSrc~" -o"~curObj;
+                }
+                else if (envData.os == "win64")
+                {
+                    command ~= ` /c /nologo `~curSrc~` /Fo`~curObj;
+                }
+                else
+                {
+                    command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
+                }
+            }
+            else
+            {
+                command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
+            }
+
+            auto rc = system(command);
+            if(rc)
+            {
+                writeln("failed to execute '"~command~"'");
+                return 1;
+            }
+            testArgs.sources ~= curObj;
+        }
+    }
     writef(" ... %-30s %s%s(%s)",
             input_file,
             testArgs.requiredArgs,
@@ -436,6 +521,7 @@ int main(string[] args)
                 }
             }
 
+            compile_output = std.regex.replace(compile_output, regex(`^DMD v2\.[0-9]+.* DEBUG$`, "m"), "");
             compile_output = std.string.strip(compile_output);
             compile_output = compile_output.unifyNewLine();
 
@@ -444,8 +530,6 @@ int main(string[] args)
 
             if (testArgs.compileOutput !is null)
             {
-                compile_output = std.regex.replace(compile_output, regex(`DMD v2\.[0-9]+ DEBUG\n`, ""), "");
-                compile_output = std.regex.replace(compile_output, regex(`\nDMD v2\.[0-9]+ DEBUG`, ""), "");
                 enforce(compile_output == testArgs.compileOutput,
                         "\nexpected:\n----\n"~testArgs.compileOutput~"\n----\nactual:\n----\n"~compile_output~"\n----\n");
             }

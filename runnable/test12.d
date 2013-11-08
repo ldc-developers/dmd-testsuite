@@ -786,12 +786,7 @@ void test36()
     printf("%d\n", a.d);
 
     version(D_LP64)
-    {
-        version (LDC)
-            assert(a.classinfo.init.length == 40);
-        else
-            assert(a.classinfo.init.length == 36);
-    }
+        assert(a.classinfo.init.length == 40);
     else
         assert(a.classinfo.init.length == 28);
     assert(a.s == 1);
