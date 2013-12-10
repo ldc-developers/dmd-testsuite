@@ -1,4 +1,4 @@
-// REQUIRED_ARGS: -noruntime -release
+// REQUIRED_ARGS: -nogc
 
 // None of the below array literals should be allocated on the GC heap.
 void arrayLiterals() {
