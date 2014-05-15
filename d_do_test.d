@@ -56,6 +56,7 @@ struct TestArgs
     string   compileOutput;
     string   postScript;
     string   requiredArgs;
+    string   requiredArgsForLink;
     // reason for disabling the test (if empty, the test is not disabled)
     string   disabled_reason;
     @property bool disabled() { return disabled_reason != ""; }
@@ -174,8 +175,8 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     }
     replaceResultsDir(testArgs.permuteArgs, envData);
 
-    // win(32|64) doesn't support pic, nor does freebsd/64 currently
-    if (envData.os == "win32" || envData.os == "win64" || envData.os == "freebsd")
+    // win(32|64) doesn't support pic
+    if (envData.os == "win32" || envData.os == "win64")
     {
         auto index = std.string.indexOf(testArgs.permuteArgs, "-fPIC");
         if (index != -1)
@@ -208,8 +209,8 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
             s = replace(s, "/", to!string(envData.sep));
     //writeln ("sources: ", testArgs.sources);
 
-    string compileSeparatelyStr;
-    testArgs.compileSeparately = findTestParameter(file, "COMPILE_SEPARATELY", compileSeparatelyStr);
+    // COMPILE_SEPARATELY can take optional compiler switches when link .o files
+    testArgs.compileSeparately = findTestParameter(file, "COMPILE_SEPARATELY", testArgs.requiredArgsForLink);
 
     findTestParameter(file, "DISABLED", testArgs.disabled_reason);
 
@@ -514,7 +515,8 @@ int main(string[] args)
                 if (testArgs.mode == TestMode.RUN)
                 {
                     // link .o's into an executable
-                    string command = format("%s -m%s %s -od%s -of%s %s", envData.dmd, envData.model, envData.required_args, output_dir, test_app_dmd, join(toCleanup, " "));
+                    string command = format("%s -m%s %s %s -od%s -of%s %s", envData.dmd, envData.model, envData.required_args,
+                            testArgs.requiredArgsForLink, output_dir, test_app_dmd, join(toCleanup, " "));
                     version (LDC) {} else version(Windows) command ~= " -map nul.map";
 
                     execute(fThisRun, command, true, result_path);

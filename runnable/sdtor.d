@@ -2415,6 +2415,11 @@ struct Test9386
         printf("Deleted %.*s\n", name.length, name.ptr);
         op ~= "c";
     }
+
+    const int opCmp(ref const Test9386 t)
+    {
+	return op[0] - t.op[0];
+    }
 }
 
 void test9386()
@@ -3091,6 +3096,44 @@ void fun7474(T...)() { T x; }
 void test7474() { fun7474!S7474(); }
 
 /**********************************/
+// 11286
+
+struct A11286
+{
+    ~this() {}
+}
+
+A11286 getA11286() pure nothrow
+{
+    return A11286();
+}
+
+void test11286()
+{
+    A11286 a = getA11286();
+}
+
+/**********************************/
+// 11505
+
+struct Foo11505
+{
+    Bar11505 b;
+}
+
+struct Bar11505
+{
+    ~this() @safe { }
+    void* p;
+}
+
+void test11505()
+{
+    Foo11505 f;
+    f = Foo11505();
+}
+
+/**********************************/
 
 int main()
 {
@@ -3187,6 +3230,7 @@ int main()
     test11134();
     test11197();
     test7474();
+    test11505();
 
     printf("Success\n");
     return 0;
