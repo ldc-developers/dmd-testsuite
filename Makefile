@@ -161,8 +161,16 @@ DISABLED_SH_TESTS += test44
 DISABLED_COMPILE_TESTS += sw_transition_field
 DISABLED_COMPILE_TESTS += sw_transition_tls
 
-# LDC: Our diagnostic is different, might be worth revisiting at some point though.
+# LDC: Our ASM diagnostics are different, might be worth revisiting at some point.
 DISABLED_FAIL_TESTS += diag6717
+DISABLED_FAIL_TESTS += fail152
+
+# LDC: Our error messages are slightly different, but equally informative.
+DISABLED_FAIL_TESTS += fail274
+
+# LDC: This is an error in the DMD glue code (e2ir). We can emit the array cast
+# correctly, with the expected result.
+DISABLED_FAIL_TESTS += fail8179b
 ####
 
 ifeq ($(OS),win64)
