@@ -6270,6 +6270,7 @@ void test161()
 void test8819()
 {
     void[0] sa0 = (void[0]).init;
+    version (LDC) {} else // See D-Programming-Language/dmd#3729 for a proper fix to the test.
     assert(sa0.ptr !is null); // 7175 - ptr should not be null
 
     void[1] sa1 = (void[1]).init;
