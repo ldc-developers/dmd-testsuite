@@ -160,6 +160,9 @@ DISABLED_SH_TESTS += test44
 # LDC_FIXME: We currently don't support gotos into try blocks, see GitHub #676.
 DISABLED_COMPILE_TESTS += ice11925
 
+# LDC_FIXME: This covers an optimization LLVM chooses not to do, see GitHub #679.
+DISABLED_COMPILE_TESTS += test11237
+
 # LDC: -transition/-vtls not supported yet.
 DISABLED_COMPILE_TESTS += sw_transition_field
 DISABLED_COMPILE_TESTS += sw_transition_tls
