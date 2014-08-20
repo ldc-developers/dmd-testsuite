@@ -299,10 +299,8 @@ int bar11(T)()
 }
 struct S6360
 {
-	@property const pure nothrow long weeks1();
-
-	const nothrow pure @property long weeks2();
-
+	const pure nothrow @property long weeks1();
+	const pure nothrow @property long weeks2();
 }
 struct S12
 {
@@ -396,3 +394,15 @@ template Test10334(T...)
 mixin Test10334!int a;
 mixin Test10334!(int, long) b;
 mixin Test10334!"str" c;
+auto clamp12266a(T1, T2, T3)(T1 x, T2 min_val, T3 max_val)
+{
+	return 0;
+}
+pure clamp12266b(T1, T2, T3)(T1 x, T2 min_val, T3 max_val)
+{
+	return 0;
+}
+@disable pure clamp12266c(T1, T2, T3)(T1 x, T2 min_val, T3 max_val)
+{
+	return 0;
+}

@@ -273,7 +273,6 @@ static assert(test10058l.mangleof == "_Z10test10058lPFPvS_EPFS_PKvEPFS3_S_E");
 class Expression;
 // LDC_FIXME: We need the full type to emit the function declarations. See Github #678.
 version (LDC) { struct Loc {} } else
-struct Loc;
 
 extern(C++)
 class CallExp
