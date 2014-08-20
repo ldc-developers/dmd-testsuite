@@ -303,7 +303,11 @@ extern(C++) void myvprintf(const(char)*, va_list);
 extern(C++) void myprintf(const(char)* format, ...)
 {
     va_list ap;
-    version(X86_64)
+    version(LDC)
+    {
+        va_start(ap, format);
+    }
+    else version(X86_64)
     {
         version(Windows)
             va_start(ap, format);
