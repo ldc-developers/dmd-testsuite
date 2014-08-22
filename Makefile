@@ -140,6 +140,7 @@ DISABLED_TESTS += bug9010
 # LDC: Disable -profile tests.
 DISABLED_TESTS += hello-profile
 DISABLED_TESTS += testprofile
+DISABLED_COMPILE_TESTS += diag11066
 
 # LDC: This test checks for a number of error messages, of which we only report
 # the first one. Not a bug.
@@ -177,6 +178,14 @@ DISABLED_FAIL_TESTS += fail274
 # LDC: This is an error in the DMD glue code (e2ir). We can emit the array cast
 # correctly, with the expected result.
 DISABLED_FAIL_TESTS += fail8179b
+
+# LDC: Binary size test. LDC's output exceeds the limits.
+DISABLED_TESTS += test13117b
+DISABLED_TESTS += test13117
+
+# LDC: dmd bug caught early: https://issues.dlang.org/show_bug.cgi?id=13353
+DISABLED_TESTS += testclass
+
 ####
 
 ifeq ($(OS),win64)
