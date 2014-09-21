@@ -5118,6 +5118,33 @@ void test6910()
 }
 
 /***************************************************/
+
+void fun12503()
+{
+    string b = "abc";
+    try
+    {
+        try
+        {
+            b = null;
+            return;
+        }
+        catch
+        {
+        }
+    }
+    finally
+    {
+        assert("abc" !is b);
+    }
+}
+
+void test12503()
+{
+    fun12503();
+}
+
+/***************************************************/
 // 6902
 
 void test6902()
@@ -5598,6 +5625,14 @@ mixin template ProxyOf(alias a)
 
     void test1(this X)(){}
     void test2(this Y)(){}
+}
+
+/***************************************************/
+
+import core.stdc.stdlib;
+
+void test13427(void* buffer = alloca(100))
+{
 }
 
 /***************************************************/
@@ -6972,6 +7007,69 @@ void test13154()
 }
 
 /***************************************************/
+// 13472
+
+class A13472
+{
+    int a;
+}
+
+void test13472()
+{
+    A13472[] test;
+    test.length = 4;
+    auto b = test[0..2] ~ null ~ test[2..$];
+    assert(b.length == 5);
+}
+
+/***************************************************/
+// 13476
+
+template ParameterTypeTuple13476(func...)
+{
+    static if (is(typeof(*func[0]) P == function))
+        alias ParameterTypeTuple13476 = P;
+    else
+        static assert(0, "argument has no parameters");
+}
+
+int flag13476;
+
+__gshared extern(C) void function(int) nothrow someFunc13476 = &Stub13476!someFunc13476;
+
+extern(C) auto Stub13476(alias func)(ParameterTypeTuple13476!func args)
+{
+    ++flag13476;
+    extern(C) void function(int) nothrow impl = (i) { };
+    return (func = impl)(args);
+}
+
+__gshared extern(C) void function(int) nothrow  someFunc13476Alt = &Stub13476Alt!someFunc13476AltP;
+__gshared extern(C) void function(int) nothrow* someFunc13476AltP = &someFunc13476Alt;
+
+extern(C) auto Stub13476Alt(alias func)(int args) nothrow
+{
+    ++flag13476;
+    extern(C) void function(int) nothrow impl = (i) {};
+    return (*func = impl)(args);
+}
+
+void test13476()
+{
+    assert(flag13476 == 0);
+
+    someFunc13476(42);
+    assert(flag13476 == 1);
+    someFunc13476(43);
+    assert(flag13476 == 1);
+
+    someFunc13476Alt(42);
+    assert(flag13476 == 2);
+    someFunc13476Alt(43);
+    assert(flag13476 == 2);
+}
+
+/***************************************************/
 
 int main()
 {
@@ -7218,6 +7316,7 @@ int main()
     test7871();
     test7906();
     test7907();
+    test12503();
     test8004();
     test8064();
     test8105();
@@ -7226,6 +7325,7 @@ int main()
     test8283();
     test13182();
     test8395();
+    test13427();
     test5749();
     test8396();
     test160();
@@ -7260,6 +7360,8 @@ int main()
     test12153();
     test12937();
     test13154();
+    test13472();
+    test13476();
 
     printf("Success\n");
     return 0;
