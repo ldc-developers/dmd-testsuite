@@ -140,9 +140,12 @@ void test4()
 
 void test5()
 {
-    static assert( llvm_fabs( cast(float)-1.0 ) == 1.0 );
-    static assert( llvm_fabs( cast(double)-1.0 ) == 1.0 );
-    static assert( llvm_fabs( cast(real)-1.0 ) == 1.0 );
+    static if (__traits(compiles, llvm_fabs(3.14L)))
+    {
+        static assert( llvm_fabs( cast(float)-1.0 ) == 1.0 );
+        static assert( llvm_fabs( cast(double)-1.0 ) == 1.0 );
+        static assert( llvm_fabs( cast(real)-1.0 ) == 1.0 );
+    }
 }
 
 /*******************************************/
