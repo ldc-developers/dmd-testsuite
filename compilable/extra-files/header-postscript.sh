@@ -6,5 +6,5 @@ if [ $? -ne 0 ]; then
     exit 1;
 fi
 
-rm ${RESULTS_DIR}/compilable/$1.di{,.2}
+rm -f ${RESULTS_DIR}/compilable/{,test}$1.di{,.2}
 
