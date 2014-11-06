@@ -13,6 +13,15 @@ void arrayLiterals() {
     if (z[2] != 3) assert(0);
 }
 
+// Enums shouldn't actually be emitted as variable declarations (see GitHub
+// issue #762).
+void noEmitEnum() {
+    foreach (i; 0 .. 10000) {
+        enum sortedIDs = [2, 4, 1, 5, 7];
+    }
+}
+
 void main() {
     arrayLiterals();
+    noEmitEnum();
 }
