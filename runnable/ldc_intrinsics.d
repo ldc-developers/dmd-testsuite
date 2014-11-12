@@ -150,6 +150,118 @@ void test5()
 
 /*******************************************/
 
+void test6()
+{
+    static if (__traits(compiles, llvm_floor(3.14L)))
+    {
+        static assert( llvm_floor( cast(float)2.3 ) == 2.0 );
+        static assert( llvm_floor( cast(float)3.8 ) == 3.0 );
+        static assert( llvm_floor( cast(float)5.5 ) == 5.0 );
+        static assert( llvm_floor( cast(float)-2.3 ) == -3.0 );
+        static assert( llvm_floor( cast(float)-3.8 ) == -4.0 );
+        static assert( llvm_floor( cast(float)-5.5 ) == -6.0 );
+
+        static assert( llvm_floor( cast(double)2.3 ) == 2.0 );
+        static assert( llvm_floor( cast(double)3.8 ) == 3.0 );
+        static assert( llvm_floor( cast(double)5.5 ) == 5.0 );
+        static assert( llvm_floor( cast(double)-2.3 ) == -3.0 );
+        static assert( llvm_floor( cast(double)-3.8 ) == -4.0 );
+        static assert( llvm_floor( cast(double)-5.5 ) == -6.0 );
+
+        static assert( llvm_floor( cast(real)2.3 ) == 2.0 );
+        static assert( llvm_floor( cast(real)3.8 ) == 3.0 );
+        static assert( llvm_floor( cast(real)5.5 ) == 5.0 );
+        static assert( llvm_floor( cast(real)-2.3 ) == -3.0 );
+        static assert( llvm_floor( cast(real)-3.8 ) == -4.0 );
+        static assert( llvm_floor( cast(real)-5.5 ) == -6.0 );
+    }
+}
+
+/*******************************************/
+
+void test7()
+{
+    static if (__traits(compiles, llvm_ceil(3.14L)))
+    {
+        static assert( llvm_ceil( cast(float)2.3 ) == 3.0 );
+        static assert( llvm_ceil( cast(float)3.8 ) == 4.0 );
+        static assert( llvm_ceil( cast(float)5.5 ) == 6.0 );
+        static assert( llvm_ceil( cast(float)-2.3 ) == -2.0 );
+        static assert( llvm_ceil( cast(float)-3.8 ) == -3.0 );
+        static assert( llvm_ceil( cast(float)-5.5 ) == -5.0 );
+
+        static assert( llvm_ceil( cast(double)2.3 ) == 3.0 );
+        static assert( llvm_ceil( cast(double)3.8 ) == 4.0 );
+        static assert( llvm_ceil( cast(double)5.5 ) == 6.0 );
+        static assert( llvm_ceil( cast(double)-2.3 ) == -2.0 );
+        static assert( llvm_ceil( cast(double)-3.8 ) == -3.0 );
+        static assert( llvm_ceil( cast(double)-5.5 ) == -5.0 );
+
+        static assert( llvm_ceil( cast(real)2.3 ) == 3.0 );
+        static assert( llvm_ceil( cast(real)3.8 ) == 4.0 );
+        static assert( llvm_ceil( cast(real)5.5 ) == 6.0 );
+        static assert( llvm_ceil( cast(real)-2.3 ) == -2.0 );
+        static assert( llvm_ceil( cast(real)-3.8 ) == -3.0 );
+        static assert( llvm_ceil( cast(real)-5.5 ) == -5.0 );
+    }
+}
+
+/*******************************************/
+
+void test8()
+{
+    static if (__traits(compiles, llvm_trunc(3.14L)))
+    {
+        static assert( llvm_trunc( cast(float)2.3 ) == 2.0 );
+        static assert( llvm_trunc( cast(float)3.8 ) == 3.0 );
+        static assert( llvm_trunc( cast(float)5.5 ) == 5.0 );
+        static assert( llvm_trunc( cast(float)-2.3 ) == -2.0 );
+        static assert( llvm_trunc( cast(float)-3.8 ) == -3.0 );
+        static assert( llvm_trunc( cast(float)-5.5 ) == -5.0 );
+    }
+}
+
+/*******************************************/
+
+void test9()
+{
+    static if (__traits(compiles, llvm_round(3.14L)))
+    {
+        static assert( llvm_round( cast(float)2.3 ) == 2.0 );
+        static assert( llvm_round( cast(float)3.8 ) == 4.0 );
+        static assert( llvm_round( cast(float)5.5 ) == 6.0 );
+        static assert( llvm_round( cast(float)-2.3 ) == -2.0 );
+        static assert( llvm_round( cast(float)-3.8 ) == -4.0 );
+        static assert( llvm_round( cast(float)-5.5 ) == -6.0 );
+    }
+}
+
+/*******************************************/
+
+void test10()
+{
+    static if (__traits(compiles, llvm_minnum(3.14L, 2.81L)))
+    {
+        static assert( llvm_minnum( cast(float)2.3, cast(float) 3.8 ) == 2.3 );
+        static assert( llvm_minnum( cast(double)2.3, cast(float) 3.8 ) == 2.3 );
+        static assert( llvm_minnum( cast(real)2.3, cast(float) 3.8 ) == 2.3 );
+    }
+}
+
+/*******************************************/
+
+void test11()
+{
+    static if (__traits(compiles, llvm_maxnum(3.14L, 2.81L)))
+    {
+        static assert( llvm_maxnum( cast(float)2.3, cast(float) 3.8 ) == 3.8 );
+        static assert( llvm_maxnum( cast(double)2.3, cast(float) 3.8 ) == 3.8 );
+        static assert( llvm_maxnum( cast(real)2.3, cast(float) 3.8 ) == 3.8 );
+    }
+}
+
+/*******************************************/
+
 void main()
 {
     test1();
@@ -157,4 +269,10 @@ void main()
     test3();
     test4();
     test5();
+    test6();
+    test7();
+    test8();
+    test9();
+    test10();
+    test11();
 }
