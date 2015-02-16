@@ -319,18 +319,32 @@ void test10071()
 
 /****************************************/
 
+version(LDC)
+{
+    version(X86_64)
+    {
+        version(Win64) {}
+        else version = LDC_SystemV;
+    }
+}
+
+version(LDC_SystemV)
+    alias __va_list_tag* cpp_va_list;
+else
+    alias va_list cpp_va_list;
+
 char[100] valistbuffer;
 
-extern(C++) void myvprintfx(const(char)* format, va_list va)
+extern(C++) void myvprintfx(const(char)* format, cpp_va_list va)
 {
-    vsprintf(valistbuffer.ptr, format, va);
+    vsprintf(valistbuffer.ptr, format, cast(va_list) va);
 }
-extern(C++) void myvprintf(const(char)*, va_list);
+extern(C++) void myvprintf(const(char)*, cpp_va_list);
 extern(C++) void myprintf(const(char)* format, ...)
 {
     va_list ap;
     va_start(ap, format);
-    myvprintf(format, ap);
+    myvprintf(format, cast(cpp_va_list) ap);
     va_end(ap);
 }
 
