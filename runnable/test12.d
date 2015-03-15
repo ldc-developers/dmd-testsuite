@@ -621,14 +621,9 @@ struct S29 {
 
 int hoge(S29 s) {
     char[10] b;
-    version (LDC) {
-      // LDC_FIXME: ABI rewrites are not applied for variadic parameters,
-      // see GitHub issue #172.
-    } else {
     printf("%x\n", s);
     sprintf(b.ptr, "%x", s);
     assert(b[0 .. 7] == "4030201");
-    }
     return 0;
 }
 

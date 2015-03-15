@@ -4937,13 +4937,7 @@ void test245()
 }
 
 /***************************************************/
-version (LDC)
-{
-    // LDC_FIXME: We currently crash on this due to DMD issue 8626, need to
-    // wait for upstream fix.
-}
-else
-{
+
 mixin template mix7974()
 {
     uint _x;
@@ -4960,7 +4954,7 @@ struct Foo7974
 
     mixin mix7974!();
 }
-}
+
 /***************************************************/
 // 4155
 

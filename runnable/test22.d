@@ -1285,10 +1285,7 @@ int main()
     test50();
     test51();
     test52();
-    version (LDC)
-        pragma(msg, "Vararg support currently broken.");
-    else
-        test6758();
+    test6758();
 
     printf("Success\n");
     return 0;
