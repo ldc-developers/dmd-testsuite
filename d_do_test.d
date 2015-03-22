@@ -12,6 +12,7 @@ import std.regex;
 import std.stdio;
 import std.string;
 import core.sys.posix.sys.wait;
+private import core.stdc.stdlib;
 
 void usage()
 {
@@ -262,9 +263,9 @@ string genTempFilename(string result_path)
 
 int system(string command)
 {
-    if (!command) return std.c.process.system(null);
+    if (!command) return core.stdc.stdlib.system(null);
     const commandz = toStringz(command);
-    auto status = std.c.process.system(commandz);
+    auto status = core.stdc.stdlib.system(commandz);
     if (status == -1) return status;
     version (Windows) status <<= 8;
     return status;
@@ -357,18 +358,18 @@ int main(string[] args)
     string test_extension = args[3];
 
     EnvData envData;
-    envData.all_args      = getenv("ARGS");
-    envData.results_dir   = getenv("RESULTS_DIR");
-    envData.sep           = getenv("SEP");
-    envData.dsep          = getenv("DSEP");
-    envData.obj           = getenv("OBJ");
-    envData.exe           = getenv("EXE");
-    envData.os            = getenv("OS");
-    envData.dmd           = replace(getenv("DMD"), "/", envData.sep);
+    envData.all_args      = environment.get("ARGS");
+    envData.results_dir   = environment.get("RESULTS_DIR");
+    envData.sep           = environment.get("SEP");
+    envData.dsep          = environment.get("DSEP");
+    envData.obj           = environment.get("OBJ");
+    envData.exe           = environment.get("EXE");
+    envData.os            = environment.get("OS");
+    envData.dmd           = replace(environment.get("DMD"), "/", envData.sep);
     envData.compiler      = "dmd"; //should be replaced for other compilers
-    envData.ccompiler     = getenv("CC");
-    envData.model         = getenv("MODEL");
-    envData.required_args = getenv("REQUIRED_ARGS");
+    envData.ccompiler     = environment.get("CC");
+    envData.model         = environment.get("MODEL");
+    envData.required_args = environment.get("REQUIRED_ARGS");
 
     string result_path    = envData.results_dir ~ envData.sep;
     string input_file     = input_dir ~ envData.sep ~ test_name ~ "." ~ test_extension;
