@@ -97,7 +97,7 @@ else
     SHELL=/bin/bash
 endif
 QUIET=@
-export RESULTS_DIR=./test_results
+export RESULTS_DIR=test_results
 export MODEL=32
 export REQUIRED_ARGS=
 
@@ -222,12 +222,6 @@ fail_compilation_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(fai
 all: run_tests
 
 $(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/runnable/,$(DISABLED_TESTS))): $(RESULTS_DIR)/.created
-	$(QUIET) echo " ... $@ - disabled"
-
-$(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/compilable/,$(DISABLED_COMPILE_TESTS))): $(RESULTS_DIR)/.created
-	$(QUIET) echo " ... $@ - disabled"
-
-$(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/fail_compilation/,$(DISABLED_FAIL_TESTS))): $(RESULTS_DIR)/.created
 	$(QUIET) echo " ... $@ - disabled"
 
 $(addsuffix .sh.out,$(addprefix $(RESULTS_DIR)/runnable/,$(DISABLED_SH_TESTS))): $(RESULTS_DIR)/.created
