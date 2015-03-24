@@ -52,6 +52,7 @@ struct TestArgs
     string   executeArgs;
     string[] sources;
     string[] cppSources;
+    string[] objcSources;
     string   permuteArgs;
     string   compileOutput;
     string   postScript;
@@ -76,6 +77,7 @@ struct EnvData
     string ccompiler;
     string model;
     string required_args;
+    bool dobjc;
 }
 
 bool findTestParameter(string file, string token, ref string result)
@@ -155,7 +157,7 @@ void replaceResultsDir(ref string arguments, const ref EnvData envData)
     arguments = replace(arguments, "${RESULTS_DIR}", envData.results_dir);
 }
 
-void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_file, const ref EnvData envData)
+bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_file, const ref EnvData envData)
 {
     string file = cast(string)std.file.read(input_file);
 
@@ -203,6 +205,17 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     foreach(s; split(extraCppSourcesStr))
         testArgs.cppSources ~= s;
 
+    string extraObjcSourcesStr;
+    auto objc = findTestParameter(file, "EXTRA_OBJC_SOURCES", extraObjcSourcesStr);
+
+    if (objc && !envData.dobjc)
+        return false;
+
+    testArgs.objcSources = [];
+    // prepend input_dir to each extra source file
+    foreach(s; split(extraObjcSourcesStr))
+        testArgs.objcSources ~= s;
+
     // swap / with $SEP
     if (envData.sep && envData.sep != "/")
         foreach (ref s; testArgs.sources)
@@ -218,6 +231,8 @@ void gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
 
     if (findTestParameter(file, "POST_SCRIPT", testArgs.postScript))
         testArgs.postScript = replace(testArgs.postScript, "/", to!string(envData.sep));
+
+    return true;
 }
 
 string[] combinations(string argstr)
@@ -262,9 +277,9 @@ string genTempFilename(string result_path)
 
 int system(string command)
 {
-    if (!command) return std.c.process.system(null);
+    if (!command) return core.stdc.stdlib.system(null);
     const commandz = toStringz(command);
-    auto status = std.c.process.system(commandz);
+    auto status = core.stdc.stdlib.system(commandz);
     if (status == -1) return status;
     version (Windows) status <<= 8;
     return status;
@@ -342,6 +357,45 @@ unittest
         == `fail_compilation\diag.d(2): Error: fail_compilation\imports\fail.d must be imported`);
 }
 
+bool collectExtraSources (in string input_dir, in string output_dir, in string[] extraSources, ref string[] sources, bool msc, in EnvData envData, in string compiler)
+{
+    foreach (cur; extraSources)
+    {
+        auto curSrc = input_dir ~ envData.sep ~"extra-files" ~ envData.sep ~ cur;
+        auto curObj = output_dir ~ envData.sep ~ cur ~ envData.obj;
+        string command = compiler;
+        if (envData.compiler == "dmd")
+        {
+            if (msc)
+            {
+                command ~= ` /c /nologo `~curSrc~` /Fo`~curObj;
+            }
+            else if (envData.os == "win32")
+            {
+                command ~= " -c "~curSrc~" -o"~curObj;
+            }
+            else
+            {
+                command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
+            }
+        }
+        else
+        {
+            command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
+        }
+
+        auto rc = system(command);
+        if(rc)
+        {
+            writeln("failed to execute '"~command~"'");
+            return false;
+        }
+        sources ~= curObj;
+    }
+
+    return true;
+}
+
 int main(string[] args)
 {
     if (args.length != 4)
@@ -357,18 +411,19 @@ int main(string[] args)
     string test_extension = args[3];
 
     EnvData envData;
-    envData.all_args      = getenv("ARGS");
-    envData.results_dir   = getenv("RESULTS_DIR");
-    envData.sep           = getenv("SEP");
-    envData.dsep          = getenv("DSEP");
-    envData.obj           = getenv("OBJ");
-    envData.exe           = getenv("EXE");
-    envData.os            = getenv("OS");
-    envData.dmd           = replace(getenv("DMD"), "/", envData.sep);
+    envData.all_args      = environment.get("ARGS");
+    envData.results_dir   = environment.get("RESULTS_DIR");
+    envData.sep           = environment.get("SEP");
+    envData.dsep          = environment.get("DSEP");
+    envData.obj           = environment.get("OBJ");
+    envData.exe           = environment.get("EXE");
+    envData.os            = environment.get("OS");
+    envData.dmd           = replace(environment.get("DMD"), "/", envData.sep);
     envData.compiler      = "dmd"; //should be replaced for other compilers
-    envData.ccompiler     = getenv("CC");
-    envData.model         = getenv("MODEL");
-    envData.required_args = getenv("REQUIRED_ARGS");
+    envData.ccompiler     = environment.get("CC");
+    envData.model         = environment.get("MODEL");
+    envData.required_args = environment.get("REQUIRED_ARGS");
+    envData.dobjc         = environment.get("D_OBJC") == "1";
 
     string result_path    = envData.results_dir ~ envData.sep;
     string input_file     = input_dir ~ envData.sep ~ test_name ~ "." ~ test_extension;
@@ -380,9 +435,9 @@ int main(string[] args)
 
     switch (input_dir)
     {
-        case "compilable":       testArgs.mode = TestMode.COMPILE;      break;
-        case "fail_compilation": testArgs.mode = TestMode.FAIL_COMPILE; break;
-        case "runnable":         testArgs.mode = TestMode.RUN;          break;
+        case "compilable":              testArgs.mode = TestMode.COMPILE;      break;
+        case "fail_compilation":        testArgs.mode = TestMode.FAIL_COMPILE; break;
+        case "runnable":                testArgs.mode = TestMode.RUN;          break;
         default:
             writeln("input_dir must be one of 'compilable', 'fail_compilation', or 'runnable'");
             return 1;
@@ -397,7 +452,10 @@ int main(string[] args)
             default:      envData.ccompiler = "g++"; break;
         }
     }
-    gatherTestParameters(testArgs, input_dir, input_file, envData);
+    bool msc = envData.ccompiler.toLower.endsWith("cl.exe");
+
+    if (!gatherTestParameters(testArgs, input_dir, input_file, envData))
+        return 0;
 
     //prepare cpp extra sources
     if (testArgs.cppSources.length)
@@ -418,40 +476,13 @@ int main(string[] args)
                 writeln("unknown compiler: "~envData.compiler);
                 return 1;
         }
-        foreach (cur; testArgs.cppSources)
-        {
-            auto curSrc = input_dir ~ envData.sep ~"extra-files" ~ envData.sep ~ cur;
-            auto curObj = output_dir ~ envData.sep ~ cur ~ envData.obj;
-            string command = envData.ccompiler;
-            if (envData.compiler == "dmd")
-            {
-                if (envData.os == "win32")
-                {
-                    command ~= " -c "~curSrc~" -o"~curObj;
-                }
-                else if (envData.os == "win64")
-                {
-                    command ~= ` /c /nologo `~curSrc~` /Fo`~curObj;
-                }
-                else
-                {
-                    command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
-                }
-            }
-            else
-            {
-                command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
-            }
-
-            auto rc = system(command);
-            if(rc)
-            {
-                writeln("failed to execute '"~command~"'");
-                return 1;
-            }
-            testArgs.sources ~= curObj;
-        }
+        if (!collectExtraSources(input_dir, output_dir, testArgs.cppSources, testArgs.sources, msc, envData, envData.ccompiler))
+            return 1;
     }
+    //prepare objc extra sources
+    if (!collectExtraSources(input_dir, output_dir, testArgs.objcSources, testArgs.sources, msc, envData, "clang"))
+        return 1;
+
     writef(" ... %-30s %s%s(%s)",
             input_file,
             testArgs.requiredArgs,
@@ -467,7 +498,7 @@ int main(string[] args)
 
     auto f = File(output_file, "a");
 
-    foreach(i, c; combinations(testArgs.permuteArgs))
+    foreach (i, c; combinations(testArgs.permuteArgs))
     {
         string test_app_dmd = test_app_dmd_base ~ to!string(i) ~ envData.exe;
 
@@ -485,14 +516,19 @@ int main(string[] args)
                 removeIfExists(thisRunName);
             }
 
+            // can override -verrors by using REQUIRED_ARGS
+            auto reqArgs =
+                (testArgs.mode == TestMode.FAIL_COMPILE ? "-verrors=0 " : null) ~
+                testArgs.requiredArgs;
+
             string compile_output;
             if (!testArgs.compileSeparately)
             {
                 string objfile = output_dir ~ envData.sep ~ test_name ~ "_" ~ to!string(i) ~ envData.obj;
                 toCleanup ~= objfile;
 
-                string command = format("%s -m%s -I%s %s %s -od%s -of%s %s%s", envData.dmd, envData.model, input_dir,
-                        testArgs.requiredArgs, c, output_dir,
+                string command = format("%s -conf= -m%s -I%s %s %s -od%s -of%s %s%s", envData.dmd, envData.model, input_dir,
+                        reqArgs, c, output_dir,
                         (testArgs.mode == TestMode.RUN ? test_app_dmd : objfile),
                         (testArgs.mode == TestMode.RUN ? "" : "-c "),
                         join(testArgs.sources, " "));
@@ -507,15 +543,15 @@ int main(string[] args)
                     string newo= result_path ~ replace(replace(filename, ".d", envData.obj), envData.sep~"imports"~envData.sep, envData.sep);
                     toCleanup ~= newo;
 
-                    string command = format("%s -m%s -I%s %s %s -od%s -c %s", envData.dmd, envData.model, input_dir,
-                        testArgs.requiredArgs, c, output_dir, filename);
+                    string command = format("%s -conf= -m%s -I%s %s %s -od%s -c %s", envData.dmd, envData.model, input_dir,
+                        reqArgs, c, output_dir, filename);
                     compile_output ~= execute(fThisRun, command, testArgs.mode != TestMode.FAIL_COMPILE, result_path);
                 }
 
                 if (testArgs.mode == TestMode.RUN)
                 {
                     // link .o's into an executable
-                    string command = format("%s -m%s %s %s -od%s -of%s %s", envData.dmd, envData.model, envData.required_args,
+                    string command = format("%s -conf= -m%s %s %s -od%s -of%s %s", envData.dmd, envData.model, envData.required_args,
                             testArgs.requiredArgsForLink, output_dir, test_app_dmd, join(toCleanup, " "));
                     version (LDC) {} else version(Windows) command ~= " -map nul.map";
 
@@ -540,7 +576,7 @@ int main(string[] args)
             {
                 toCleanup ~= test_app_dmd;
                 version(Windows)
-                    if (envData.model == "64")
+                    if (msc)
                     {
                         toCleanup ~= test_app_dmd_base ~ to!string(i) ~ ".ilk";
                         toCleanup ~= test_app_dmd_base ~ to!string(i) ~ ".pdb";

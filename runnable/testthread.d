@@ -1,9 +1,9 @@
 // PERMUTE_ARGS:
 
-import std.c.stdio;
+import core.stdc.stdio;
 import core.thread;
 
-version (Win32)
+version (CRuntime_DigitalMars)
 {
     extern (C)
     {
@@ -26,7 +26,7 @@ class Foo
         Thread t = Thread.getThis();
 
         version (LDC) {} else
-        version (Win32)
+        version (CRuntime_DigitalMars)
             printf("thread ptr=%p, %p &tlsx = %p %p\n", t, &_tlsstart, &tlsx, &_tlsend);
         x = 3;
         printf("-bar()\n");
