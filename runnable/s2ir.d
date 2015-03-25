@@ -8,11 +8,7 @@ void test1()
     int i;
     __gshared int j;
 
-    version (LDC)
-    {
-        // LDC does not support referencing non-global variables in naked asm.
-    }
-    else version (D_InlineAsm_X86)
+    version (D_InlineAsm_X86)
     {
         asm
         {

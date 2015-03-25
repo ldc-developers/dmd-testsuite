@@ -622,13 +622,7 @@ void test41()
 {
     printf("&x = %p\n", &x41);
     printf("&s = %p\n", &s41);
-    version (LDC) {
-        // Clang emits a constant of type struct Test { int a, b, c, d; };
-        // 4-byte aligned, so requiring 16-byte alignment would _not_ be
-        // "compatible to the underlying C compiler", as mandated by the spec.
-    } else {
     assert((cast(int)&s41 & 0xF) == 0);
-    }
 }
 
 /***************************************************/

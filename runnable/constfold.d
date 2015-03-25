@@ -389,15 +389,8 @@ void test2()
     int i = cast(int) f;
     writeln(i);
     writeln(cast(int)float.max);
-    version (LDC) {
-        // LDC_FIXME: This test fails in optimized builds due to the constant
-        // folding done by the LLVM optimizer. It should be checked whether the
-        // result of the cast is really specified in C, and as a consequence
-        // in D (see [dmd-internals] float.infinity->int test case in constfold.d).
-    } else {
     assert(i == cast(int)float.max);
     assert(i == 0x80000000);
-    }
 }
 
 /************************************/

@@ -25,7 +25,6 @@ class Foo
         tlsx = 5;
         Thread t = Thread.getThis();
 
-        version (LDC) {} else
         version (CRuntime_DigitalMars)
             printf("thread ptr=%p, %p &tlsx = %p %p\n", t, &_tlsstart, &tlsx, &_tlsend);
         x = 3;

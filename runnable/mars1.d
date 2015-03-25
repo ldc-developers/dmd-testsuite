@@ -789,15 +789,6 @@ void testdocond()
 
 ////////////////////////////////////////////////////////////////////////
 
-// LDC_FIXME: Quite interestingly, the LLVM x86 backend also suffers from the
-// same issue as DMD did. Reported as http://llvm.org/bugs/show_bug.cgi?id=20292.
-version (LDC) version (X86) version = LLVM_BUG_20292;
-
-version (LLVM_BUG_20292)
-{
-}
-else
-{
 struct S8658
 {
     int[16385] a;
@@ -813,7 +804,6 @@ void test8658()
     S8658 s;
     for(int i = 0; i < 1000; i++)
         foo8658(s);
-}
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1304,13 +1294,7 @@ int main()
     testU();
     testulldiv();
     testbittest();
-version (LLVM_BUG_20292)
-{
-}
-else
-{
     test8658();
-}
     testfastudiv();
     testfastdiv();
     test3918();
