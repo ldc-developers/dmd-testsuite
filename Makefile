@@ -70,7 +70,15 @@ ifeq (,$(OS))
             ifeq (FreeBSD,$(OS))
                 OS:=freebsd
             else
-                $(error Unrecognized or unsupported OS for uname: $(OS))
+                ifeq (Solaris,$(OS))
+                    OS:=solaris
+                else
+                    ifeq (SunOS,$(OS))
+                        OS:=solaris
+                    else
+                        $(error Unrecognized or unsupported OS for uname: $(OS))
+                    endif
+                endif
             endif
         endif
     endif
@@ -133,6 +141,11 @@ endif
 endif
 
 ifeq ($(OS),freebsd)
+DISABLED_TESTS += dhry
+# runnable/dhry.d(488): Error: undefined identifier dtime
+endif
+
+ifeq ($(OS),solaris)
 DISABLED_TESTS += dhry
 # runnable/dhry.d(488): Error: undefined identifier dtime
 endif
