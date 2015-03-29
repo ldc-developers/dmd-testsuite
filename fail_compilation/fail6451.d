@@ -1,11 +1,17 @@
-
 version(Win64)
 {
     static assert(0);
 }
-else version(X86_64)
+else version(DigitalMars)
 {
-    void error(...){}
+    version(X86_64)
+    {
+        void error(...){}
+    }
+    else
+    {
+        static assert(0);
+    }
 }
 else
 {

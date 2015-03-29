@@ -2090,8 +2090,12 @@ void test9006()
     assert(ns == NS.init);
 
     static struct SS { NS ns; }
+version (LDC) {} else {
+    // LDC_FIXME: Need to figure out to which extent we want to emulate this
+    // behavior.
     assert(SS.init.ns == NS.init); // fails
     assert(SS.init.ns != NS());    // fails
+}
 
     SS s;
     assert(s.ns != NS.init); // line 20
