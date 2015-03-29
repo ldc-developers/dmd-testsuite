@@ -389,8 +389,20 @@ void test2()
     int i = cast(int) f;
     writeln(i);
     writeln(cast(int)float.max);
+    version (LDC) {
+        // LDC_FIXME: This test fails in optimized builds due to the constant
+        // folding done by the LLVM optimizer. It should be checked whether the
+        // result of the cast is really specified in C, and as a consequence
+        // in D (see [dmd-internals] float.infinity->int test case in constfold.d).
+        // Update: The values are really implementation dependent.
+        // Intel CPUs return the "indefinite interger value" (0x80000000).
+        // ARM CPUs return 0x80000000 or 0x7FFFFFFF depending on the value.
+        // PowerPC CPUs behave like ARM bit use 64bit values.
+        // MIPS CPUs always return 0x7FFFFFFF_FFFFFFFF.
+    } else {
     assert(i == cast(int)float.max);
     assert(i == 0x80000000);
+    }
 }
 
 /************************************/
