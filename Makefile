@@ -155,12 +155,6 @@ DISABLED_FAIL_TESTS += fail13939
 endif
 
 ####
-# LDC: Disable -cov tests.
-DISABLED_TESTS += a20
-DISABLED_TESTS += cov2
-DISABLED_TESTS += sieve
-DISABLED_TESTS += bug9010
-
 # LDC: Disable -profile tests.
 DISABLED_TESTS += hello-profile
 DISABLED_TESTS += testprofile
