@@ -197,6 +197,10 @@ DISABLED_FAIL_TESTS += fail274
 # correctly, with the expected result.
 DISABLED_FAIL_TESTS += fail8179b
 
+# LDC: These inline asm tests fail to fail, that is, the code works as expected
+DISABLED_FAIL_TESTS += fail13938
+DISABLED_FAIL_TESTS += fail13939
+
 # LDC: Binary size test. LDC's output exceeds the limits.
 DISABLED_TESTS += test13117b
 DISABLED_TESTS += test13117
