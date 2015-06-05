@@ -160,6 +160,13 @@ DISABLED_TESTS += hello-profile
 DISABLED_TESTS += testprofile
 DISABLED_COMPILE_TESTS += diag11066
 
+# LDC: Disable gdb tests. Problems are the implicit return and
+# variables optimized out by the compiler.
+DISABLED_TESTS += gdb1
+DISABLED_TESTS += gdb10311
+DISABLED_TESTS += gdb14225
+DISABLED_TESTS += gdb4181
+
 # LDC: This test checks for a number of error messages, of which we only report
 # the first one. Not a bug.
 DISABLED_FAIL_TESTS += fail9418
