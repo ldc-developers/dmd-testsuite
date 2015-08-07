@@ -84,10 +84,15 @@ ifeq (,$(OS))
     endif
 else
     ifeq (Windows_NT,$(OS))
-        ifeq ($(findstring WOW64, $(shell uname)),WOW64)
+        SHELL=cmd.exe
+        ifeq ($(findstring AMD64,$(shell echo %PROCESSOR_ARCHITECTURE%)),AMD64)
             OS:=win64
         else
-            OS:=win32
+            ifeq ($(findstring AMD64,$(shell echo %PROCESSOR_ARCHITEW6432%)),AMD64)
+                OS:=win64
+            else
+                OS:=win32
+            endif
         endif
     endif
     ifeq (Win_32,$(OS))
@@ -110,6 +115,7 @@ export MODEL=32
 export REQUIRED_ARGS=
 
 ifeq ($(findstring win,$(OS)),win)
+SHELL=bash.exe
 export ARGS=-inline -release -g -O -unittest
 export DMD=../src/dmd.exe
 export EXE=.exe
@@ -120,7 +126,6 @@ export SEP=$(subst /,\,/)
 DRUNTIME_PATH=..\..\druntime
 PHOBOS_PATH=..\..\phobos
 export DFLAGS=-I$(DRUNTIME_PATH)\import -I$(PHOBOS_PATH)
-export LIB=$(PHOBOS_PATH)
 else
 export ARGS=-inline -release -gc -O -unittest -fPIC
 export DMD=../src/dmd

@@ -453,7 +453,7 @@ int main(string[] args)
         switch (envData.os)
         {
             case "win32": envData.ccompiler = "dmc"; break;
-            case "win64": envData.ccompiler = `\"Program Files (x86)"\"Microsoft Visual Studio 10.0"\VC\bin\amd64\cl.exe`; break;
+            case "win64": envData.ccompiler = "cl.exe"; break;
             default:      envData.ccompiler = "g++"; break;
         }
     }
