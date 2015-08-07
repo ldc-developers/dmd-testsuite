@@ -427,6 +427,8 @@ bool compareOutput(string output, string refoutput)
     }
 }
 
+version(LDC) version(CRuntime_Microsoft) version = LDC_MSVC;
+
 int main(string[] args)
 {
     if (args.length != 4)
@@ -479,8 +481,16 @@ int main(string[] args)
     {
         switch (envData.os)
         {
+          version(LDC_MSVC)
+          {
+            case "win32": envData.ccompiler = "cl.exe"; break;
+            case "win64": envData.ccompiler = "cl.exe"; break;
+          }
+          else
+          {
             case "win32": envData.ccompiler = "dmc"; break;
             case "win64": envData.ccompiler = `\"Program Files (x86)"\"Microsoft Visual Studio 10.0"\VC\bin\amd64\cl.exe`; break;
+          }
             default:      envData.ccompiler = "g++"; break;
         }
     }
