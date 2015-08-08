@@ -237,8 +237,9 @@ void assertEqual(real* a, real* b, string file = __FILE__, size_t line = __LINE_
 
     // Only compare the 10 value bytes, the padding bytes are of undefined
     // value.
-    version (X86) enum count = 10;
-    else version (X86_64) enum count = 10;
+    import std.algorithm.comparison: min;
+    version (X86) enum count = min(real.sizeof, 10);
+    else version (X86_64) enum count = min(real.sizeof, 10);
     else enum count = real.sizeof;
     for (size_t i = 0; i < count; i++)
     {
