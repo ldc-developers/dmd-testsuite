@@ -436,6 +436,9 @@ int main(string[] args)
     string output_file    = result_path ~ input_dir ~ envData.sep ~ test_name ~ "." ~ test_extension ~ ".out";
     string test_app_dmd_base = output_dir ~ envData.sep ~ test_name ~ "_";
 
+    if (envData.all_args == envData.sep)
+        envData.all_args = "";
+
     TestArgs testArgs;
 
     switch (input_dir)
