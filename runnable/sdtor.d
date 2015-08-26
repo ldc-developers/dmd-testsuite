@@ -2678,7 +2678,7 @@ void test9985()
     }
     auto p = &(retN());        // OK
     assert(p == &n);
-    alias ref const(int) F1();
+    alias pure nothrow @nogc @safe ref const(int) F1();
     static assert(is(typeof(retN) == F1));
 
     enum const(int) x = 1;
@@ -2687,7 +2687,7 @@ void test9985()
         return x;
     }
     static assert(!__traits(compiles, { auto q = &(retX()); }));
-    alias const(int) F2();
+    alias pure nothrow @nogc @safe const(int) F2();
     static assert(is(typeof(retX) == F2));
 }
 
@@ -3038,6 +3038,70 @@ void test10789()
         assert(S10789.count == 0);
     }
 }
+
+/**********************************/
+// 10972
+
+int test10972()
+{
+    string result;
+
+    struct A
+    {
+        this(this)  { result ~= "pA"; version(none) printf("copied A\n"); }
+        ~this()     { result ~= "dA"; version(none) printf("destroy A\n"); }
+    }
+    struct B
+    {
+        this(this)
+        {
+            result ~= "(pB)"; version(none) printf("B says what?\n");
+            throw new Exception("BOOM!");
+        }
+        ~this() { result ~= "dB"; version(none) printf("destroy B\n"); }
+    }
+    struct S
+    {
+        A a;
+        B b;
+    }
+
+    result = "{";
+    {
+        S s1;
+        result ~= "[";
+        try
+        {
+            S s3 = s1;
+            assert(0);
+        }
+        catch (Exception e)
+        {}
+        result ~= "]";
+    }
+    result ~= "}";
+    assert(result == "{[pA(pB)dA]dBdA}", result);
+
+    result = "{";
+    {
+        S s1;
+        S s2;
+        result ~= "[";
+        try
+        {
+            s2 = s1;
+            assert(0);
+        }
+        catch (Exception e)
+        {}
+        result ~= "]";
+    }
+    result ~= "}";
+    assert(result == "{[pA(pB)dA]dBdAdBdA}", result);
+
+    return 1;
+}
+static assert(test10972()); // CTFE
 
 /**********************************/
 // 11134
@@ -3847,6 +3911,91 @@ void test13095()
 }
 
 /**********************************/
+// 14264
+
+void test14264()
+{
+    static int dtor;
+    static struct Foo
+    {
+        ~this() { ++dtor; }
+        T opCast(T:bool)() { return true; }
+    }
+
+    Foo makeFoo()
+    {
+        return Foo();
+    }
+
+    assert(dtor == 0);
+
+    makeFoo();
+    assert(dtor == 1);
+
+    makeFoo;
+    assert(dtor == 2);
+
+    if (makeFoo()) {}
+    assert(dtor == 3);
+
+    if (makeFoo) {}
+    assert(dtor == 4);
+}
+
+/**********************************/
+// 14838
+
+int test14838() pure nothrow @safe
+{
+    int dtor;
+
+    struct S14838(T)
+    {
+        ~this() { ++dtor; }
+    }
+    struct X14838
+    {
+              S14838!int ms;
+        const S14838!int cs;
+
+              S14838!int[2] ma;
+        const S14838!int[2] ca;
+
+              S14838!int[2][2] ma2x2;
+        const S14838!int[2][2] ca2x2;
+
+        // number of S14838 = 1*2 + 2*2 + 4*2 = 14
+    }
+
+    void test(Dg)(scope Dg code)
+    {
+        dtor = 0;
+        code();
+    }
+
+    test(delegate{       S14838!int a; }); assert(dtor == 1);
+    test(delegate{ const S14838!int a; }); assert(dtor == 1);
+
+    test(delegate{       S14838!int[2] a; }); assert(dtor == 2);
+    test(delegate{ const S14838!int[2] a; }); assert(dtor == 2);
+
+    test(delegate{       S14838!int[2][2] a; }); assert(dtor == 4);
+    test(delegate{ const S14838!int[2][2] a; }); assert(dtor == 4);
+
+    test(delegate{       X14838 a; }); assert(dtor == 1 * 14);
+    test(delegate{ const X14838 a; }); assert(dtor == 1 * 14);
+
+    test(delegate{       X14838[2] a; }); assert(dtor == 2 * 14);
+    test(delegate{ const X14838[2] a; }); assert(dtor == 2 * 14);
+
+    test(delegate{       X14838[2][2] a; }); assert(dtor == 4 * 14);
+    test(delegate{ const X14838[2][2] a; }); assert(dtor == 4 * 14);
+
+    return 1;
+}
+static assert(test14838());
+
+/**********************************/
 
 int main()
 {
@@ -3940,6 +4089,7 @@ int main()
     test10244();
     test10694();
     test10789();
+    test10972();
     test11134();
     test11197();
     test7474();
@@ -3960,6 +4110,8 @@ int main()
     test14023();
     test13669();
     test13095();
+    test14264();
+    test14838();
 
     printf("Success\n");
     return 0;
