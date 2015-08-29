@@ -222,7 +222,7 @@ DISABLED_TESTS += test13117
 DISABLED_TESTS += testclass
 
 # LDC: Test specific to DMD's library names.
-DISABLED_TESTS += test_shared
+DISABLED_SH_TESTS += test_shared
 
 ####
 
