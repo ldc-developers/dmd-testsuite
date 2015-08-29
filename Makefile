@@ -221,6 +221,9 @@ DISABLED_TESTS += test13117
 # LDC: dmd bug caught early: https://issues.dlang.org/show_bug.cgi?id=13353
 DISABLED_TESTS += testclass
 
+# LDC: Test specific to DMD's library names.
+DISABLED_TESTS += test_shared
+
 ####
 
 ifeq ($(OS),win64)
