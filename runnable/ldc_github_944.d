@@ -1,5 +1,17 @@
 import core.stdc.errno;
-import core.sys.linux.epoll;
+
+struct epoll_event  {
+align(1):
+    uint events;
+    epoll_data_t data;
+}
+
+union epoll_data_t  {
+    void *ptr;
+    int fd;
+    uint u32;
+    ulong u64;
+}
 
 enum PollerEventType : int { a }
 

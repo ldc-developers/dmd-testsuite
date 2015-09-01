@@ -1,5 +1,5 @@
 
-import std.c.stdio;
+import core.stdc.stdio;
 
 void testgoto()
 {
@@ -436,6 +436,27 @@ void test12095(int k)
 ////////////////////////////////////////////////////////////////////////
 
 
+bool test3918a( float t, real u )
+{
+	printf("%f\n", u );
+	return t && u;
+}
+
+bool test3918b( real t, float u )
+{
+	printf("%f\n", t );
+	return t && u;
+}
+
+void test3918()
+{
+	assert(test3918a(float.nan, real.nan));
+	assert(test3918b(real.nan, float.nan));
+}
+
+////////////////////////////////////////////////////////////////////////
+
+
 int div10(int x)
 {
     return x / 10;
@@ -768,15 +789,6 @@ void testdocond()
 
 ////////////////////////////////////////////////////////////////////////
 
-// LDC_FIXME: Quite interestingly, the LLVM x86 backend also suffers from the
-// same issue as DMD did. Reported as http://llvm.org/bugs/show_bug.cgi?id=20292.
-version (LDC) version (X86) version = LLVM_BUG_20292;
-
-version (LLVM_BUG_20292)
-{
-}
-else
-{
 struct S8658
 {
     int[16385] a;
@@ -792,7 +804,6 @@ void test8658()
     S8658 s;
     for(int i = 0; i < 1000; i++)
         foo8658(s);
-}
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1176,6 +1187,22 @@ void test13190()
 
 ////////////////////////////////////////////////////////////////////////
 
+double foo13485(double c, double d)
+{
+    // This must not be optimized to c += (d + d)
+    c += d;
+    c += d;
+    return c;
+}
+
+void test13485()
+{
+    enum double d = 0X1P+1023;
+    assert(foo13485(-d, d) == d);
+}
+
+////////////////////////////////////////////////////////////////////////
+
 void test12833a(int a)
 {
     long x = cast(long)a;
@@ -1227,6 +1254,68 @@ void test12057()
 
 ////////////////////////////////////////////////////////////////////////
  
+long modulo24 (long ticks)
+{
+    ticks %= 864000000000;
+    if (ticks < 0)
+        ticks += 864000000000;
+    return ticks;
+}
+
+void test13784()
+{
+    assert (modulo24(-141600000000) == 722400000000);
+}
+
+
+////////////////////////////////////////////////////////////////////////
+
+struct S13969 {
+    int x, y;
+}
+
+int test13969(const S13969* f) {
+    return 0 % ((f.y > 0) ? f.x / f.y : f.x / -f.y);
+}
+
+////////////////////////////////////////////////////////////////////////
+
+void test14220()
+{
+    auto a = toString(14);
+
+    printf("a.ptr = %p, a.length = %d\n", a.ptr, cast(int)a.length);
+    return;
+}
+
+auto toString(int value)
+{
+    uint mValue = value;
+
+    char[int.sizeof * 3] buffer = void;
+    size_t index = buffer.length;
+
+    do
+    {
+        uint div = cast(int)(mValue / 10);
+        char mod = mValue % 10 + '0';
+        buffer[--index] = mod;        // Line 22
+        mValue = div;
+    } while (mValue);
+
+    //printf("buffer.ptr = %p, index = %d\n", buffer.ptr, cast(int)index);
+    return dup(buffer[index .. $]);
+}
+
+char[] dup(char[] a)
+{
+    //printf("a.ptr = %p, a.length = %d\n", a.ptr, cast(int)a.length);
+    a[0] = 1;       // segfault
+    return a;
+}
+
+////////////////////////////////////////////////////////////////////////
+ 
 int main()
 {
     testgoto();
@@ -1241,15 +1330,10 @@ int main()
     testU();
     testulldiv();
     testbittest();
-version (LLVM_BUG_20292)
-{
-}
-else
-{
     test8658();
-}
     testfastudiv();
     testfastdiv();
+    test3918();
     test12051();
     testdocond();
     testnegcom();
@@ -1262,6 +1346,7 @@ else
     testshrshl();
     test13383();
     test13190();
+    test13485();
     test10639();
     test10715();
     test10678();
@@ -1270,6 +1355,8 @@ else
     test12833();
     test9449();
     test12057();
+    test13784();
+    test14220();
     printf("Success\n");
     return 0;
 }

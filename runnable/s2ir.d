@@ -4,21 +4,33 @@ import std.stdio;
 /***********************************/
 
 void test1()
-{   int i;
-    static int j;
+{
+    int i;
+    __gshared int j;
 
     version (LDC)
     {
-        // LDC does not support referencing non-global variables in naked asm.
+        // Local variables in nested functions (which by definition have no
+        // stack frame the compiler can know about) are ill-defined and will not
+        // be supported by LDC in the forseeable future.
     }
-    else version (D_InlineAsm_X86)
+    else
+    version (D_InlineAsm_X86)
     {
-    asm
-    {
-	naked		;
-	mov EAX, i	;
-	mov EAX, j	;
-    }
+        asm
+        {
+            naked       ;
+            mov EAX, i  ;
+        }
+      version(D_PIC)
+      {}
+      else
+      {
+        asm
+        {
+            mov EAX, j  ;
+        }
+      }
     }
 }
 
@@ -28,8 +40,8 @@ int main()
 {
     for (int i = 0; ; i++)
     {
-	if (i == 10)
-	    break;
+        if (i == 10)
+            break;
     }
 
     string[] a = new string[3];
@@ -38,53 +50,53 @@ int main()
     a[2] = "foo";
 
     foreach (string s; a)
-	writefln(s);
+        writefln(s);
 
     switch (1)
     {
-	default:
-	    break;
+        default:
+            break;
     }
 
     switch ("foo"w)
     {
-	case "foo":
-	    break;
-	default: assert(0);
+        case "foo":
+            break;
+        default: assert(0);
     }
 
     switch (1)
     {
-	case 1:
-	    try
-	    {
-		goto default;
-	    }
-	    catch (Throwable o)
-	    {
-	    }
-	    break;
+        case 1:
+            try
+            {
+                goto default;
+            }
+            catch (Throwable o)
+            {
+            }
+            break;
 
-	default:
-	    break;
+        default:
+            break;
     }
 
     switch (1)
     {
-	case 1:
-	    try
-	    {
-		goto case 2;
-	    }
-	    catch (Throwable o)
-	    {
-	    }
-	    break;
+        case 1:
+            try
+            {
+                goto case 2;
+            }
+            catch (Throwable o)
+            {
+            }
+            break;
 
-	case 2:
-	    break;
+        case 2:
+            break;
 
-	default: assert(0);
+        default: assert(0);
     }
 
     writefln("Success\n");
