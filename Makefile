@@ -224,6 +224,11 @@ DISABLED_TESTS += testclass
 # LDC: Test specific to DMD's library names.
 DISABLED_SH_TESTS += test_shared
 
+# LDC: OS X ld needs extra options, but not needed so do not bother
+ifeq ($(OS),osx)
+DISABLED_TESTS += ldc_extern_weak
+endif
+
 ####
 
 ifeq ($(OS),win64)
