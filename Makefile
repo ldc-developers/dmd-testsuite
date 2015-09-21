@@ -228,6 +228,9 @@ DISABLED_SH_TESTS += test_shared
 ifeq ($(OS),osx)
 DISABLED_TESTS += ldc_extern_weak
 endif
+ifeq ($(OS),win64)
+DISABLED_TESTS += ldc_extern_weak
+endif
 
 ####
 
