@@ -1,3 +1,9 @@
+version(D_InlineAsm_X86_64) version = DMD_InlineAsm;
+version(D_InlineAsm_X86) version = DMD_InlineAsm;
+
+version(InlineAsm)
+{
+
 void fooNormal()() {
     asm {
         jmp Llabel;
@@ -18,4 +24,10 @@ Llabel:
 void main() {
     fooNormal();
     fooNaked();
+}
+
+}
+else
+{
+void main() {}
 }

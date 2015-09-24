@@ -203,6 +203,17 @@ DISABLED_TESTS += test13117
 # LDC: dmd bug caught early: https://issues.dlang.org/show_bug.cgi?id=13353
 DISABLED_TESTS += testclass
 
+# LDC: Test specific to DMD's library names.
+DISABLED_SH_TESTS += test_shared
+
+# LDC: OS X ld needs extra options, but not needed so do not bother
+ifeq ($(OS),osx)
+DISABLED_TESTS += ldc_extern_weak
+endif
+ifeq ($(OS),win64)
+DISABLED_TESTS += ldc_extern_weak
+endif
+
 ####
 
 ifeq ($(OS),win64)

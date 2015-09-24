@@ -802,8 +802,15 @@ void foo8658(S8658 s)
 void test8658()
 {
     S8658 s;
+version (LDC)
+{
+    // LDC_FIXME: The LLVM x86 backend suffers from this as well.
+}
+else
+{
     for(int i = 0; i < 1000; i++)
         foo8658(s);
+}
 }
 
 ////////////////////////////////////////////////////////////////////////
