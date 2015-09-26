@@ -172,12 +172,17 @@ DISABLED_COMPILE_TESTS += ice11925
 DISABLED_COMPILE_TESTS += test11237
 
 # LDC: -transition/-vtls not supported yet.
+DISABLED_COMPILE_TESTS += sw_transition_complex
 DISABLED_COMPILE_TESTS += sw_transition_field
 DISABLED_COMPILE_TESTS += sw_transition_tls
 
 # LDC: Our ASM diagnostics are different, might be worth revisiting at some point.
 DISABLED_FAIL_TESTS += diag6717
 DISABLED_FAIL_TESTS += fail152
+
+# LDC: This tests a glue layer error message, where DMD emits two but we exit
+# after the first one. Not a bug.
+DISABLED_FAIL_TESTS += fail120
 
 # LDC: Our error messages are slightly different, but equally informative.
 DISABLED_FAIL_TESTS += fail274
