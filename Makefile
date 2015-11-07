@@ -137,17 +137,30 @@ DISABLED_FAIL_TESTS += fail13939
 endif
 
 ####
+
+# LDC_FIXME: GDB tests currently not passing on Travis. Some other combinations
+# of LLVM and GDB versions might fare slightly better, but focussed attention
+# will be needed to improve the debugging experience and resolve all of these.
+DISABLED_TESTS += gdb1
+DISABLED_TESTS += gdb4149
+DISABLED_TESTS += gdb4181
+DISABLED_TESTS += gdb10311
+DISABLED_TESTS += gdb14225
+DISABLED_TESTS += gdb14276
+DISABLED_TESTS += gdb14313
+DISABLED_TESTS += gdb14330
+
+# LDC_FIXME: pragma(inline) is not currently implemented.
+DISABLED_FAIL_TESTS += pragmainline2
+
+# LDC_FIXME: We don't report the failure here, probably because the called
+# nested function does not actually need a context.
+DISABLED_FAIL_TESTS += fail39
+
 # LDC: Disable -profile tests.
 DISABLED_TESTS += hello-profile
 DISABLED_TESTS += testprofile
 DISABLED_COMPILE_TESTS += diag11066
-
-# LDC: Disable gdb tests. Problems are the implicit return and
-# variables optimized out by the compiler.
-DISABLED_TESTS += gdb1
-DISABLED_TESTS += gdb10311
-DISABLED_TESTS += gdb14225
-DISABLED_TESTS += gdb4181
 
 # LDC: This test checks for a number of error messages, of which we only report
 # the first one. Not a bug.
