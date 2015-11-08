@@ -1,8 +1,4 @@
 // Syntax of load changed with LLVM 3.7
-version(LDC_LLVM_301) version = PREDATES_307;
-version(LDC_LLVM_302) version = PREDATES_307;
-version(LDC_LLVM_303) version = PREDATES_307;
-version(LDC_LLVM_304) version = PREDATES_307;
 version(LDC_LLVM_305) version = PREDATES_307;
 version(LDC_LLVM_306) version = PREDATES_307;
 
