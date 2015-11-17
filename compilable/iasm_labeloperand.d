@@ -1,4 +1,6 @@
-﻿
+﻿// LLVM mach-o backend: "32-bit absolute addressing is not supported in 64-bit mode"
+version (LDC) version(OSX) version = LDC_OSX;
+version (LDC_OSX) {} else
 version (D_InlineAsm_X86)
     version = TestInlineAsm;
 else version (D_InlineAsm_X86_64)
