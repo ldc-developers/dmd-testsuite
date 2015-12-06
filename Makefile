@@ -225,10 +225,11 @@ DISABLED_TESTS += testclass
 DISABLED_SH_TESTS += test_shared
 
 # LDC: OS X ld needs extra options, but not needed so do not bother
+#      not supported for MSVC either
 ifeq ($(OS),osx)
 DISABLED_TESTS += ldc_extern_weak
 endif
-ifeq ($(OS),win64)
+ifeq ($(findstring win,$(OS)),win)
 DISABLED_TESTS += ldc_extern_weak
 endif
 
