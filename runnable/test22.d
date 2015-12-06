@@ -15,6 +15,9 @@ extern(C)
         int snprintf(char*, size_t, const char*, ...);
 }
 
+version (LDC) static if (real.mant_dig != 64)
+    version = LDC_NoX87;
+
 /*************************************/
 
 // http://www.digitalmars.com/d/archives/digitalmars/D/bugs/4766.html
@@ -237,7 +240,8 @@ void assertEqual(real* a, real* b, string file = __FILE__, size_t line = __LINE_
 
     // Only compare the 10 value bytes, the padding bytes are of undefined
     // value.
-    version (X86) enum count = 10;
+    version (LDC_NoX87) enum count = real.sizeof;
+    else version (X86) enum count = 10;
     else version (X86_64) enum count = 10;
     else enum count = real.sizeof;
     for (size_t i = 0; i < count; i++)
@@ -922,7 +926,11 @@ in
 }
 body
 {
-    version (D_InlineAsm_X86)
+    version (LDC_NoX87)
+    {
+        return 0;
+    }
+    else version (D_InlineAsm_X86)
     {
 	version (linux)
 	{
@@ -1078,6 +1086,7 @@ void test47()
 
     r = (56.1L + (32.7L + 6L * x) * x);
     assert(r == poly_c(x, pp));
+  version (LDC_NoX87) {} else
     version (D_InlineAsm_X86)
         assert(r == poly_asm(x, pp));
     assert(r == poly(x, pp));
