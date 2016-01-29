@@ -373,7 +373,7 @@ bool collectExtraSources (in string input_dir, in string output_dir, in string[]
         {
             if (msc)
             {
-                command ~= ` /c /nologo `~curSrc~` /Fo`~curObj;
+                command ~= ` /c /nologo /EHsc `~curSrc~` /Fo`~curObj;
             }
             else if (envData.os == "win32")
             {

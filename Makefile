@@ -134,6 +134,8 @@ endif
 
 ifeq ($(OS),win32)
 DISABLED_FAIL_TESTS += fail13939
+else
+DISABLED_TESTS += ldc_cpp_eh
 endif
 
 ####
