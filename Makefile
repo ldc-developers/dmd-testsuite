@@ -178,6 +178,9 @@ DISABLED_COMPILE_TESTS += ice11925
 # LDC_FIXME: This covers an optimization LLVM chooses not to do, see GitHub #679.
 DISABLED_COMPILE_TESTS += test11237
 
+# LDC_FIXME: We ICE here due to DMD issue 15650. Enable again after 15650 is fixed.
+DISABLED_COMPILE_TESTS += test10981
+
 # LDC: -transition/-vtls not supported yet.
 DISABLED_COMPILE_TESTS += sw_transition_complex
 DISABLED_COMPILE_TESTS += sw_transition_field
