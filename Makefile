@@ -136,6 +136,14 @@ DISABLED_TESTS += gdb14276
 DISABLED_TESTS += gdb14313
 DISABLED_TESTS += gdb14330
 
+# LDC_FIXME: We don't currently support the ObjC interface.
+DISABLED_COMPILE_TESTS += objc_interface
+DISABLED_FAIL_TESTS += objc_interface1
+DISABLED_FAIL_TESTS += objc_interface2
+DISABLED_FAIL_TESTS += objc_interface3
+DISABLED_TESTS += objc_call
+DISABLED_TESTS += objc_objc_msgSend
+
 # LDC_FIXME: pragma(inline) is not currently implemented.
 DISABLED_FAIL_TESTS += pragmainline2
 
