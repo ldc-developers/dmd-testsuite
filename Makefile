@@ -174,6 +174,7 @@ DISABLED_COMPILE_TESTS += test11237
 DISABLED_COMPILE_TESTS += sw_transition_complex
 DISABLED_COMPILE_TESTS += sw_transition_field
 DISABLED_COMPILE_TESTS += sw_transition_tls
+DISABLED_COMPILE_TESTS += diag3243
 
 # LDC: Our ASM diagnostics are different, might be worth revisiting at some point.
 DISABLED_FAIL_TESTS += diag6717
