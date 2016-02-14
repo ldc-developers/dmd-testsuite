@@ -151,6 +151,11 @@ DISABLED_FAIL_TESTS += pragmainline2
 # nested function does not actually need a context.
 DISABLED_FAIL_TESTS += fail39
 
+# LDC_FIXME: We display a different error message, but never ICE'd. Our message
+# is worse, but the proper resolution of this depends on a regression/change
+# discussed at DMD GitHub pull request #5390.
+DISABLED_FAIL_TESTS += ice15239
+
 # LDC: Disable -profile tests.
 DISABLED_TESTS += hello-profile
 DISABLED_TESTS += testprofile
