@@ -4692,6 +4692,26 @@ void test14886()
 }
 
 /******************************************/
+// 15156
+
+// 15156
+auto f15116a(T)(string s, string arg2) { return 1; }
+auto f15116b(T)(int    i, string arg2) { return 2; }
+
+template bish15116(T)
+{
+    alias bish15116 = f15116a!T;
+    alias bish15116 = f15116b!T;
+}
+
+void test15116()
+{
+    alias func = bish15116!string;
+    assert(func("", "") == 1);
+    assert(func(12, "") == 2);
+}
+
+/******************************************/
 // 15152
 
 void test15152()
@@ -4705,6 +4725,36 @@ void test15152()
 
     enum s = S.init;
     func!(s.name);
+}
+
+/******************************************/
+// 15352
+
+struct S15352(T, T delegate(uint idx) supplier)
+{
+}
+
+auto make15352a(T, T delegate(uint idx) supplier)()
+{
+    enum local = supplier;      // OK
+    S15352!(T, local) ret;
+    return ret;
+}
+
+auto make15352b(T, T delegate(uint idx) supplier)()
+{
+    S15352!(T, supplier) ret;   // OK <- Error
+    return ret;
+}
+
+void test15352()
+{
+    enum dg = delegate(uint idx) => idx;
+    auto s1 = S15352!(uint, dg)();
+    auto s2 = make15352a!(uint, dg)();
+    auto s3 = make15352b!(uint, dg)();
+    assert(is(typeof(s1) == typeof(s2)));
+    assert(is(typeof(s1) == typeof(s3)));
 }
 
 /******************************************/
@@ -4820,6 +4870,7 @@ int main()
     test14836();
     test14735();
     test14802();
+    test15116();
 
     printf("Success\n");
     return 0;
