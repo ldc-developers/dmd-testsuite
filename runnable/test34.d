@@ -695,6 +695,9 @@ void test34()
 
 /************************************************/
 
+version(D_InlineAsm_X86_64) version = DMD_InlineAsm;
+version(D_InlineAsm_X86) version = DMD_InlineAsm;
+
 void foo35()
 {
         uint a;
@@ -707,6 +710,7 @@ void foo35()
         c = 3;
 
         xxx = cast(typeof(xxx))(a + b);
+	version (DMD_InlineAsm)
         asm { int 3; }
         xxx( 4, 5, 6 );
 }
