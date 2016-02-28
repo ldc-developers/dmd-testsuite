@@ -236,6 +236,7 @@ endif
 # disable tests based on arch
 ifeq ($(OS),linux)
   ARCH:=$(shell uname -m)
+  export NO_ARCH_VARIANT=1
 
   # disable invalid tests on ARM
   ifneq (,$(findstring arm,$(ARCH)))
