@@ -2430,6 +2430,11 @@ void crash(int x)
  if (x==200) return;
   version (DMD_InlineAsm)
   asm { int 3; }
+  else version (LDC)
+  {
+      import ldc.intrinsics;
+      llvm_debugtrap();
+  }
   else
     assert(false);
 }

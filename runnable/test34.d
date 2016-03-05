@@ -712,6 +712,13 @@ void foo35()
         xxx = cast(typeof(xxx))(a + b);
 	version (DMD_InlineAsm)
         asm { int 3; }
+        else version (LDC)
+        {
+            import ldc.intrinsics;
+            llvm_debugtrap();
+        }
+        else
+            assert(false);
         xxx( 4, 5, 6 );
 }
 
