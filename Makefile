@@ -236,10 +236,11 @@ endif
 # disable tests based on arch
 ifeq ($(OS),linux)
   ARCH:=$(shell uname -m)
-  export NO_ARCH_VARIANT=1
 
-  # disable invalid tests on ARM
-  ifneq (,$(findstring arm,$(ARCH)))
+  # disable invalid tests on arm, aarch64
+  ifneq (,$(filter arm% aarch64%,$(ARCH)))
+    export NO_ARCH_VARIANT=1	# tell d_do_test.d to ignore MODEL
+
     DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
     DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
     DISABLED_COMPILE_TESTS += test11471       # dmd inline asm
