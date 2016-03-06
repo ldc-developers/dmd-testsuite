@@ -1674,6 +1674,11 @@ void test101()
 /***************************************************/
 
 version(X86)
+    version = Test103;
+else version(ARM)
+    version = Test103;
+
+version(Test103)
 {
 int x103;
 
@@ -2417,10 +2422,21 @@ bool foo150()
 /***************************************************/
 // 3521
 
+version(D_InlineAsm_X86_64) version = DMD_InlineAsm;
+version(D_InlineAsm_X86) version = DMD_InlineAsm;
+
 void crash(int x)
 {
-  if (x==200) return;
-   asm { int 3; }
+ if (x==200) return;
+  version (DMD_InlineAsm)
+  asm { int 3; }
+  else version (LDC)
+  {
+      import ldc.intrinsics;
+      llvm_debugtrap();
+  }
+  else
+    assert(false);
 }
 
 void test151()
@@ -4168,6 +4184,10 @@ void oddity4001()
 
 /***************************************************/
 
+// Don't understand this test, but let it compile
+// on non x86 anyway
+
+version (DMD_InlineAsm)
 int bug3809() { asm { nop; } return 0; }
 struct BUG3809 { int xx; }
 void bug3809b() {

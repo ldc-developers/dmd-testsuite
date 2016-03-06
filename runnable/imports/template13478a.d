@@ -5,12 +5,13 @@ bool foo(T)() {
     // needs to reference it.
     version (LDC)
     {
-        pragma(LDC_never_inline)
-        return false;
+        pragma(LDC_never_inline);
+        import ldc.llvmasm;
+        __asm("",  "");
     }
     else
     {
     asm { nop; }
-    return false;
     }
+    return false;
 }

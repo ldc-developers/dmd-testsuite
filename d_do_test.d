@@ -80,6 +80,7 @@ struct EnvData
     string model;
     string required_args;
     bool dobjc;
+    bool noArchVariant;
 }
 
 bool findTestParameter(string file, string token, ref string result)
@@ -381,12 +382,16 @@ bool collectExtraSources (in string input_dir, in string output_dir, in string[]
             }
             else
             {
-                command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
+                if (!envData.noArchVariant)
+                    command ~= " -m"~envData.model;
+                command ~= " -c "~curSrc~" -o "~curObj;
             }
         }
         else
         {
-            command ~= " -m"~envData.model~" -c "~curSrc~" -o "~curObj;
+            if (!envData.noArchVariant)
+                command ~= " -m"~envData.model;
+            command ~= " -c "~curSrc~" -o "~curObj;
         }
 
         auto rc = system(command);
@@ -448,6 +453,7 @@ int main(string[] args)
     envData.model         = environment.get("MODEL");
     envData.required_args = environment.get("REQUIRED_ARGS");
     envData.dobjc         = environment.get("D_OBJC") == "1";
+    envData.noArchVariant = environment.get("NO_ARCH_VARIANT") == "1";
 
     string result_path    = envData.results_dir ~ envData.sep;
     string input_file     = input_dir ~ envData.sep ~ test_name ~ "." ~ test_extension;
