@@ -239,7 +239,8 @@ ifeq ($(OS),linux)
 
   # disable invalid tests on arm, aarch64
   ifneq (,$(filter arm% aarch64%,$(ARCH)))
-    export NO_ARCH_VARIANT=1	# tell d_do_test.d to ignore MODEL
+    # tell d_do_test.d to ignore MODEL
+    export NO_ARCH_VARIANT=1
 
     DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
     DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
