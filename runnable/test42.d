@@ -1674,11 +1674,6 @@ void test101()
 /***************************************************/
 
 version(X86)
-    version = Test103;
-else version(ARM)
-    version = Test103;
-
-version(Test103)
 {
 int x103;
 
@@ -1713,6 +1708,14 @@ void test103()
 else version(X86_64)
 {
     pragma(msg, "Not ported to x86-64 compatible varargs, yet.");
+    void test103() {}
+}
+else version(AArch64)
+{
+    void test103() {}
+}
+else version(ARM)
+{
     void test103() {}
 }
 else
