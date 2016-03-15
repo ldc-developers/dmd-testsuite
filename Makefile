@@ -236,6 +236,37 @@ ifeq ($(findstring win,$(OS)),win)
 DISABLED_TESTS += ldc_extern_weak
 endif
 
+# disable tests based on arch
+ifeq ($(OS),linux)
+  ARCH:=$(shell uname -m)
+
+  # disable invalid tests on arm, aarch64
+  ifneq (,$(filter arm% aarch64%,$(ARCH)))
+    # tell d_do_test.d to ignore MODEL
+    export NO_ARCH_VARIANT=1
+
+    DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
+    DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
+    DISABLED_COMPILE_TESTS += ldc_github_1292 # dmd inline asm
+    DISABLED_COMPILE_TESTS += test11471       # dmd inline asm
+    DISABLED_COMPILE_TESTS += test12979b      # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979a    # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979b    # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979c    # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979d    # dmd inline asm
+    DISABLED_FAIL_TESTS += fail12635          # dmd inline asm
+    DISABLED_FAIL_TESTS += fail13434_m64      # no -m64
+    DISABLED_FAIL_TESTS += fail14009          # dmd inline asm
+    DISABLED_FAIL_TESTS += fail2350           # dmd inline asm
+    DISABLED_FAIL_TESTS += fail238_m64        # no -m64
+    DISABLED_FAIL_TESTS += fail327            # dmd inline asm
+    DISABLED_FAIL_TESTS += fail37_m64         # no -m64
+    DISABLED_FAIL_TESTS += fail80_m64         # no -m64
+    DISABLED_FAIL_TESTS += ldc_diag8425       # no -m64
+    DISABLED_TESTS += test36                  # dmd inline asm/Windows
+  endif
+endif
+
 ####
 
 ifeq ($(OS),win64)
