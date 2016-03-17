@@ -3,8 +3,11 @@
 #include <stdarg.h>
 
 // ldc_cabi1 defines these
-extern int8_t a, b, c, d;
-extern uint32_t errors;
+extern "C"
+{
+  extern int8_t a, b, c, d;
+  extern uint32_t errors;
+}
 
 #define TEST(b) \
   if (!(b)) (++errors, printf("%s:%u: failed check\n", __FILE__, __LINE__))
