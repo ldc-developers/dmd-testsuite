@@ -124,6 +124,13 @@ endif
 
 ####
 
+# LDC: Support Objective-C tests on 32-bit too
+ifeq ($(OS),osx)
+ifeq ($(MODEL),32)
+export D_OBJC=1
+endif
+endif
+
 # LDC_FIXME: GDB tests currently not passing on Travis. Some other combinations
 # of LLVM and GDB versions might fare slightly better, but focussed attention
 # will be needed to improve the debugging experience and resolve all of these.
