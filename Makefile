@@ -92,6 +92,7 @@ export MODEL
 export REQUIRED_ARGS=
 
 ifeq ($(findstring win,$(OS)),win)
+SHELL=bash.exe
 export ARGS=-inline -release -g -O -unittest
 export DMD=../src/dmd.exe
 export EXE=.exe
@@ -102,7 +103,6 @@ export SEP=$(subst /,\,/)
 DRUNTIME_PATH=..\..\druntime
 PHOBOS_PATH=..\..\phobos
 export DFLAGS=-I$(DRUNTIME_PATH)\import -I$(PHOBOS_PATH)
-export LIB=$(PHOBOS_PATH)
 else
 export ARGS=-inline -release -gc -O -unittest -fPIC
 export DMD=../src/dmd
