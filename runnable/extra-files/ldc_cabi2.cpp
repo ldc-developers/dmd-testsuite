@@ -3,7 +3,7 @@
 #include <stdarg.h>
 
 // ldc_cabi1 defines these
-extern int8_t a, b, c, d;
+extern int8_t a, b, c, d, e, f, g, h;
 extern uint32_t errors;
 
 #define TEST(b) \
@@ -40,9 +40,13 @@ struct F4 {float a, b, c, d;};
 struct D1 {double a;};
 struct D2 {double a, b;};
 struct D4 {double a, b, c, d;};
+struct D5 {double a, b, c, d, e;};
+struct D8 {double a, b, c, d, e, f, g, h;};
 union UD4 {D1 a; D2 b; D4 c; double e;};
 struct DA0 {double a[0];};
 struct DA4 {double a[4];};
+struct DA5 {double a[5];};
+struct DA8 {double a[8];};
 struct CA4 {char a[4];};
 struct DHFA1 {EMPTY a; double d;};
 //struct DHFA1 {EMPTY a; EMPTY b; double c[0]; double d;};
@@ -130,6 +134,34 @@ D4 cretd4(D4 x)
     return r;
 }
 
+D5 dretd5(D5 x);
+D5 cretd5(D5 x)
+{
+    TEST(x.a == a);
+    TEST(x.b == b);
+    TEST(x.c == c);
+    TEST(x.d == d);
+    TEST(x.e == e);
+    D5 r = {(double)++a, (double)++b, (double)++c, (double)++d, (double)++e};
+    return r;
+}
+
+D8 dretd8(D8 x);
+D8 cretd8(D8 x)
+{
+    TEST(x.a == a);
+    TEST(x.b == b);
+    TEST(x.c == c);
+    TEST(x.d == d);
+    TEST(x.e == e);
+    TEST(x.f == f);
+    TEST(x.g == g);
+    TEST(x.h == h);
+    D8 r = {(double)++a, (double)++b, (double)++c, (double)++d,
+            (double)++e, (double)++f, (double)++g, (double)++h};
+    return r;
+}
+
 UD4 dretud4(UD4 x);
 UD4 cretud4(UD4 x)
 {
@@ -149,7 +181,7 @@ DA0 cretda0(DA0 x)
     DA0 r;
     return r;
 }
-    
+
 DA4 dretda4(DA4 x);
 DA4 cretda4(DA4 x)
 {
@@ -157,7 +189,35 @@ DA4 cretda4(DA4 x)
     TEST(x.a[1] == b);
     TEST(x.a[2] == c);
     TEST(x.a[3] == d);
-    DA4 r = {{(double)++a, (double)++b, (double)++c, (double)++d}};
+    DA4 r = {(double)++a, (double)++b, (double)++c, (double)++d};
+    return r;
+}
+
+DA5 dretda5(DA5 x);
+DA5 cretda5(DA5 x)
+{
+    TEST(x.a[0] == a);
+    TEST(x.a[1] == b);
+    TEST(x.a[2] == c);
+    TEST(x.a[3] == d);
+    TEST(x.a[4] == e);
+    DA5 r = {(double)++a, (double)++b, (double)++c, (double)++d, (double)++e};
+    return r;
+}
+
+DA8 dretda8(DA8 x);
+DA8 cretda8(DA8 x)
+{
+    TEST(x.a[0] == a);
+    TEST(x.a[1] == b);
+    TEST(x.a[2] == c);
+    TEST(x.a[3] == d);
+    TEST(x.a[4] == e);
+    TEST(x.a[5] == f);
+    TEST(x.a[6] == g);
+    TEST(x.a[7] == h);
+    DA8 r = {(double)++a, (double)++b, (double)++c, (double)++d,
+             (double)++e, (double)++f, (double)++g, (double)++h};
     return r;
 }
 
@@ -257,7 +317,7 @@ SA65 dretsa65(SA65 x);
 SA65 cretsa65(SA65 x)
 {
     TEST(testar(x.a, 65, a));
-    
+
     SA65 r;
     ++a;
     for (int i = 0; i < 65; ++i) {
@@ -317,12 +377,12 @@ void ccall()
     B2 b2r = dretb2(b2);
     TEST(b2r.a == a);
     TEST(b2r.b == b);
-    
+
     I2 i2 = {++a,++b};
     I2 i2r = dreti2(i2);
     TEST(i2r.a == a);
     TEST(i2r.b == b);
-    
+
     UNI1 uni1i = {{++a}};
     UNI1 uni1 = dretuni1(uni1i);
     TEST(uni1.a.a == a);
@@ -341,6 +401,26 @@ void ccall()
     TEST(d4r.c == c);
     TEST(d4r.d == d);
 
+    D5 d5 = {(double)++a, (double)++b, (double)++c, (double)++d, (double)++e};
+    D5 d5r = dretd5(d5);
+    TEST(d5r.a == a);
+    TEST(d5r.b == b);
+    TEST(d5r.c == c);
+    TEST(d5r.d == d);
+    TEST(d5r.e == e);
+
+    D8 d8 = {(double)++a, (double)++b, (double)++c, (double)++d,
+             (double)++e, (double)++f, (double)++g, (double)++h};
+    D8 d8r = dretd8(d8);
+    TEST(d8r.a == a);
+    TEST(d8r.b == b);
+    TEST(d8r.c == c);
+    TEST(d8r.d == d);
+    TEST(d8r.e == e);
+    TEST(d8r.f == f);
+    TEST(d8r.g == g);
+    TEST(d8r.h == h);
+
     UD4 ud4;
     D4 d4x = {(double)++a, (double)++b, (double)++c, (double)++d};
     ud4.c = d4x;
@@ -348,17 +428,44 @@ void ccall()
     TEST(ud4r.c.a == a);
     TEST(ud4r.c.b == b);
     TEST(ud4r.c.c == c);
-    TEST(ud4r.c.d == d);    
+    TEST(ud4r.c.d == d);
+
+    DA4 da4 = {(double)++a, (double)++b, (double)++c, (double)++d};
+    DA4 da4r = dretda4(da4);
+    TEST(da4r.a[0] == a);
+    TEST(da4r.a[1] == b);
+    TEST(da4r.a[2] == c);
+    TEST(da4r.a[3] == d);
+
+    DA5 da5 = {(double)++a, (double)++b, (double)++c, (double)++d, (double)++e};
+    DA5 da5r = dretda5(da5);
+    TEST(da5r.a[0] == a);
+    TEST(da5r.a[1] == b);
+    TEST(da5r.a[2] == c);
+    TEST(da5r.a[3] == d);
+    TEST(da5r.a[4] == e);
+
+    DA8 da8 = {(double)++a, (double)++b, (double)++c, (double)++d,
+               (double)++e, (double)++f, (double)++g, (double)++h};
+    DA8 da8r = dretda8(da8);
+    TEST(da8r.a[0] == a);
+    TEST(da8r.a[1] == b);
+    TEST(da8r.a[2] == c);
+    TEST(da8r.a[3] == d);
+    TEST(da8r.a[4] == e);
+    TEST(da8r.a[5] == f);
+    TEST(da8r.a[6] == g);
+    TEST(da8r.a[7] == h);
 
     DHFA2 dhfa2i = {(double)++a, {(double)++b}};
     DHFA2 dhfa2 = dretdhfa2(dhfa2i);
     TEST(dhfa2.a == a);
-    TEST(dhfa2.b.a == b);    
+    TEST(dhfa2.b.a == b);
 
     DHFA2a dhfa2ai = {{(double)++a}, (double)++b};
     DHFA2a dhfa2a = dretdhfa2a(dhfa2ai);
     TEST(dhfa2a.a.a == a);
-    TEST(dhfa2a.b == b);    
+    TEST(dhfa2a.b == b);
 
     DHFA4x dhfa4xi = {{{(double)++a, (double)++b}, {(double)++c, (double)++d}}};
     DHFA4x dhfa4x = dretdhfa4x(dhfa4xi);
@@ -394,7 +501,7 @@ void ccall()
     }
     SA65 s65r = dretsa65(s65);
     TEST(testar(s65r.a, 65, a));
-        
+
     b1.a = ++a;
     dvfun(0, b1);
 
@@ -423,10 +530,10 @@ void ccall()
 
     dhfa2.a = ++a;
     dhfa2.b.a = ++b;
-    dvfun(5, dhfa2);    
+    dvfun(5, dhfa2);
 
     dhfa2a.a.a = ++a;
     dhfa2a.b = ++b;
-    dvfun(6, dhfa2a);    
+    dvfun(6, dhfa2a);
 }
 } // extern "C"
