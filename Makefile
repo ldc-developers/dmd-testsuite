@@ -92,6 +92,7 @@ export MODEL
 export REQUIRED_ARGS=
 
 ifeq ($(findstring win,$(OS)),win)
+SHELL=bash.exe
 export ARGS=-inline -release -g -O -unittest
 export DMD=../src/dmd.exe
 export EXE=.exe
@@ -102,7 +103,6 @@ export SEP=$(subst /,\,/)
 DRUNTIME_PATH=..\..\druntime
 PHOBOS_PATH=..\..\phobos
 export DFLAGS=-I$(DRUNTIME_PATH)\import -I$(PHOBOS_PATH)
-export LIB=$(PHOBOS_PATH)
 else
 export ARGS=-inline -release -g -O -unittest -fPIC
 export DMD=../src/dmd
@@ -240,11 +240,8 @@ endif
 ifeq ($(OS),linux)
   ARCH:=$(shell uname -m)
 
-  # disable invalid tests on arm, aarch64
-  ifneq (,$(filter arm% aarch64%,$(ARCH)))
-    # tell d_do_test.d to ignore MODEL
-    export NO_ARCH_VARIANT=1
-
+  # disable invalid tests on arm, aarch64, mips, ppc
+  ifneq (,$(filter arm% aarch64% mips% ppc%,$(ARCH)))
     DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
     DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
     DISABLED_COMPILE_TESTS += ldc_github_1292 # dmd inline asm
@@ -264,6 +261,11 @@ ifeq ($(OS),linux)
     DISABLED_FAIL_TESTS += fail80_m64         # no -m64
     DISABLED_FAIL_TESTS += ldc_diag8425       # no -m64
     DISABLED_TESTS += test36                  # dmd inline asm/Windows
+  endif
+
+  ifneq (,$(filter arm% aarch64% ppc64le%,$(ARCH)))
+    # tell d_do_test.d to ignore MODEL
+    export NO_ARCH_VARIANT=1
   endif
 endif
 
