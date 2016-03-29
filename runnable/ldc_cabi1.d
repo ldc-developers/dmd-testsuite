@@ -5,7 +5,7 @@ import core.stdc.stdio;
 
 extern (C)
 {
-  __gshared byte a = 1, b = -42, c = 3, d = -10, e = 0, f = -50;
+  __gshared byte a = 1, b = -42, c = 3, d = -10, e = 0, f = -50, g = 20, h = -77;
   __gshared uint errors;
 }
 
@@ -68,6 +68,8 @@ struct F4 {float a, b, c, d;}
 struct D1 {double a;}
 struct D2 {double a, b;}
 struct D4 {double a, b, c, d;}
+struct D5 {double a, b, c, d, e;}
+struct D8 {double a, b, c, d, e, f, g, h;}
 union UD4 {D1 a; D2 b; D4 c; double e;}
 struct CX1 {creal a;}
 struct CX2 {creal a, b;}
@@ -78,6 +80,7 @@ struct DA2 {double[2] a;}
 struct DA3 {double[3] a;}
 struct DA4 {double[4] a;}
 struct DA5 {double[5] a;}
+struct DA8 {double[8] a;}
 struct CA4 {char[4] a;}
 struct DHFA1 {EMPTY a; double d;}
 //struct DHFA1 {EMPTY a; EMPTY b; double[0] c; double d;}
@@ -207,6 +210,33 @@ D4 dretd4(D4 x)
     return r;
 }
 
+D5 cretd5(D5 x);
+D5 dretd5(D5 x)
+{
+    test(x.a == a);
+    test(x.b == b);
+    test(x.c == c);
+    test(x.d == d);
+    test(x.e == e);
+    D5 r = {++a, ++b, ++c, ++d, ++e};
+    return r;
+}
+
+D8 cretd8(D8 x);
+D8 dretd8(D8 x)
+{
+    test(x.a == a);
+    test(x.b == b);
+    test(x.c == c);
+    test(x.d == d);
+    test(x.e == e);
+    test(x.f == f);
+    test(x.g == g);
+    test(x.h == h);
+    D8 r = {++a, ++b, ++c, ++d, ++e, ++f, ++g, ++h};
+    return r;
+}
+
 UD4 cretud4(UD4 x);
 UD4 dretud4(UD4 x)
 {
@@ -244,8 +274,23 @@ DA5 dretda5(DA5 x)
     test(x.a[1] == b);
     test(x.a[2] == c);
     test(x.a[3] == d);
-    test(x.a[4] == d);
+    test(x.a[4] == e);
     DA5 r = {[++a, ++b, ++c, ++d, ++e]};
+    return r;
+}
+
+DA8 cretda8(DA8 x);
+DA8 dretda8(DA8 x)
+{
+    test(x.a[0] == a);
+    test(x.a[1] == b);
+    test(x.a[2] == c);
+    test(x.a[3] == d);
+    test(x.a[4] == e);
+    test(x.a[5] == f);
+    test(x.a[6] == g);
+    test(x.a[7] == h);
+    DA8 r = {[++a, ++b, ++c, ++d, ++e, ++f, ++g, ++h]};
     return r;
 }
 
@@ -542,6 +587,23 @@ void dcall()
     test(d4.c == c);
     test(d4.d == d);    
 
+    D5 d5 = cretd5(D5(++a, ++b, ++c, ++d, ++e));
+    test(d5.a == a);
+    test(d5.b == b);
+    test(d5.c == c);
+    test(d5.d == d);
+    test(d5.e == e);
+
+    D8 d8 = cretd8(D8(++a, ++b, ++c, ++d, ++e, ++f, ++g, ++h));
+    test(d8.a == a);
+    test(d8.b == b);
+    test(d8.c == c);
+    test(d8.d == d);
+    test(d8.e == e);
+    test(d8.f == f);
+    test(d8.g == g);
+    test(d8.h == h);
+
     UD4 ud4;
     ud4.c = D4(++a, ++b, ++c, ++d);
     UD4 ud4r = cretud4(ud4);
@@ -549,6 +611,29 @@ void dcall()
     test(ud4r.c.b == b);
     test(ud4r.c.c == c);
     test(ud4r.c.d == d);    
+
+    DA4 da4 = cretda4(DA4([++a, ++b, ++c, ++d]));
+    test(da4.a[0] == a);
+    test(da4.a[1] == b);
+    test(da4.a[2] == c);
+    test(da4.a[3] == d);
+
+    DA5 da5 = cretda5(DA5([++a, ++b, ++c, ++d, ++e]));
+    test(da5.a[0] == a);
+    test(da5.a[1] == b);
+    test(da5.a[2] == c);
+    test(da5.a[3] == d);
+    test(da5.a[4] == e);
+
+    DA8 da8 = cretda8(DA8([++a, ++b, ++c, ++d, ++e, ++f, ++g, ++h]));
+    test(da8.a[0] == a);
+    test(da8.a[1] == b);
+    test(da8.a[2] == c);
+    test(da8.a[3] == d);
+    test(da8.a[4] == e);
+    test(da8.a[5] == f);
+    test(da8.a[6] == g);
+    test(da8.a[7] == h);
 
     DHFA2 dhfa2 = cretdhfa2(DHFA2(++a, D1(++b)));
     test(dhfa2.a == a);
