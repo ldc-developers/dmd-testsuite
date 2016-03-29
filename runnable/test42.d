@@ -1673,7 +1673,11 @@ void test101()
 
 /***************************************************/
 
-version(X86)
+version(X86) version = HAS_ARGPTR;
+version(PPC) version = HAS_ARGPTR;
+version(PPC64) version = HAS_ARGPTR;
+
+version(HAS_ARGPTR)
 {
 int x103;
 
