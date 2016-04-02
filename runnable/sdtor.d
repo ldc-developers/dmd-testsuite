@@ -2151,6 +2151,129 @@ void test7506()
 }
 
 /**********************************/
+// 7516
+
+struct S7516
+{
+    int val;
+
+    this(int n) { val = n; }
+    this(this) { val *= 3; }
+}
+
+// CondExp on return statement
+void test7516a()
+{
+    alias S = S7516;
+    S s1 = S(1);
+    S s2 = S(2);
+
+    S foo(bool f) { return f ?  s1  :  s2;  }
+    S hoo(bool f) { return f ? S(1) : S(2); }
+    S bar(bool f) { return f ?  s1  : S(2); }
+    S baz(bool f) { return f ? S(1) :  s2;  }
+
+    auto r1 = foo(true);    assert(r1.val == 3);
+    auto r2 = foo(false);   assert(r2.val == 6);
+    auto r3 = hoo(true);    assert(r3.val == 1);
+    auto r4 = hoo(false);   assert(r4.val == 2);
+    auto r5 = bar(true);    assert(r5.val == 3);
+    auto r6 = bar(false);   assert(r6.val == 2);
+    auto r7 = baz(true);    assert(r7.val == 1);
+    auto r8 = baz(false);   assert(r8.val == 6);
+}
+
+// CondExp on function argument
+void test7516b()
+{
+    alias S = S7516;
+    S s1 = S(1);
+    S s2 = S(2);
+    S func(S s) { return s; }
+
+    S foo(bool f) { return func(f ?  s1  :  s2 ); }
+    S hoo(bool f) { return func(f ? S(1) : S(2)); }
+    S bar(bool f) { return func(f ?  s1  : S(2)); }
+    S baz(bool f) { return func(f ? S(1) :  s2 ); }
+
+    auto r1 = foo(true);    assert(r1.val == 3 * 3);
+    auto r2 = foo(false);   assert(r2.val == 6 * 3);
+    auto r3 = hoo(true);    assert(r3.val == 1 * 3);
+    auto r4 = hoo(false);   assert(r4.val == 2 * 3);
+    auto r5 = bar(true);    assert(r5.val == 3 * 3);
+    auto r6 = bar(false);   assert(r6.val == 2 * 3);
+    auto r7 = baz(true);    assert(r7.val == 1 * 3);
+    auto r8 = baz(false);   assert(r8.val == 6 * 3);
+}
+
+// CondExp on array literal
+void test7516c()
+{
+    alias S = S7516;
+    S s1 = S(1);
+    S s2 = S(2);
+
+    S[] foo(bool f) { return [f ?  s1  :  s2 ]; }
+    S[] hoo(bool f) { return [f ? S(1) : S(2)]; }
+    S[] bar(bool f) { return [f ?  s1  : S(2)]; }
+    S[] baz(bool f) { return [f ? S(1) :  s2 ]; }
+
+    auto r1 = foo(true);    assert(r1[0].val == 3);
+    auto r2 = foo(false);   assert(r2[0].val == 6);
+    auto r3 = hoo(true);    assert(r3[0].val == 1);
+    auto r4 = hoo(false);   assert(r4[0].val == 2);
+    auto r5 = bar(true);    assert(r5[0].val == 3);
+    auto r6 = bar(false);   assert(r6[0].val == 2);
+    auto r7 = baz(true);    assert(r7[0].val == 1);
+    auto r8 = baz(false);   assert(r8[0].val == 6);
+}
+
+// CondExp on rhs of cat assign
+void test7516d()
+{
+    alias S = S7516;
+    S s1 = S(1);
+    S s2 = S(2);
+
+    S[] foo(bool f) { S[] a; a ~= f ?  s1  :  s2 ; return a; }
+    S[] hoo(bool f) { S[] a; a ~= f ? S(1) : S(2); return a; }
+    S[] bar(bool f) { S[] a; a ~= f ?  s1  : S(2); return a; }
+    S[] baz(bool f) { S[] a; a ~= f ? S(1) :  s2 ; return a; }
+
+    auto r1 = foo(true);    assert(r1[0].val == 3);
+    auto r2 = foo(false);   assert(r2[0].val == 6);
+    auto r3 = hoo(true);    assert(r3[0].val == 1);
+    auto r4 = hoo(false);   assert(r4[0].val == 2);
+    auto r5 = bar(true);    assert(r5[0].val == 3);
+    auto r6 = bar(false);   assert(r6[0].val == 2);
+    auto r7 = baz(true);    assert(r7[0].val == 1);
+    auto r8 = baz(false);   assert(r8[0].val == 6);
+}
+
+// CondExp on struct literal element
+void test7516e()
+{
+    alias S = S7516;
+    S s1 = S(1);
+    S s2 = S(2);
+    struct X { S s; }
+
+    X foo(bool f) { return X(f ?  s1  :  s2 ); }
+    X hoo(bool f) { return X(f ? S(1) : S(2)); }
+    X bar(bool f) { return X(f ?  s1  : S(2)); }
+    X baz(bool f) { return X(f ? S(1) :  s2 ); }
+
+    auto r1 = foo(true);    assert(r1.s.val == 3);
+    auto r2 = foo(false);   assert(r2.s.val == 6);
+    auto r3 = hoo(true);    assert(r3.s.val == 1);
+    auto r4 = hoo(false);   assert(r4.s.val == 2);
+    auto r5 = bar(true);    assert(r5.s.val == 3);
+    auto r6 = bar(false);   assert(r6.s.val == 2);
+    auto r7 = baz(true);    assert(r7.s.val == 1);
+    auto r8 = baz(false);   assert(r8.s.val == 6);
+}
+
+/**********************************/
 // 7530
 
 void test7530()
@@ -3943,6 +4066,50 @@ void test14264()
 }
 
 /**********************************/
+// 14686
+
+int test14686()
+{
+    string r;
+
+    struct S
+    {
+        int n;
+        this(this) { r ~= cast(char)('0' + n); }
+    }
+
+    S s1 = S(1);
+    S s2 = S(2);
+    S[] a1 = [S(1)];
+
+    S[2] sa1 = [s1, s2];
+    assert(r == "12", r);       // OK
+
+    r = "";
+    S[] a2 = a1 ~ s2;           // runtime concatenation
+    assert(r == "12", r);       // OK <- NG only in CTFE
+
+    r = "";
+    S[2] sa2a = [s1] ~ s2;
+    assert(r == "12", r);       // OK <- NG, s2 is not copied
+
+    r = "";
+    S[2] sa2b = s2 ~ [s1];
+    assert(r == "21", r);       // OK <- NG, s2 is not copied
+
+    r = "";
+    S[3] sa3a = ([s1] ~ [s1]) ~ s2;
+    assert(r == "112", r);      // OK <- NG, s2 is not copied
+
+    r = "";
+    S[3] sa3b = s2 ~ ([s1] ~ [s1]);
+    assert(r == "211", r);      // OK <- NG, s2 is not copied
+
+    return 1;
+}
+static assert(test14686());
+
+/**********************************/
 // 14815
 
 int test14815()
@@ -4316,6 +4483,11 @@ int main()
     test7353();
     test61();
     test7506();
+    test7516a();
+    test7516b();
+    test7516c();
+    test7516d();
+    test7516e();
     test7530();
     test62();
     test7579a();
@@ -4355,6 +4527,7 @@ int main()
     test13669();
     test13095();
     test14264();
+    test14686();
     test14815();
     test14860();
     test14696();
