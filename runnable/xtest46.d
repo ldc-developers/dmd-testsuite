@@ -6799,7 +6799,9 @@ void test9477()
             assert(order == 2);
         }
 
-    ubyte[64] a1, a2;
+    // need largest natural alignment to avoid unaligned access on
+    // some architectures, double in this case.
+    align(8) ubyte[64] a1, a2;
     foreach (T; Tuple9477!(void, ubyte, ushort, uint, ulong, char, wchar, dchar, float, double))
     {
         auto s1 = cast(T[])(a1[]);
@@ -7677,6 +7679,66 @@ template isCustomSerializable15126(T)
 alias bug15126 = isCustomSerializable15126!Json15126;
 
 /***************************************************/
+// 15141
+
+class A15141
+{
+    abstract void method();
+}
+
+class B15141 : A15141 { }
+
+void test15141()
+{
+    auto a = Object.factory(__MODULE__ ~ ".A15141");
+    assert(a is null);
+    auto b = Object.factory(__MODULE__ ~ ".B15141");
+    assert(b is null); // OK <- oops
+}
+
+/***************************************************/
+// 15366
+
+enum E15366 : bool { A, B };
+
+struct S15366
+{
+    void func1(E15366 e) {}
+
+    void func2(E15366 a, E15366 b)
+    {
+        func1(cast(E15366)(a && b));
+        func1(cast(E15366)(a || b));
+
+        auto x1 = cast(E15366)(a && b);
+        auto x2 = cast(E15366)(a || b);
+    }
+}
+
+/***************************************************/
+// 15369
+
+struct MsgTable15369
+{
+    const(char)[] ident;
+    const(char)* name;
+};
+
+MsgTable15369[] msgTable15369 =
+[
+    { "empty", "" },
+];
+
+void test15369()
+{
+    auto id = msgTable15369[0].ident;
+    auto p = msgTable15369[0].name;
+
+    // a string literal "" should be zero-terminated
+    assert(*p == '\0');
+}
+
+/***************************************************/
 
 int main()
 {
@@ -7989,6 +8051,8 @@ int main()
     test13952();
     test13985();
     test14211();
+    test15141();
+    test15369();
 
     printf("Success\n");
     return 0;

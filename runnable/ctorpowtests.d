@@ -1,11 +1,27 @@
 // PERMUTE_ARGS:
 
+version (D_InlineAsm_X86)
+    version = DMD_InlineAsm;
+else version (D_InlineAsm_X86_64)
+    version = DMD_InlineAsm;
+else
+{
+   version = LDC_InlineAsm;
+   import ldc.llvmasm;
+}
+
+
 int magicVariable()
 {
   if (__ctfe) 
    return 3;
   
+  version (DMD_InlineAsm)
   asm { nop; }
+  else version (LDC_InlineAsm)
+      __asm("", "");
+  else
+    static assert(0, "Unsupported platform");
   return 2;
 }
 
@@ -113,7 +129,12 @@ struct StructWithCtor
 }
 
 int containsAsm() {
+       version (DMD_InlineAsm)
        asm { nop; }
+       else version (LDC_InlineAsm)
+           __asm("", "");
+       else
+           static assert(0, "Unsupported inline asm");
        return 0;
     }
 

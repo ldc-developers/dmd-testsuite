@@ -92,6 +92,7 @@ export MODEL
 export REQUIRED_ARGS=
 
 ifeq ($(findstring win,$(OS)),win)
+SHELL=bash.exe
 export ARGS=-inline -release -g -O -unittest
 export DMD=../src/dmd.exe
 export EXE=.exe
@@ -102,9 +103,8 @@ export SEP=$(subst /,\,/)
 DRUNTIME_PATH=..\..\druntime
 PHOBOS_PATH=..\..\phobos
 export DFLAGS=-I$(DRUNTIME_PATH)\import -I$(PHOBOS_PATH)
-export LIB=$(PHOBOS_PATH)
 else
-export ARGS=-inline -release -gc -O -unittest -fPIC
+export ARGS=-inline -release -g -O -unittest -fPIC
 export DMD=../src/dmd
 export EXE=
 export OBJ=.o
@@ -149,6 +149,11 @@ DISABLED_FAIL_TESTS += pragmainline2
 # LDC_FIXME: We don't report the failure here, probably because the called
 # nested function does not actually need a context.
 DISABLED_FAIL_TESTS += fail39
+
+# LDC_FIXME: We display a different error message, but never ICE'd. Our message
+# is worse, but the proper resolution of this depends on a regression/change
+# discussed at DMD GitHub pull request #5390.
+DISABLED_FAIL_TESTS += ice15239
 
 # LDC: Disable -profile tests.
 DISABLED_TESTS += hello-profile
@@ -228,6 +233,39 @@ DISABLED_TESTS += ldc_extern_weak
 endif
 ifeq ($(findstring win,$(OS)),win)
 DISABLED_TESTS += ldc_extern_weak
+endif
+
+# disable tests based on arch
+ifeq ($(OS),linux)
+  ARCH:=$(shell uname -m)
+
+  # disable invalid tests on arm, aarch64, mips, ppc
+  ifneq (,$(filter arm% aarch64% mips% ppc%,$(ARCH)))
+    DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
+    DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
+    DISABLED_COMPILE_TESTS += ldc_github_1292 # dmd inline asm
+    DISABLED_COMPILE_TESTS += test11471       # dmd inline asm
+    DISABLED_COMPILE_TESTS += test12979b      # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979a    # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979b    # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979c    # dmd inline asm
+    DISABLED_FAIL_TESTS += deprecate12979d    # dmd inline asm
+    DISABLED_FAIL_TESTS += fail12635          # dmd inline asm
+    DISABLED_FAIL_TESTS += fail13434_m64      # no -m64
+    DISABLED_FAIL_TESTS += fail14009          # dmd inline asm
+    DISABLED_FAIL_TESTS += fail2350           # dmd inline asm
+    DISABLED_FAIL_TESTS += fail238_m64        # no -m64
+    DISABLED_FAIL_TESTS += fail327            # dmd inline asm
+    DISABLED_FAIL_TESTS += fail37_m64         # no -m64
+    DISABLED_FAIL_TESTS += fail80_m64         # no -m64
+    DISABLED_FAIL_TESTS += ldc_diag8425       # no -m64
+    DISABLED_TESTS += test36                  # dmd inline asm/Windows
+  endif
+
+  ifneq (,$(filter arm% aarch64% ppc64le%,$(ARCH)))
+    # tell d_do_test.d to ignore MODEL
+    export NO_ARCH_VARIANT=1
+  endif
 endif
 
 ####
