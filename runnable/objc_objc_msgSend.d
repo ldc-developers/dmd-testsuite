@@ -100,8 +100,8 @@ void test_double64()
 
 void main()
 {
-    // test_stret();
-    // test_fp2ret();
+    test_stret();
+    test_fp2ret();
     test_fpret();
     test_float32();
     test_double64();
