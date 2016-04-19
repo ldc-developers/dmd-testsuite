@@ -186,12 +186,6 @@ DISABLED_COMPILE_TESTS += test11237
 # LDC_FIXME: We ICE here due to DMD issue 15650. Enable again after 15650 is fixed.
 DISABLED_COMPILE_TESTS += test10981
 
-# LDC: -transition/-vtls not supported yet.
-DISABLED_COMPILE_TESTS += sw_transition_complex
-DISABLED_COMPILE_TESTS += sw_transition_field
-DISABLED_COMPILE_TESTS += sw_transition_tls
-DISABLED_COMPILE_TESTS += diag3243
-
 # LDC: Our ASM diagnostics are different, might be worth revisiting at some point.
 DISABLED_FAIL_TESTS += diag6717
 DISABLED_FAIL_TESTS += fail152
