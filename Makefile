@@ -215,6 +215,14 @@ DISABLED_FAIL_TESTS += diag8425
 DISABLED_TESTS += test13117b
 DISABLED_TESTS += test13117
 
+# LDC: tests requiring -dwarfeh, a temporary switch in DMD 2.071 which should 
+# not have made into the release
+DISABLED_FAIL_TESTS += cppeh1
+DISABLED_FAIL_TESTS += cppeh2
+
+# LDC: tests requiring -gx, unlikely to be supported soon
+DISABLED_FAIL_TESTS += test15779
+
 # LDC: dmd bug caught early: https://issues.dlang.org/show_bug.cgi?id=13353
 DISABLED_TESTS += testclass
 
