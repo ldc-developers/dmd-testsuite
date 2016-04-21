@@ -221,7 +221,10 @@ DISABLED_FAIL_TESTS += cppeh1
 DISABLED_FAIL_TESTS += cppeh2
 
 # LDC: tests requiring -gx, unlikely to be supported soon
-DISABLED_FAIL_TESTS += test15779
+DISABLED_TESTS += test15779
+
+# LDC: broken in dmd, too: https://issues.dlang.org/show_bug.cgi?id=15943
+DISABLED_COMPILE_TESTS += test15578
 
 # LDC: dmd bug caught early: https://issues.dlang.org/show_bug.cgi?id=13353
 DISABLED_TESTS += testclass
