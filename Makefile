@@ -135,6 +135,7 @@ DISABLED_TESTS += gdb14225
 DISABLED_TESTS += gdb14276
 DISABLED_TESTS += gdb14313
 DISABLED_TESTS += gdb14330
+DISABLED_TESTS += gdb15729
 
 # LDC_FIXME: We don't currently support the ObjC interface.
 DISABLED_COMPILE_TESTS += objc_interface
@@ -277,8 +278,10 @@ endif
 ####
 
 ifeq ($(OS),win64)
-DISABLED_TESTS += testxmm
-DISABLED_FAIL_TESTS += fail13939
+# LDC: no reason to disable
+# DISABLED_TESTS += testxmm
+# LDC: already disabled for all above
+# DISABLED_FAIL_TESTS += fail13939
 endif
 
 ifeq ($(OS),osx)
