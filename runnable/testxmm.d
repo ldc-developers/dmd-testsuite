@@ -1,5 +1,5 @@
 // REQUIRED_ARGS:
-// DISABLED: win64
+// enabled on LDC: win64
 
 version (D_SIMD)
 {

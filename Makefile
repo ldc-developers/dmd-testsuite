@@ -142,6 +142,7 @@ DISABLED_TESTS += gdb14225
 DISABLED_TESTS += gdb14276
 DISABLED_TESTS += gdb14313
 DISABLED_TESTS += gdb14330
+DISABLED_SH_TESTS += gdb15729
 
 # LDC_FIXME: pragma(inline) is not currently implemented.
 DISABLED_FAIL_TESTS += pragmainline2
@@ -185,12 +186,6 @@ DISABLED_COMPILE_TESTS += test11237
 # LDC_FIXME: We ICE here due to DMD issue 15650. Enable again after 15650 is fixed.
 DISABLED_COMPILE_TESTS += test10981
 
-# LDC: -transition/-vtls not supported yet.
-DISABLED_COMPILE_TESTS += sw_transition_complex
-DISABLED_COMPILE_TESTS += sw_transition_field
-DISABLED_COMPILE_TESTS += sw_transition_tls
-DISABLED_COMPILE_TESTS += diag3243
-
 # LDC: Our ASM diagnostics are different, might be worth revisiting at some point.
 DISABLED_FAIL_TESTS += diag6717
 DISABLED_FAIL_TESTS += fail152
@@ -219,6 +214,17 @@ DISABLED_FAIL_TESTS += diag8425
 # LDC: Binary size test. LDC's output exceeds the limits.
 DISABLED_TESTS += test13117b
 DISABLED_TESTS += test13117
+
+# LDC: tests requiring -dwarfeh, a temporary switch in DMD 2.071 which should 
+# not have made into the release
+DISABLED_FAIL_TESTS += cppeh1
+DISABLED_FAIL_TESTS += cppeh2
+
+# LDC: tests requiring -gx, unlikely to be supported soon
+DISABLED_TESTS += test15779
+
+# LDC: broken in dmd, too: https://issues.dlang.org/show_bug.cgi?id=15943
+DISABLED_COMPILE_TESTS += test15578
 
 # LDC: dmd bug caught early: https://issues.dlang.org/show_bug.cgi?id=13353
 DISABLED_TESTS += testclass
@@ -271,8 +277,10 @@ endif
 ####
 
 ifeq ($(OS),win64)
-DISABLED_TESTS += testxmm
-DISABLED_FAIL_TESTS += fail13939
+# LDC: no reason to disable
+# DISABLED_TESTS += testxmm
+# LDC: already disabled for all above
+# DISABLED_FAIL_TESTS += fail13939
 endif
 
 ifeq ($(OS),osx)
