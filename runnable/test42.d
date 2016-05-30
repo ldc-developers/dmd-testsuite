@@ -6075,6 +6075,20 @@ void test14510()
 }
 
 /***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=16027
+
+void test16027()
+{
+    double value = 1.0;
+    value *= -1.0;
+    assert(value == -1.0);    // fails, value is +1.0
+
+    value = 1.0;
+    value = value * -1.0;
+    assert(value == -1.0);
+}
+
+/***************************************************/
 
 int main()
 {
@@ -6371,6 +6385,7 @@ int main()
     test12138();
     test14430();
     test14510();
+    test16027();
 
     writefln("Success");
     return 0;
