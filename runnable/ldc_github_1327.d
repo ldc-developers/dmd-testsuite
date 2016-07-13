@@ -8,5 +8,5 @@ void main()
     assert(v == 4);
 
     v *= inc(v) + v;
-    assert(v == 4 * (10 + 5));
+    assert(v == (4+1) * (10 + 5));
 }
