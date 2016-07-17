@@ -1,10 +1,10 @@
-int add8ret3(ref int s)
+int add8ret3(T)(ref T s)
 {
     s += 8;
     return 3;
 }
 
-int mul11ret3(ref int s)
+int mul11ret3(T)(ref T s)
 {
     s *= 11;
     return 3;
@@ -74,10 +74,27 @@ void test_xor()
     assert(val == (((2^7)+8) ^ 3));
 }
 
+void test_addptr()
+{
+    int* val;
+    val = cast(int*)4;
+    val += add8ret3(val);
+    assert(val == ((cast(int*)4) + 8 + 3));
+
+    val = cast(int*)4;
+    val = val + add8ret3(val);
+    assert(val == ((cast(int*)4) + 3));
+
+    val = cast(int*)16;
+    (val += 7) += add8ret3(val);
+    assert(val == ((cast(int*)16) + 7 + 8 + 3));
+}
+
 void main()
 {
     test_add();
     test_min();
     test_mul();
     test_xor();
+    test_addptr();
 }
