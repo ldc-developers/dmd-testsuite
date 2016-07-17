@@ -90,6 +90,15 @@ void test_addptr()
     assert(val == ((cast(int*)16) + 7 + 8 + 3));
 }
 
+void test_lhsCast()
+{
+    byte val = 1;
+    // lhs type `byte`, rhs type `int` =>
+    // rewritten to `cast(int)(cast(int)val += 10) -= mul11ret3(val)`
+    (val += 10) -= mul11ret3(val);
+    assert(val == ((1 + 10) * 11 - 3));
+}
+
 void main()
 {
     test_add();
@@ -97,4 +106,5 @@ void main()
     test_mul();
     test_xor();
     test_addptr();
+    test_lhsCast();
 }
