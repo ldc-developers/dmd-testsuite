@@ -87,12 +87,14 @@ else
     SHELL=/bin/bash
 endif
 QUIET=@
+BASH_RESULTS_DIR=$(RESULTS_DIR)
 export RESULTS_DIR=test_results
 export MODEL
 export REQUIRED_ARGS=
 
 ifeq ($(findstring win,$(OS)),win)
 SHELL=bash.exe
+BASH_RESULTS_DIR=$(subst /,\\\\,$(RESULTS_DIR))
 export ARGS=-inline -release -g -O -unittest
 export DMD=../src/dmd.exe
 export EXE=.exe
@@ -308,7 +310,7 @@ $(RESULTS_DIR)/runnable/%.d.out: runnable/%.d $(RESULTS_DIR)/.created $(RESULTS_
 
 $(RESULTS_DIR)/runnable/%.sh.out: runnable/%.sh $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test$(EXE) $(DMD)
 	$(QUIET) echo " ... $(<D)/$*.sh"
-	$(QUIET) ./$(<D)/$*.sh
+	$(QUIET) RESULTS_DIR=$(BASH_RESULTS_DIR) ./$(<D)/$*.sh
 
 $(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/compilable/,$(DISABLED_COMPILE_TESTS))): $(RESULTS_DIR)/.created
 	$(QUIET) echo " ... $@ - disabled"
@@ -318,7 +320,7 @@ $(RESULTS_DIR)/compilable/%.d.out: compilable/%.d $(RESULTS_DIR)/.created $(RESU
 
 $(RESULTS_DIR)/compilable/%.sh.out: compilable/%.sh $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test$(EXE) $(DMD)
 	$(QUIET) echo " ... $(<D)/$*.sh"
-	$(QUIET) ./$(<D)/$*.sh
+	$(QUIET) RESULTS_DIR=$(BASH_RESULTS_DIR) ./$(<D)/$*.sh
 
 $(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/fail_compilation/,$(DISABLED_FAIL_TESTS))): $(RESULTS_DIR)/.created
 	$(QUIET) echo " ... $@ - disabled"
