@@ -59,7 +59,7 @@
 #                        considered to be enabled).
 #                        default: (none, enabled)
 #
-#   GDB_FLAGS:           flags to enable gdb tests: 
+#   GDB_FLAGS:           flags to enable gdb tests:
 #                        OFF - disables gdb tests
 #                        NOTLS - disables tests that fail for gdb < 7.6.1 that fixed TLS issues
 
@@ -184,9 +184,6 @@ DISABLED_FAIL_TESTS += fail9414b
 # LDC_FIXME: Don't disable whole asm tests, only DMD-specific parts.
 DISABLED_TESTS += iasm
 DISABLED_TESTS += iasm64
-
-# LDC_FIXME: Name object files the same as DMD for LDMD compatibility (->Github #171)
-DISABLED_SH_TESTS += test44
 
 # LDC_FIXME: This covers an optimization LLVM chooses not to do, see GitHub #679.
 DISABLED_COMPILE_TESTS += test11237
