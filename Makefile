@@ -162,6 +162,10 @@ DISABLED_FAIL_TESTS += pragmainline2
 # nested function does not actually need a context.
 DISABLED_FAIL_TESTS += fail39
 
+# LDC: We don't have the arraysize limit that DMD imposes to work around an
+#      optlink bug (https://issues.dlang.org/show_bug.cgi?id=14859)
+DISABLED_FAIL_TESTS += fail4611
+
 # LDC_FIXME: We display a different error message, but never ICE'd. Our message
 # is worse, but the proper resolution of this depends on a regression/change
 # discussed at DMD GitHub pull request #5390.
