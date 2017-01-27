@@ -623,6 +623,17 @@ void test13045b()
 }
 
 /******************************************************/
+// 15680
+
+void test15680()
+{
+    auto tid = typeid(null);
+    auto iz = tid.initializer();
+    assert(iz.length == typeof(null).sizeof);
+    assert(iz.ptr is null || *(cast(void**)iz.ptr) is null);
+}
+
+/******************************************************/
 
 int main()
 {
@@ -669,6 +680,7 @@ int main()
     test11010();
     test13045a();
     test13045b();
+    test15680();
 
     return 0;
 }

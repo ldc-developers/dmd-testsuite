@@ -1093,15 +1093,7 @@ class C15417
         void test2 (ulong c1, ...)
         {
             va_list ap;
-            version (LDC)
-                va_start(ap, c1);
-            else
-            version (Win64)
-                va_start(ap, c1);
-            else version (X86_64)
-                va_start(ap, __va_argsave);
-            else version (X86)
-                va_start(ap, c1);
+            va_start(ap, c1);
 
             check(c1, ap, _arguments);
         }

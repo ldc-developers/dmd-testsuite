@@ -34,6 +34,7 @@ headers.
 #include <stdio.h>
 #include <assert.h>
 #include <exception>
+#include <cstdarg>
 
 /**************************************/
 
@@ -755,4 +756,44 @@ void test15455b(X8 s)
 }
 
 /******************************************/
+// 15372
 
+template <typename T>
+int foo15372(int value)
+{
+    return value;
+}
+
+void test15372b()
+{
+	int t = foo15372<int>(1);
+}
+
+/****************************************/
+// 15802
+
+template <typename T>
+class Foo15802
+{
+public:
+    static int boo(int value)
+    {
+        return value;
+    }
+};
+
+void test15802b()
+{
+	int t = Foo15802<int>::boo(1);
+}
+
+
+/****************************************/
+// 16536 - mangling mismatch on OSX
+
+#if defined(__APPLE__)
+__UINTMAX_TYPE__ pass16536(__UINTMAX_TYPE__ a)
+{
+    return a;
+}
+#endif
