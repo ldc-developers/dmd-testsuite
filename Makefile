@@ -257,6 +257,9 @@ ifeq ($(findstring win,$(OS)),win)
 DISABLED_TESTS += ldc_extern_weak
 endif
 
+# LDC doesn't enforce any hardcoded limit for static array sizes
+DISABLED_FAIL_TESTS += staticarrayoverflow
+
 # disable tests based on arch
 ifeq ($(OS),linux)
   ARCH:=$(shell uname -m)

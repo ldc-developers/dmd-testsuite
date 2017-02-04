@@ -67,6 +67,13 @@ static assert(U9766.var3.offsetof == 24);
 static assert(U9766.pad4.offsetof == 32);
 static assert(U9766.var4.offsetof == 40);
 
+version (LDC)
+{
+    // LLVM 3.9.1 max alignment (at least for MSVC x64 target): 2^29
+    // => assertion when generating the TestMaxAlign init symbol
+}
+else
+{
 struct TestMaxAlign
 {
 align(1u << 31):
@@ -75,3 +82,4 @@ align(1u << 31):
 }
 
 static assert(TestMaxAlign.b.offsetof == 2147483648u);
+}
