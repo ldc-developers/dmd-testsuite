@@ -205,6 +205,7 @@ DISABLED_COMPILE_TESTS += test10981
 # LDC: Our ASM diagnostics are different, might be worth revisiting at some point.
 DISABLED_FAIL_TESTS += diag6717
 DISABLED_FAIL_TESTS += fail152
+DISABLED_FAIL_TESTS += fail14009
 
 # LDC: This tests a glue layer error message, where DMD emits two but we exit
 # after the first one. Not a bug.
@@ -259,6 +260,9 @@ endif
 
 # LDC doesn't enforce any hardcoded limit for static array sizes
 DISABLED_FAIL_TESTS += staticarrayoverflow
+
+# LDC: disable DMD-specific core.simd.__simd tests
+DISABLED_FAIL_TESTS += test12430
 
 # disable tests based on arch
 ifeq ($(OS),linux)
