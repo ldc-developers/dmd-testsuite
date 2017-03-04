@@ -34,3 +34,35 @@ if [ $? -ne 0 ]; then bailout; fi;
 # -o-
 $DMD -m${MODEL} -Icompilable/extra-files/ldc_output_filenames -o- compilable/extra-files/ldc_output_filenames/{main.d,foo.d,imp/foo.d} >> ${output_file}
 if [ $? -ne 0 ]; then bailout; fi;
+
+
+# Make sure the default file extension is appended if the user's
+# -of doesn't contain any (LDMD only).
+
+# args: <extra command-line options> <-of filename> <expected output filename>
+function buildAndDelete {
+    $DMD -m${MODEL} -Icompilable/extra-files/ldc_output_filenames -of${dir}/$2 "$1" compilable/extra-files/ldc_output_filenames/{main.d,foo.d,imp/foo.d} >> ${output_file}
+    if [ $? -ne 0 ]; then bailout; fi;
+    rm ${dir}/$3 >> ${output_file}
+    if [ $? -ne 0 ]; then bailout; fi;
+}
+
+# executable
+EXE_EXTENSION=
+if [[ "$OS" == win* ]]; then EXE_EXTENSION=.exe; fi;
+buildAndDelete "" executable executable${EXE_EXTENSION}
+buildAndDelete "" executable.myExt executable.myExt
+
+# static library
+LIB_EXTENSION=.a
+if [[ "$OS" == win* ]]; then LIB_EXTENSION=.lib; fi;
+buildAndDelete "-lib" staticLib staticLib${LIB_EXTENSION}
+buildAndDelete "-lib" staticLib.myExt staticLib.myExt
+
+# shared library
+SO_EXTENSION=.so
+if [[ "$OS" == win* ]]; then SO_EXTENSION=.dll;
+elif [ "$OS" == "osx" ]; then SO_EXTENSION=.dylib;
+fi;
+buildAndDelete "-shared" sharedLib sharedLib${SO_EXTENSION}
+buildAndDelete "-shared" sharedLib.myExt sharedLib.myExt
