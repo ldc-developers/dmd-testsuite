@@ -4,17 +4,21 @@
 
 dir=${RESULTS_DIR}/compilable
 
-rsp_file=${dir}/ldmd_response_file.rsp
-rm -f ${rsp_file}
-
 # generate a ~100K response file for LDMD
-for i in {0..1000}
+rsp_file=${dir}/ldmd_response_file.rsp
+echo "-version=FirstLine" > ${rsp_file}
+for i in {1..1000}
 do
    echo "-I=Some/lengthy/string/Some/lengthy/string/Some/lengthy/string/Some/lengthy/string/Some/lengthy/string/" >> ${rsp_file}
 done
+echo "-version=LastLine" >> ${rsp_file}
 
+# statically assert that both versions are set
 src_file=${dir}/ldmd_response_file.d
-echo "void main() {}" > ${src_file}
+echo "version (FirstLine) {" > ${src_file}
+echo "    version (LastLine) {} else static assert(0);" >> ${src_file}
+echo "} else" >> ${src_file}
+echo "    static assert(0);" >> ${src_file}
 
 # LDMD errors if there's no source file.
 $DMD @${rsp_file} -c -o- ${src_file}
