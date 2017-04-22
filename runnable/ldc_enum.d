@@ -7,7 +7,7 @@ auto test1_a()
 {
     auto t = typeid(EF);
     assert(t.name == "ldc_enum.EF");
-    auto init = *cast(float*)t.init.ptr;
+    auto init = *cast(float*)t.initializer.ptr;
     assert(init == 1.1f);
 }
 
@@ -15,7 +15,7 @@ auto test1_b()
 {
     auto t = typeid(ED);
     assert(t.name == "ldc_enum.ED");
-    auto init = *cast(double*)t.init.ptr;
+    auto init = *cast(double*)t.initializer.ptr;
     assert(init == 1.2);
 }
 
