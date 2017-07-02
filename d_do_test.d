@@ -545,11 +545,12 @@ int main(string[] args)
     if (!collectExtraSources(input_dir, output_dir, testArgs.objcSources, testArgs.sources, msc, envData, "clang"))
         return 1;
 
-    writef(" ... %-30s %s%s(%s)",
+    writef(" ... %-30s %s%s(%s) %s",
             input_file,
             testArgs.requiredArgs,
             (!testArgs.requiredArgs.empty ? " " : ""),
-            testArgs.permuteArgs);
+            testArgs.permuteArgs,
+            envData.dflags);
 
     if (testArgs.disabledPlatforms.canFind(envData.os, envData.os ~ envData.model))
     {
