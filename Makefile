@@ -374,7 +374,8 @@ $(RESULTS_DIR)/.created:
 
 run_tests: start_runnable_tests start_compilable_tests start_fail_compilation_tests
 
-run_runnable_tests: $(runnable_test_results)
+# LDC: Try to test long-running runnable/xtest46.d as soon as possible for better parallelization
+run_runnable_tests: $(RESULTS_DIR)/runnable/xtest46.d.out $(runnable_test_results)
 
 start_runnable_tests: $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test$(EXE)
 	@echo "Running runnable tests"
