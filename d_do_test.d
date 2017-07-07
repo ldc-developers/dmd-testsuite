@@ -80,6 +80,7 @@ struct EnvData
     string ccompiler;
     string model;
     string required_args;
+    string dflags;
     bool dobjc;
     bool coverage_build;
     bool noArchVariant;
@@ -181,6 +182,16 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
             testArgs.permuteArgs = replace(testArgs.permuteArgs, "-unittest", "");
     }
     replaceResultsDir(testArgs.permuteArgs, envData);
+
+    // remove permute args enforced via DFLAGS env variable
+    if (envData.dflags.length && testArgs.permuteArgs.length)
+    {
+        const dflags = split(envData.dflags);
+        const newPermuteArgs = split(testArgs.permuteArgs)
+            .filter!(a => !dflags.canFind(a))
+            .join(" ");
+        testArgs.permuteArgs = newPermuteArgs;
+    }
 
     // win(32|64) doesn't support pic
     if (envData.os == "win32" || envData.os == "win64")
@@ -459,6 +470,7 @@ int main(string[] args)
     envData.ccompiler     = environment.get("CC");
     envData.model         = environment.get("MODEL");
     envData.required_args = environment.get("REQUIRED_ARGS");
+    envData.dflags        = environment.get("DFLAGS");
     envData.dobjc         = environment.get("D_OBJC") == "1";
     envData.coverage_build   = environment.get("DMD_TEST_COVERAGE") == "1";
     envData.noArchVariant = environment.get("NO_ARCH_VARIANT") == "1";
@@ -533,11 +545,12 @@ int main(string[] args)
     if (!collectExtraSources(input_dir, output_dir, testArgs.objcSources, testArgs.sources, msc, envData, "clang"))
         return 1;
 
-    writef(" ... %-30s %s%s(%s)",
+    writef(" ... %-30s %s%s(%s) %s",
             input_file,
             testArgs.requiredArgs,
             (!testArgs.requiredArgs.empty ? " " : ""),
-            testArgs.permuteArgs);
+            testArgs.permuteArgs,
+            envData.dflags);
 
     if (testArgs.disabledPlatforms.canFind(envData.os, envData.os ~ envData.model))
     {
