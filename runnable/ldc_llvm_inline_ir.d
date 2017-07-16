@@ -1,37 +1,6 @@
-// Syntax of load changed with LLVM 3.7
-version(LDC_LLVM_305) version = PREDATES_307;
-version(LDC_LLVM_306) version = PREDATES_307;
-
 pragma(LDC_inline_ir)
     R inlineIR(string s, R, P...)(P);
 
-version(PREDATES_307)
-{
-alias inlineIR!(`
-    %rp = alloca i32
-    %ip = alloca i32
-    store i32 1, i32* %rp
-    store i32 %0, i32* %ip
-    %cond = icmp sgt i32 %0, 0
-    br i1 %cond, label %loop, label %end
-
-    loop:
-        %i = load i32* %ip
-        %r = load i32* %rp
-        %rnext = mul i32 %r, %i
-        %inext = sub i32 %i, 1
-        store i32 %rnext, i32* %rp
-        store i32 %inext, i32* %ip
-        %cond1 = icmp sgt i32 %inext, 0
-        br i1 %cond1, label %loop, label %end
-
-    end:
-        %ret = load i32* %rp
-        ret i32 %ret`,
-    int, int) factorial;
-}
-else
-{
 alias inlineIR!(`
     %rp = alloca i32
     %ip = alloca i32
@@ -54,7 +23,6 @@ alias inlineIR!(`
         %ret = load i32, i32* %rp
         ret i32 %ret`,
     int, int) factorial;
-}
 
 alias __vector(int[4]) int4;
 
