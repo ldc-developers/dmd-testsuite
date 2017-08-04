@@ -234,6 +234,9 @@ DISABLED_FAIL_TESTS += fail5908
 # LDC: Not all error messages are trure for ldc. Replaced by ldc_diag8425.
 DISABLED_FAIL_TESTS += diag8425
 
+# LDC: We do allow comparing vectors for equality.
+DISABLED_FAIL_TESTS += fail10905
+
 # LDC: Binary size test. LDC's output exceeds the limits.
 DISABLED_TESTS += test13117b
 DISABLED_TESTS += test13117
