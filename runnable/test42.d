@@ -6118,6 +6118,18 @@ void test16530()
 
 /***************************************************/
 
+void test252()
+{
+    __gshared int x = 7;
+    __gshared long y = 217;
+    if ((-1 - x) != ~x)
+        assert(0);
+    if ((-1 - y) != ~y)
+        assert(0);
+}
+
+/***************************************************/
+
 int main()
 {
     test1();
@@ -6415,6 +6427,7 @@ int main()
     test14510();
     test16027();
     test16530();
+    test252();
 
     writefln("Success");
     return 0;
