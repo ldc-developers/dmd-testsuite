@@ -278,6 +278,9 @@ ifeq ($(findstring win,$(OS)),win)
 DISABLED_TESTS += testptrref
 endif
 
+# LDC doesn't define D_SIMD and wouldn't deprecate 256-bit vector types for missing `-mcpu=avx`
+DISABLED_COMPILE_TESTS += vector_types
+
 # disable tests based on arch
 ifeq ($(OS),linux)
   ARCH:=$(shell uname -m)
