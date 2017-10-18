@@ -7,7 +7,16 @@ void main(string[] args)
 {
     // https://issues.dlang.org/show_bug.cgi?id=4014
     // -gf should drag in full definitions of Object, TickDuration and ClockType
+  version(LDC)
+  {
+    // `Object` has no explicit fields; DMD emits debuginfos about methods which LDC doesn't.
+    // So use `Exception` with fields instead.
+    Exception e = new Exception("abc");
+  }
+  else
+  {
     Object o = new Object;
+  }
     TickDuration duration; // struct
     ClockType ct; // enumerator
 
@@ -24,9 +33,18 @@ void main(string[] args)
 
         // dumpSymbols(globals, SymTagEnum.SymTagNull, null, 0);
 
+      version(LDC)
+      {
+        IDiaSymbol excsym = searchSymbol(globals, "object.Exception");
+        testSymbolHasChildren(excsym, "object.Exception");
+        excsym.Release();
+      }
+      else
+      {
         IDiaSymbol objsym = searchSymbol(globals, "object.Object");
         testSymbolHasChildren(objsym, "object.Object");
         objsym.Release();
+      }
 
         IDiaSymbol ticksym = searchSymbol(globals, "core.time.TickDuration");
         testSymbolHasChildren(ticksym, "core.time.TickDuration");
@@ -73,6 +91,15 @@ void testSymbolHasChildren(IDiaSymbol sym, string name)
 
 void testLineNumbers(IDiaSession session, IDiaSymbol globals)
 {
+  version(LDC)
+  {
+    // The function's pretty name (LLVM DI name) shows up instead of its mangled
+    // name (LLVM DI linkage name).
+    // The code below doesn't find the symbol even when using the pretty name;
+    // the code byte tests are DMD-specific.
+  }
+  else
+  {
     IDiaSymbol funcsym = searchSymbol(globals, test15432.mangleof);
     assert(funcsym, "symbol test15432 not found");
     ubyte[] funcRange;
@@ -84,6 +111,7 @@ void testLineNumbers(IDiaSession session, IDiaSymbol globals)
     assert (lines[$-1].line == lineAfterTest15432 - 1);
     ubyte codeByte = lines[$-1].addr[0];
     assert(codeByte == 0x48 || codeByte == 0x5d || codeByte == 0xc3); // should be one of "mov rsp,rbp", "pop rbp" or "ret"
+  }
 }
 
 import core.stdc.stdio;
