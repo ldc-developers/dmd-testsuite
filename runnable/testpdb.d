@@ -2,7 +2,9 @@
 // PERMUTE_ARGS:
 
 import core.time;
+import ldc.attributes;
 
+@optStrategy("none") // LDC
 void main(string[] args)
 {
     // https://issues.dlang.org/show_bug.cgi?id=4014
