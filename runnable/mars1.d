@@ -1672,6 +1672,21 @@ void testeqeqranges()
 
 ////////////////////////////////////////////////////////////////////////
 
+void testdivcmp()
+{
+    // https://github.com/dlang/dmd/pull/7128
+    static bool foo(uint a, uint b)
+    {
+        return cast(bool)(a / b); // convert / to >=
+    }
+
+    assert(!foo(3, 4));
+    assert(foo(4, 4));
+    assert(foo(5, 4));
+}
+
+////////////////////////////////////////////////////////////////////////
+
 int main()
 {
     testgoto();
@@ -1730,6 +1745,7 @@ int main()
     test5();
     test6();
     testeqeqranges();
+    testdivcmp();
     printf("Success\n");
     return 0;
 }
