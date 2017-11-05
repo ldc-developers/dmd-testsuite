@@ -272,6 +272,7 @@ DISABLED_FAIL_TESTS += staticarrayoverflow
 
 # LDC: disable DMD-specific core.simd.__simd tests
 DISABLED_FAIL_TESTS += test12430
+DISABLED_FAIL_TESTS += fix17751
 
 # LDC: Windows-specific test relying on DMD section-bracketing symbols
 ifeq ($(findstring win,$(OS)),win)
