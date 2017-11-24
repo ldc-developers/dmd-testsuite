@@ -932,9 +932,6 @@ void testeh()
 {
     printf("testeh()\n");
 
-    // LDC_FIXME: Implement support for catching C++ exceptions on Linux, see
-    // GitHub issue #1476.
-    version (LDC) {} else
     version (linux)
     {
         version (X86_64)
@@ -955,9 +952,6 @@ void testeh()
 
 /****************************************/
 
-// LDC_FIXME: Implement support for catching C++ exceptions on Linux, see
-// GitHub issue #1476.
-version (LDC) { void testeh2() {} } else
 version (linux)
 {
     version (X86_64)
@@ -1003,9 +997,6 @@ extern (C++) { void throwle(); void throwpe(); }
 void testeh3()
 {
     printf("testeh3()\n");
-    // LDC_FIXME: Implement support for catching C++ exceptions on Linux, see
-    // GitHub issue #1476.
-    version (LDC) {} else
     version (linux)
     {
         version (X86_64)
