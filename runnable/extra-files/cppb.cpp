@@ -601,16 +601,18 @@ void fuzz3_cppvararg(wchar arg10, wchar arg11, bool arg12)
 
 void throwit()
 {
+/* LDC: enabled for all targets
 #if _WIN32
-#else
+#else*/
     std::exception se;
     throw se;
-#endif
+//#endif
 }
 
 /******************************************/
 
-#if linux
+/* LDC: enabled for all targets
+#if linux*/
 #include <stdexcept>
 
 void throwle()
@@ -619,7 +621,7 @@ void throwle()
      throw le;
 }
 
-#endif
+//#endif
 
 /******************************************/
 // 15579
