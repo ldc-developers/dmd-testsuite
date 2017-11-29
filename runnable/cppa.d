@@ -923,6 +923,16 @@ void fuzz()
 
 /****************************************/
 
+version (LDC)
+{
+    version (OSX)
+    {
+        // FIXME: C++ exceptions not caught
+    }
+    else
+        version = LDC_CppEH;
+}
+
 extern (C++)
 {
     void throwit();
@@ -932,11 +942,10 @@ void testeh()
 {
     printf("testeh()\n");
 
-    /* LDC: enabled for all targets
-    version (linux)
+    version (LDC_CppEH) // LDC: was `version (linux)`
     {
-        version (X86_64)
-        {*/
+        version (all)   // LDC: was `version (X86_64)`
+        {
             bool caught;
             try
             {
@@ -947,18 +956,16 @@ void testeh()
                 caught = true;
             }
             assert(caught);
-        /* LDC
         }
-    }*/
+    }
 }
 
 /****************************************/
 
-/* LDC: enabled for all targets
-version (linux)
+version (LDC_CppEH) // LDC: was `version (linux)`
 {
-    version (X86_64)
-    {*/
+    version (all)   // LDC: was `version (X86_64)`
+    {
         bool raii_works = false;
         struct RAIITest
         {
@@ -986,14 +993,12 @@ version (linux)
                 assert(raii_works);
             }
         }
-    /* LDC
     }
     else
         void testeh2() { }
 }
 else
     void testeh2() { }
-*/
 
 /****************************************/
 
@@ -1002,11 +1007,10 @@ extern (C++) { void throwle(); void throwpe(); }
 void testeh3()
 {
     printf("testeh3()\n");
-    /* LDC: enabled for all targets
-    version (linux)
+    version (LDC_CppEH) // LDC: was `version (linux)`
     {
-        version (X86_64)
-        {*/
+        version (all)   // LDC: was `version (X86_64)`
+        {
             bool caught = false;
             try
             {
@@ -1017,9 +1021,8 @@ void testeh3()
                 caught = true;
             }
             assert(caught);
-        /* LDC
         }
-    }*/
+    }
 }
 
 /****************************************/
