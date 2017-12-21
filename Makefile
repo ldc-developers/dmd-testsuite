@@ -81,7 +81,7 @@ include ../src/osmodel.mak
 
 export OS
 
-ifeq (freebsd,$(OS))
+ifeq ($(findstring bsd,$(OS)),bsd)
     SHELL=/usr/local/bin/bash
 else
     SHELL=/bin/bash

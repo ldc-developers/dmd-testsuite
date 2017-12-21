@@ -345,7 +345,7 @@ size_t getoffset13161a()
 
 /****************************************************/
 
-#if __linux__ || __APPLE__ || __FreeBSD__
+#if __linux__ || __APPLE__ || __FreeBSD__ || __DragonFly__
 #include <memory>
 #include <vector>
 #include <string>
@@ -402,7 +402,7 @@ wchar_t f13289_cpp_wchar_t(wchar_t ch)
     }
 }
 
-#if __linux__ || __APPLE__ || __FreeBSD__ || __OpenBSD__ || __sun
+#if __linux__ || __APPLE__ || __FreeBSD__ || __OpenBSD__ || __DragonFly__ || __sun
 unsigned short f13289_d_wchar(unsigned short ch);
 wchar_t f13289_d_dchar(wchar_t ch);
 #elif _WIN32
@@ -412,7 +412,7 @@ unsigned int f13289_d_dchar(unsigned int ch);
 
 bool f13289_cpp_test()
 {
-#if __linux__ || __APPLE__ || __FreeBSD__ || __OpenBSD__ || __sun
+#if __linux__ || __APPLE__ || __FreeBSD__ || __OpenBSD__ || __DragonFly__ || __sun
     if (!(f13289_d_wchar((unsigned short)'c') == (unsigned short)'C')) return false;
     if (!(f13289_d_wchar((unsigned short)'D') == (unsigned short)'D')) return false;
     if (!(f13289_d_dchar(L'e') == L'E')) return false;
