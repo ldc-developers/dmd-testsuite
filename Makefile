@@ -70,11 +70,11 @@
 
 ifeq (Windows_NT,$(OS))
     ifeq ($(findstring WOW64, $(shell uname)),WOW64)
-	OS:=win64
-	MODEL:=64
+        OS:=win64
+        MODEL:=64
     else
-	OS:=win32
-	MODEL:=32
+        OS:=win32
+        MODEL:=32
     endif
 endif
 ifeq (Win_32,$(OS))
@@ -89,6 +89,7 @@ endif
 include ../src/osmodel.mak
 
 export OS
+BUILD=release
 
 ifeq (freebsd,$(OS))
     SHELL=/usr/local/bin/bash
@@ -104,66 +105,102 @@ export MODEL
 export REQUIRED_ARGS=
 
 ifeq ($(findstring win,$(OS)),win)
-SHELL=bash.exe
-BASH_RESULTS_DIR=$(subst /,\\\\,$(RESULTS_DIR))
-export ARGS=-inline -release -g -O
-export DMD=../src/dmd.exe
-export EXE=.exe
-export OBJ=.obj
-export DSEP=\\
-export SEP=$(subst /,\,/)
+    SHELL=bash.exe
 
-DRUNTIME_PATH=..\..\druntime
-PHOBOS_PATH=..\..\phobos
-export DFLAGS=-I$(DRUNTIME_PATH)\import -I$(PHOBOS_PATH)
+    export ARGS=-inline -release -g -O
+    export EXE=.exe
+    export OBJ=.obj
+    export DSEP=\\
+    export SEP=$(subst /,\,/)
+
+    PIC?=0
+
+    DRUNTIME_PATH=..\..\druntime
+    PHOBOS_PATH=..\..\phobos
+    export DFLAGS=-I$(DRUNTIME_PATH)\import -I$(PHOBOS_PATH)
+    export LIB=$(PHOBOS_PATH)
+
+    # auto-tester might run the testsuite with a different $(MODEL) than DMD
+    # has been compiled with. Hence we manually check which binary exists.
+    # For windows the $(OS) during build is: `windows`
+    ifeq (,$(wildcard ../generated/windows/$(BUILD)/64/dmd$(EXE)))
+        DMD_MODEL=32
+    else
+        DMD_MODEL=64
+    endif
+    export DMD=../generated/windows/$(BUILD)/$(DMD_MODEL)/dmd$(EXE)
+
 else
-export ARGS=-inline -release -g -O -fPIC
-export DMD=../src/dmd
-export EXE=
-export OBJ=.o
-export DSEP=/
-export SEP=/
+    export ARGS=-inline -release -g -O -fPIC
+    export EXE=
+    export OBJ=.o
+    export DSEP=/
+    export SEP=/
 
-DRUNTIME_PATH=../../druntime
-PHOBOS_PATH=../../phobos
-# link against shared libraries (defaults to true on supported platforms, can be overridden w/ make SHARED=0)
-SHARED=$(if $(findstring $(OS),linux freebsd),1,)
-DFLAGS=-I$(DRUNTIME_PATH)/import -I$(PHOBOS_PATH) -L-L$(PHOBOS_PATH)/generated/$(OS)/release/$(MODEL)
-ifeq (1,$(SHARED))
-DFLAGS+=-defaultlib=libphobos2.so -L-rpath=$(PHOBOS_PATH)/generated/$(OS)/release/$(MODEL)
-endif
-export DFLAGS
+    # auto-tester might run the testsuite with a different $(MODEL) than DMD
+    # has been compiled with. Hence we manually check which binary exists.
+    ifeq (,$(wildcard ../generated/$(OS)/$(BUILD)/64/dmd))
+        DMD_MODEL=32
+    else
+        DMD_MODEL=64
+    endif
+    export DMD=../generated/$(OS)/$(BUILD)/$(DMD_MODEL)/dmd
+
+    # default to PIC on x86_64, use PIC=1/0 to en-/disable PIC.
+    # Note that shared libraries and C files are always compiled with PIC.
+    ifeq ($(PIC),)
+        ifeq ($(MODEL),64) # x86_64
+            PIC:=1
+        else
+            PIC:=0
+        endif
+    endif
+    ifeq ($(PIC),1)
+        export PIC_FLAG:=-fPIC
+    else
+        export PIC_FLAG:=
+    endif
+
+    DRUNTIME_PATH=../../druntime
+    PHOBOS_PATH=../../phobos
+    # link against shared libraries (defaults to true on supported platforms, can be overridden w/ make SHARED=0)
+    SHARED=$(if $(findstring $(OS),linux freebsd),1,)
+    DFLAGS=-I$(DRUNTIME_PATH)/import -I$(PHOBOS_PATH) -L-L$(PHOBOS_PATH)/generated/$(OS)/$(BUILD)/$(MODEL)
+    ifeq (1,$(SHARED))
+        DFLAGS+=-defaultlib=libphobos2.so -L-rpath=$(PHOBOS_PATH)/generated/$(OS)/$(BUILD)/$(MODEL)
+    endif
+    export DFLAGS
 endif
 
 ifeq ($(OS),osx)
-ifeq ($(MODEL),64)
-export D_OBJC=1
-endif
+    ifeq ($(MODEL),64)
+        export D_OBJC=1
+    endif
 endif
 
 ####
 
 # LDC: Support Objective-C tests on 32-bit too
 ifeq ($(OS),osx)
-ifeq ($(MODEL),32)
-export D_OBJC=1
-endif
+    ifeq ($(MODEL),32)
+        export D_OBJC=1
+    endif
 endif
 
 ifeq ($(findstring OFF,$(GDB_FLAGS)),OFF)
-DISABLED_TESTS += gdb1
-DISABLED_TESTS += gdb4149
-DISABLED_TESTS += gdb4181
-DISABLED_TESTS += gdb14225
-DISABLED_TESTS += gdb14276
-DISABLED_TESTS += gdb14313
-DISABLED_TESTS += gdb14330
-DISABLED_SH_TESTS += gdb15729
+    DISABLED_TESTS += gdb1
+    DISABLED_TESTS += gdb4149
+    DISABLED_TESTS += gdb4181
+    DISABLED_TESTS += gdb14225
+    DISABLED_TESTS += gdb14276
+    DISABLED_TESTS += gdb14313
+    DISABLED_TESTS += gdb14330
+    DISABLED_SH_TESTS += gdb15729
 else
-ifeq ($(findstring NOTLS,$(GDB_FLAGS)),NOTLS)
-# LDC: travis has only gdb 7.4, but TLS was fixed in 7.6.1
-DISABLED_TESTS += gdb4181
-endif
+    ifeq ($(findstring NOTLS,$(GDB_FLAGS)),NOTLS)
+        # LDC: travis has only gdb 7.4, but TLS was fixed in 7.6.1
+        DISABLED_TESTS += gdb4181
+    endif
 endif
 # LDC: even without optimizations "x optimized-out"
 DISABLED_TESTS += gdb10311
@@ -256,10 +293,10 @@ DISABLED_SH_TESTS += test_shared
 # LDC: OS X ld needs extra options, but not needed so do not bother
 #      not supported for MSVC either
 ifeq ($(OS),osx)
-DISABLED_TESTS += ldc_extern_weak
+    DISABLED_TESTS += ldc_extern_weak
 endif
 ifeq ($(findstring win,$(OS)),win)
-DISABLED_TESTS += ldc_extern_weak
+    DISABLED_TESTS += ldc_extern_weak
 endif
 
 # LDC doesn't enforce any hardcoded limit for static array sizes
@@ -271,7 +308,7 @@ DISABLED_FAIL_TESTS += fix17751
 
 # LDC: Windows-specific test relying on DMD section-bracketing symbols
 ifeq ($(findstring win,$(OS)),win)
-DISABLED_TESTS += testptrref
+    DISABLED_TESTS += testptrref
 endif
 
 # LDC doesn't define D_SIMD and wouldn't deprecate 256-bit vector types for missing `-mcpu=avx`
@@ -279,51 +316,40 @@ DISABLED_COMPILE_TESTS += vector_types
 
 # disable tests based on arch
 ifeq ($(OS),linux)
-  ARCH:=$(shell uname -m)
+    ARCH:=$(shell uname -m)
 
-  # disable invalid tests on arm, aarch64, mips, ppc
-  ifneq (,$(filter arm% aarch64% mips% ppc%,$(ARCH)))
-    DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
-    DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
-    DISABLED_COMPILE_TESTS += ldc_github_1292 # dmd inline asm
-    DISABLED_COMPILE_TESTS += test11471       # dmd inline asm
-    DISABLED_COMPILE_TESTS += test12979b      # dmd inline asm
-    DISABLED_FAIL_TESTS += deprecate12979a    # dmd inline asm
-    DISABLED_FAIL_TESTS += deprecate12979b    # dmd inline asm
-    DISABLED_FAIL_TESTS += deprecate12979c    # dmd inline asm
-    DISABLED_FAIL_TESTS += deprecate12979d    # dmd inline asm
-    DISABLED_FAIL_TESTS += fail12635          # dmd inline asm
-    DISABLED_FAIL_TESTS += fail13434_m64      # no -m64
-    DISABLED_FAIL_TESTS += fail14009          # dmd inline asm
-    DISABLED_FAIL_TESTS += fail2350           # dmd inline asm
-    DISABLED_FAIL_TESTS += fail238_m64        # no -m64
-    DISABLED_FAIL_TESTS += fail327            # dmd inline asm
-    DISABLED_FAIL_TESTS += fail37_m64         # no -m64
-    DISABLED_FAIL_TESTS += fail80_m64         # no -m64
-    DISABLED_FAIL_TESTS += ldc_diag8425       # no -m64
-    DISABLED_TESTS += test36                  # dmd inline asm/Windows
-  endif
+    # disable invalid tests on arm, aarch64, mips, ppc
+    ifneq (,$(filter arm% aarch64% mips% ppc%,$(ARCH)))
+        DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
+        DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
+        DISABLED_COMPILE_TESTS += ldc_github_1292 # dmd inline asm
+        DISABLED_COMPILE_TESTS += test11471       # dmd inline asm
+        DISABLED_COMPILE_TESTS += test12979b      # dmd inline asm
+        DISABLED_FAIL_TESTS += deprecate12979a    # dmd inline asm
+        DISABLED_FAIL_TESTS += deprecate12979b    # dmd inline asm
+        DISABLED_FAIL_TESTS += deprecate12979c    # dmd inline asm
+        DISABLED_FAIL_TESTS += deprecate12979d    # dmd inline asm
+        DISABLED_FAIL_TESTS += fail12635          # dmd inline asm
+        DISABLED_FAIL_TESTS += fail13434_m64      # no -m64
+        DISABLED_FAIL_TESTS += fail14009          # dmd inline asm
+        DISABLED_FAIL_TESTS += fail2350           # dmd inline asm
+        DISABLED_FAIL_TESTS += fail238_m64        # no -m64
+        DISABLED_FAIL_TESTS += fail327            # dmd inline asm
+        DISABLED_FAIL_TESTS += fail37_m64         # no -m64
+        DISABLED_FAIL_TESTS += fail80_m64         # no -m64
+        DISABLED_FAIL_TESTS += ldc_diag8425       # no -m64
+        DISABLED_TESTS += test36                  # dmd inline asm/Windows
+    endif
 
-  ifneq (,$(filter arm% aarch64% ppc64le%,$(ARCH)))
-    # tell d_do_test.d to ignore MODEL
-    export NO_ARCH_VARIANT=1
-  endif
+    ifneq (,$(filter arm% aarch64% ppc64le%,$(ARCH)))
+        # tell d_do_test.d to ignore MODEL
+        export NO_ARCH_VARIANT=1
+    endif
 endif
 
 ####
 
-ifeq ($(OS),win64)
-# LDC: no reason to disable
-# DISABLED_TESTS += testxmm
-# LDC: already disabled for all above
-# DISABLED_FAIL_TESTS += fail13939
-endif
-
-ifeq ($(OS),osx)
-ifeq ($(MODEL),64)
-DISABLED_TESTS += test6423
-endif
-endif
+DEBUG_FLAGS=$(PIC_FLAG) -g
 
 export DMD_TEST_COVERAGE=
 
@@ -408,7 +434,9 @@ start_fail_compilation_tests: $(RESULTS_DIR)/.created $(RESULTS_DIR)/d_do_test$(
 
 $(RESULTS_DIR)/d_do_test$(EXE): d_do_test.d $(RESULTS_DIR)/.created
 	@echo "Building d_do_test tool"
-	@echo "OS: $(OS)"
-	$(QUIET)$(DMD) -conf= $(MODEL_FLAG) -unittest -run d_do_test.d -unittest
-	$(QUIET)$(DMD) -conf= $(MODEL_FLAG) -od$(RESULTS_DIR) -of$(RESULTS_DIR)$(DSEP)d_do_test$(EXE) d_do_test.d
+	@echo "OS: '$(OS)'"
+	@echo "MODEL: '$(MODEL)'"
+	@echo "PIC: '$(PIC_FLAG)'"
+	$(DMD) -conf= $(MODEL_FLAG) $(DEBUG_FLAGS) -unittest -run d_do_test.d -unittest
+	$(DMD) -conf= $(MODEL_FLAG) $(DEBUG_FLAGS) -od$(RESULTS_DIR) -of$(RESULTS_DIR)$(DSEP)d_do_test$(EXE) d_do_test.d
 
