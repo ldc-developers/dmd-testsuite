@@ -1,4 +1,5 @@
 /* REQUIRED_ARGS: -betterC
+ * REQUIRED_ARGS(win32): -Llegacy_stdio_definitions.lib
  * PERMUTE_ARGS:
  */
 
