@@ -106,6 +106,7 @@ export REQUIRED_ARGS=
 
 ifeq ($(findstring win,$(OS)),win)
     SHELL=bash.exe
+    BASH_RESULTS_DIR=$(subst /,\\\\,$(RESULTS_DIR))
 
     export ARGS=-inline -release -g -O
     export EXE=.exe
@@ -118,7 +119,8 @@ ifeq ($(findstring win,$(OS)),win)
     DRUNTIME_PATH=..\..\druntime
     PHOBOS_PATH=..\..\phobos
     export DFLAGS=-I$(DRUNTIME_PATH)\import -I$(PHOBOS_PATH)
-    export LIB=$(PHOBOS_PATH)
+    # LDC: don't override crucial LIB environment variable
+    #export LIB=$(PHOBOS_PATH)
 
     # auto-tester might run the testsuite with a different $(MODEL) than DMD
     # has been compiled with. Hence we manually check which binary exists.
