@@ -277,6 +277,11 @@ endif
 # LDC doesn't define D_SIMD and wouldn't deprecate 256-bit vector types for missing `-mcpu=avx`
 DISABLED_COMPILE_TESTS += vector_types
 
+# LDC: This test the vector codegen of DMD's backend. Unnecessarily brittle
+# (depends on objdump, etc.) and assumes that AVX/AVX2 are available on the
+# system running the tests. Covered by LLVM's CodeGen tests.
+DISABLED_TESTS += test_cdvecfill
+
 # disable tests based on arch
 ifeq ($(OS),linux)
   ARCH:=$(shell uname -m)
