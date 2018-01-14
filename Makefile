@@ -184,11 +184,6 @@ DISABLED_FAIL_TESTS += fail4611
 # discussed at DMD GitHub pull request #5390.
 DISABLED_FAIL_TESTS += ice15239
 
-# LDC: Disable -profile tests.
-DISABLED_TESTS += hello-profile
-DISABLED_TESTS += testprofile
-DISABLED_COMPILE_TESTS += diag11066
-
 # LDC: This test checks for a number of error messages, of which we only report
 # the first one. Not a bug.
 DISABLED_FAIL_TESTS += fail9418
