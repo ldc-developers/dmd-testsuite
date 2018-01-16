@@ -1,6 +1,9 @@
 pragma(LDC_inline_ir)
     R inlineIR(string s, R, P...)(P);
 
+pragma(LDC_inline_ir)
+    R inlineIREx(string prefix, string code, string suffix, R, P...)(P);
+
 alias inlineIR!(`
     %rp = alloca i32
     %ip = alloca i32
@@ -46,6 +49,15 @@ alias inlineIR!(`
 
 alias inlineIR!(`store i32 %1, i32* %0`, void, int*, int) bar;
 
+alias inlineIREx!("", "store i32 %1, i32* %0, !nontemporal !0", "!0 = !{i32 1}", void, int*, int) nontemporalStore;
+alias inlineIREx!("!0 = !{i32 1}", "%i = load i32, i32* %0, !nontemporal !0\nret i32 %i", "", int, const int*) nontemporalLoad;
+
+void baz(const int* src, int* dst)
+{
+  auto i = nontemporalLoad(src);
+  nontemporalStore(dst, i);
+}
+
 void main()
 {
     assert(factorial(6) == 720);
@@ -61,5 +73,10 @@ void main()
     
     assert(lt(0, 1) == -1);
     assert(lt(1, 0) == 0);
+
+    int srci = 42;
+    int dsti = 0;
+    baz(&srci, &dsti);
+    assert(dsti == 42);
 }
 
