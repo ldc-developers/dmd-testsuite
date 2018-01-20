@@ -223,11 +223,6 @@ DISABLED_FAIL_TESTS += fail4611
 # discussed at DMD GitHub pull request #5390.
 DISABLED_FAIL_TESTS += ice15239
 
-# LDC: Disable -profile tests.
-DISABLED_TESTS += hello-profile
-DISABLED_TESTS += testprofile
-DISABLED_COMPILE_TESTS += diag11066
-
 # LDC: This test checks for a number of error messages, of which we only report
 # the first one. Not a bug.
 DISABLED_FAIL_TESTS += fail9418
@@ -315,6 +310,14 @@ endif
 
 # LDC doesn't define D_SIMD and wouldn't deprecate 256-bit vector types for missing `-mcpu=avx`
 DISABLED_COMPILE_TESTS += vector_types
+
+# LDC: This tests the vector codegen of DMD's backend. Unnecessarily brittle
+# (depends on objdump, etc.) and assumes that AVX/AVX2 are available on the
+# system running the tests. Covered by LLVM's CodeGen tests.
+DISABLED_TESTS += test_cdvecfill
+
+# LDC: disable DMD codegen test failing on linux-x86 with non-eliminated frame pointers
+DISABLED_SH_TESTS += test17619
 
 # LDC: Disable some pragma(crt_{con,de}structor) tests
 # - Windows: Visual C++ runtime apparently doesn't like stdout output in crt_destructor
