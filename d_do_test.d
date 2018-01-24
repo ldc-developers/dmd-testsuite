@@ -516,6 +516,8 @@ int tryMain(string[] args)
     envData.noArchVariant = environment.get("NO_ARCH_VARIANT") == "1";
 
     string result_path    = envData.results_dir ~ envData.sep;
+    version (Windows)
+        result_path = result_path.replace("/", `\`);
     string input_file     = input_dir ~ envData.sep ~ test_name ~ "." ~ test_extension;
     string output_dir     = result_path ~ input_dir;
     string output_file    = result_path ~ input_dir ~ envData.sep ~ test_name ~ "." ~ test_extension ~ ".out";
