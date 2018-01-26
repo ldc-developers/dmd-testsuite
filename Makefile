@@ -331,6 +331,9 @@ DISABLED_FAIL_TESTS += test17868
 # - slightly different requirements/semantics make LDC pass the tests
 DISABLED_FAIL_TESTS += test17868b
 
+# LDC issue #2538: runnable-extra-files-lib13742a.lst is not generated
+DISABLED_SH_TESTS += test13742
+
 # disable tests based on arch
 ifeq ($(OS),linux)
     ARCH:=$(shell uname -m)
