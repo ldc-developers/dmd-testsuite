@@ -637,12 +637,23 @@ int tryMain(string[] args)
             string compile_output;
             if (!testArgs.compileSeparately)
             {
-                string objfile = output_dir ~ envData.sep ~ test_name ~ "_" ~ to!string(i) ~ envData.obj;
-                toCleanup ~= objfile;
+                string objfilename = test_name ~ "_" ~ to!string(i) ~ envData.obj;
+                string objfilepath = output_dir ~ envData.sep ~ objfilename;
+                toCleanup ~= objfilepath;
+
+                string of = testArgs.mode == TestMode.RUN
+                    ? test_app_dmd
+                    /**
+                     * HACK: Some tests use -lib. For a relative output_dir, it is required to
+                     * pass -of=<name_without_path>.o[bj] for the static library (!) to end up
+                     * in the output_dir specified via -od, as a relative -of path for static
+                     * libs (and static libs only!) is treated as relative to the -od dir.
+                     */
+                    : (reqArgs.canFind("-lib ") || reqArgs.endsWith("-lib")
+                        ? objfilename : objfilepath);
 
                 string command = format("%s -conf= -m%s -I%s %s %s -od%s -of%s %s%s", envData.dmd, envData.model, input_dir,
-                        reqArgs, c, output_dir,
-                        (testArgs.mode == TestMode.RUN ? test_app_dmd : objfile),
+                        reqArgs, c, output_dir, of,
                         (testArgs.mode == TestMode.RUN ? "" : "-c "),
                         join(testArgs.sources, " "));
                 version (LDC) {} else version(Windows) command ~= " -map nul.map";
