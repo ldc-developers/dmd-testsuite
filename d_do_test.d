@@ -80,7 +80,6 @@ struct EnvData
     string ccompiler;
     string model;
     string required_args;
-    string dflags;
     bool dobjc;
     bool coverage_build;
     bool noArchVariant;
@@ -168,8 +167,13 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     string file = cast(string)std.file.read(input_file);
 
     findTestParameter(file, "REQUIRED_ARGS", testArgs.requiredArgs);
-    if(envData.required_args.length)
-        testArgs.requiredArgs ~= " " ~ envData.required_args;
+    if (envData.required_args.length)
+    {
+        if (testArgs.requiredArgs.length)
+            testArgs.requiredArgs ~= " " ~ envData.required_args;
+        else
+            testArgs.requiredArgs = envData.required_args;
+    }
     replaceResultsDir(testArgs.requiredArgs, envData);
 
     if (! findTestParameter(file, "PERMUTE_ARGS", testArgs.permuteArgs))
@@ -183,12 +187,12 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     }
     replaceResultsDir(testArgs.permuteArgs, envData);
 
-    // remove permute args enforced via DFLAGS env variable
-    if (envData.dflags.length && testArgs.permuteArgs.length)
+    // remove permute args enforced as required anyway
+    if (testArgs.requiredArgs.length && testArgs.permuteArgs.length)
     {
-        const dflags = split(envData.dflags);
+        const required = split(testArgs.requiredArgs);
         const newPermuteArgs = split(testArgs.permuteArgs)
-            .filter!(a => !dflags.canFind(a))
+            .filter!(a => !required.canFind(a))
             .join(" ");
         testArgs.permuteArgs = newPermuteArgs;
     }
@@ -329,11 +333,6 @@ string execute(ref File f, string command, bool expectpass, string result_path)
     auto filename = genTempFilename(result_path);
     scope(exit) removeIfExists(filename);
 
-    version (Windows)
-    {
-        command = command.replace("${RESULTS_DIR}", result_path[0 .. $-1]);
-    }
-
     auto rc = system(command ~ " > " ~ filename ~ " 2>&1");
 
     string output = readText(filename);
@@ -473,7 +472,6 @@ int main(string[] args)
     envData.ccompiler     = environment.get("CC");
     envData.model         = environment.get("MODEL");
     envData.required_args = environment.get("REQUIRED_ARGS");
-    envData.dflags        = environment.get("DFLAGS");
     envData.dobjc         = environment.get("D_OBJC") == "1";
     envData.coverage_build   = environment.get("DMD_TEST_COVERAGE") == "1";
     envData.noArchVariant = environment.get("NO_ARCH_VARIANT") == "1";
@@ -548,12 +546,11 @@ int main(string[] args)
     if (!collectExtraSources(input_dir, output_dir, testArgs.objcSources, testArgs.sources, msc, envData, "clang"))
         return 1;
 
-    writef(" ... %-30s %s%s(%s) %s",
+    writef(" ... %-30s %s%s(%s)",
             input_file,
             testArgs.requiredArgs,
             (!testArgs.requiredArgs.empty ? " " : ""),
-            testArgs.permuteArgs,
-            envData.dflags);
+            testArgs.permuteArgs);
 
     if (testArgs.disabledPlatforms.canFind(envData.os, envData.os ~ envData.model))
     {
