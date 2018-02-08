@@ -1735,6 +1735,17 @@ void test16997()
 
 ////////////////////////////////////////////////////////////////////////
 
+void test18315() // https://issues.dlang.org/show_bug.cgi?id=18315
+{
+    int i = int.min;
+    bool b = i > 0;
+    assert(!b);
+    b = 0 < i;
+    assert(!b);
+}
+
+////////////////////////////////////////////////////////////////////////
+
 int main()
 {
     testgoto();
@@ -1795,6 +1806,7 @@ int main()
     testeqeqranges();
     testdivcmp();
     test16997();
+    test18315();
     printf("Success\n");
     return 0;
 }
