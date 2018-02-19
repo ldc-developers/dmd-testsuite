@@ -4686,7 +4686,8 @@ void test10626()
     double[2] a = v[] * ++z;
     double[2] b = v[] * --z;
     double[2] c = v[] * y.u;
-    double[2] d = v[] * (x[] = 3, x[0]);
+    x[] = 3;
+    double[2] d = v[] * x[0];
     double[2] e = v[] * (v[] ~ z)[0];
 }
 
@@ -7868,7 +7869,7 @@ bool test16022()
 {
     enum Type { Colon, Comma }
     Type type;
-    return type == Type.Colon, type == Type.Comma;
+    return type == Type.Comma;
 }
 
 bool test16022_structs()
@@ -7881,7 +7882,7 @@ bool test16022_structs()
 
     enum Type { Colon = A(0, "zero"), Comma = A(1, "one") }
     Type type;
-    return type == Type.Colon, type == Type.Comma;
+    return type == Type.Comma;
 }
 
 /***************************************************/
@@ -7987,6 +7988,24 @@ void test17915()
 struct S17915(T)
 {
     T owner;
+}
+
+void test18232()
+{
+    static struct Canary
+    {
+        int x = 0x900D_900D;
+    }
+    union U
+    {
+        Canary method()
+        {
+            Canary c;
+            return c;
+        }
+    }
+    U u;
+    assert(u.method() == Canary.init);
 }
 
 /***************************************************/
@@ -8310,6 +8329,7 @@ int main()
     test16408();
     test17349();
     test17915();
+    test18232();
 
     printf("Success\n");
     return 0;

@@ -364,14 +364,7 @@ extern(C++)
     }
 }
 
-// LDC: changed from `version (OSX)`
-version (none)
-{
-    static assert(T.foo.mangleof == "__ZNK1T3fooEi");
-    static assert(T.bar.mangleof == "__ZN1T3barEi");
-    static assert(T.boo.mangleof == "__ZN1T3booE");
-}
-else version (Posix)
+version (Posix)
 {
     static assert(T.foo.mangleof == "_ZNK1T3fooEi");
     static assert(T.bar.mangleof == "_ZN1T3barEi");

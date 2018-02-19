@@ -1,5 +1,5 @@
 // REQUIRED_ARGS: -g
-// REQUIRED_ARGS(linux freebsd): -L-export-dynamic
+// REQUIRED_ARGS(linux freebsd dragonflybsd): -L-export-dynamic
 // REQUIRED_ARGS(win32): -link-debuglib
 // PERMUTE_ARGS:
 // DISABLED: osx
