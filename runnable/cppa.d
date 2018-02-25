@@ -949,7 +949,14 @@ void testeh()
             bool caught;
             try
             {
-                throwit();
+                try
+                {
+                    throwit();
+                }
+                catch (Throwable t)
+                {
+                    assert(false, "caught a Throwable, expected an std::exception");
+                }
             }
             catch (std.exception e)
             {
