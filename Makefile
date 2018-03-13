@@ -264,6 +264,19 @@ ifeq ($(OS),linux)
     DISABLED_TESTS += test36                  # dmd inline asm/Windows
   endif
 
+  ifneq (,$(filter ppc64le%,$(ARCH)))
+    DISABLED_COMPILE_TESTS += ddoc10367       # no -m32
+    DISABLED_COMPILE_TESTS += ddoc2273        # no -m32
+    DISABLED_FAIL_TESTS += diag12480          # no -m32
+    DISABLED_FAIL_TESTS += diag7420           # no -m32
+    DISABLED_FAIL_TESTS += diag9250           # no -m32
+    DISABLED_FAIL_TESTS += diag9635           # no -m32
+    DISABLED_FAIL_TESTS += fail13434_m32      # no -m32
+    DISABLED_FAIL_TESTS += fail238_m32        # no -m32
+    DISABLED_FAIL_TESTS += fail37_m32         # no -m32
+    DISABLED_FAIL_TESTS += fail80_m32         # no -m32
+  endif
+
   ifneq (,$(filter arm% aarch64% ppc64le%,$(ARCH)))
     # tell d_do_test.d to ignore MODEL
     export NO_ARCH_VARIANT=1
