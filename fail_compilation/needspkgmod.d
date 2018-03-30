@@ -1,4 +1,5 @@
-// ARG_SETS: -i=
+// LDC: exclude `-i=` (equivalent to `-i` for LDC), which links fine
+// arg_sets: -i=
 // ARG_SETS: -i=,
 // ARG_SETS: -i=imports.pkgmod313,
 // ARG_SETS: -i=,imports.pkgmod313
