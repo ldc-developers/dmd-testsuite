@@ -660,6 +660,12 @@ int tryMain(string[] args)
         testArgs.disabled = true;
         writefln("!!! [DISABLED on %s]", envData.os);
     }
+    // LDC-specific: support `DISABLED: LDC` for tests not suited for LDC
+    else if (testArgs.disabledPlatforms.canFind("LDC"))
+    {
+        testArgs.disabled = true;
+        writeln("!!! [DISABLED for LDC]");
+    }
     else
         write("\n");
 
