@@ -358,6 +358,9 @@ DISABLED_FAIL_TESTS += test17868b
 # LDC issue #2538: runnable-extra-files-lib13742a.lst is not generated
 DISABLED_SH_TESTS += test13742
 
+# LDC doesn't print the DFLAGS environment variable as part of -v output
+DISABLED_COMPILE_SH_TESTS += testclidflags
+
 # disable tests based on arch
 ifeq ($(OS),linux)
     ARCH:=$(shell uname -m)
@@ -424,6 +427,9 @@ $(RESULTS_DIR)/runnable/%.sh.out: runnable/%.sh $(RESULTS_DIR)/.created test_too
 	$(QUIET) RESULTS_DIR=$(BASH_RESULTS_DIR) ./$(<D)/$*.sh
 
 $(addsuffix .d.out,$(addprefix $(RESULTS_DIR)/compilable/,$(DISABLED_COMPILE_TESTS))): $(RESULTS_DIR)/.created
+	$(QUIET) echo " ... $@ - disabled"
+
+$(addsuffix .sh.out,$(addprefix $(RESULTS_DIR)/compilable/,$(DISABLED_COMPILE_SH_TESTS))): $(RESULTS_DIR)/.created
 	$(QUIET) echo " ... $@ - disabled"
 
 $(RESULTS_DIR)/compilable/%.d.out: compilable/%.d $(RESULTS_DIR)/.created test_tools $(DMD)
