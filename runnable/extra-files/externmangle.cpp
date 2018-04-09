@@ -205,6 +205,11 @@ unsigned long testCppLongMangle(long a, unsigned long b)
     return a + b;
 }
 
+unsigned long long testCppLongLongMangle(long long a, unsigned long long b)
+{
+    return a + b;
+}
+
 size_t testCppSizeTMangle(ptrdiff_t a, size_t b)
 {
     return a + b;

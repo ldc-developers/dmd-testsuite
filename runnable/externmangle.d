@@ -1,5 +1,7 @@
 // EXTRA_CPP_SOURCES: externmangle.cpp
 
+version (OSX) version (X86) version = OSX_X86;
+
 extern(C++):
 
 struct Foo(X)
@@ -122,20 +124,10 @@ interface Module
     public static int dim(Array!Module*);
 };
 
-ulong testlongmangle(int a, uint b, long c, ulong d);
-static import core.stdc.config;
-// FIXME: core.stdc.config.cpp_[u]long not available for 64-bit POSIX
-static if (__traits(compiles, { core.stdc.config.cpp_ulong var; }))
-{
-    alias cpp_ulong = core.stdc.config.cpp_ulong;
-    alias cpp_long = core.stdc.config.cpp_long;
-}
-else
-{
-    alias cpp_ulong = ulong;
-    alias cpp_long = long;
-}
+import core.stdc.config;
+cpp_uint64_t testlongmangle(int a, uint b, cpp_int64_t c, cpp_uint64_t d);
 cpp_ulong testCppLongMangle(cpp_long a, cpp_ulong b);
+cpp_ulonglong testCppLongLongMangle(cpp_longlong a, cpp_ulonglong b);
 size_t testCppSizeTMangle(ptrdiff_t a, size_t b);
 
 __gshared extern int[2][2][2] test31;
@@ -293,8 +285,10 @@ void main()
     arr2.dim = 20;
     assert(Module.dim(&arr2) == 20);
 
-    assert(testlongmangle(1, 2, 3, 4) == 10);
+    assert(testlongmangle(1, 2, cpp_int64_t(3), cpp_uint64_t(4)) == 10);
     assert(testCppLongMangle(cpp_long(1), cpp_ulong(2)) == 3);
+    assert(testCppLongLongMangle(cpp_longlong(3), cpp_ulonglong(4)) == 7);
+    version (OSX_X86) { /* C++ size_t is `unsigned long` */ } else
     assert(testCppSizeTMangle(3, 4) == 7);
     assert(test31 == [[[1, 1], [1, 1]], [[1, 1], [1, 1]]]);
     assert(test32 == null);
