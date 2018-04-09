@@ -568,15 +568,23 @@ Visitor2* getVisitor2()
 
 /******************************************/
 // issues detected by fuzzer
+#if __APPLE__ && _LP64
+// 64-bit macOS defines int64_t as `long long`
+typedef long d_long;
+typedef unsigned long d_ulong;
+#else
+typedef int64_t d_long;
+typedef uint64_t d_ulong;
+#endif
 
-void fuzz1_checkValues(int64_t arg10, int64_t arg11, bool arg12);
-void fuzz1_cppvararg(int64_t arg10, int64_t arg11, bool arg12)
+void fuzz1_checkValues(d_long arg10, d_long arg11, bool arg12);
+void fuzz1_cppvararg(d_long arg10, d_long arg11, bool arg12)
 {
     fuzz1_checkValues(arg10, arg11, arg12);
 }
 
-void fuzz2_checkValues(uint64_t arg10, uint64_t arg11, bool arg12);
-void fuzz2_cppvararg(uint64_t arg10, uint64_t arg11, bool arg12)
+void fuzz2_checkValues(d_ulong arg10, d_ulong arg11, bool arg12);
+void fuzz2_cppvararg(d_ulong arg10, d_ulong arg11, bool arg12)
 {
     fuzz2_checkValues(arg10, arg11, arg12);
 }
@@ -803,7 +811,7 @@ void test15802b()
 // 16536 - mangling mismatch on OSX
 
 #if defined(__APPLE__)
-uint64_t pass16536(uint64_t a)
+__UINTMAX_TYPE__ pass16536(__UINTMAX_TYPE__ a)
 {
     return a;
 }
