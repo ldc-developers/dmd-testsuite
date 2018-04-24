@@ -2,6 +2,7 @@
 // PERMUTE_ARGS:
 
 import core.time;
+import core.demangle;
 import ldc.attributes;
 
 @optStrategy("none") // LDC
@@ -102,7 +103,7 @@ void testLineNumbers(IDiaSession session, IDiaSymbol globals)
   }
   else
   {
-    IDiaSymbol funcsym = searchSymbol(globals, test15432.mangleof);
+    IDiaSymbol funcsym = searchSymbol(globals, cPrefix ~ test15432.mangleof);
     assert(funcsym, "symbol test15432 not found");
     ubyte[] funcRange;
     Line[] lines = findSymbolLineNumbers(session, funcsym, &funcRange);
