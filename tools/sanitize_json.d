@@ -111,6 +111,8 @@ void sanitizeCompilerInfo(ref JSONValue[string] buildInfo)
     removeArray(&buildInfo["platforms"]);
     removeArray(&buildInfo["architectures"]);
     removeArray(&buildInfo["predefinedVersions"]);
+    version (LDC)
+        buildInfo["interface"] = JSONValue("dmd"); // not "ldc"
 }
 void sanitizeBuildInfo(ref JSONValue[string] buildInfo)
 {
