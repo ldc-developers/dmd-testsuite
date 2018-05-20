@@ -435,7 +435,7 @@ unittest
         == `fail_compilation\diag.d(2): Error: fail_compilation\imports\fail.d must be imported`);
 }
 
-bool collectExtraSources (in string input_dir, in string output_dir, in string[] extraSources, ref string[] sources, in EnvData envData, in string compiler)
+bool collectExtraSources (in string input_dir, in string output_dir, in string[] extraSources, ref string[] sources, in EnvData envData, in string compiler, in bool objC = false)
 {
     foreach (cur; extraSources)
     {
@@ -457,6 +457,7 @@ bool collectExtraSources (in string input_dir, in string output_dir, in string[]
                 if (!envData.noArchVariant)
                     command ~= " -m"~envData.model;
                 command ~= " -c "~curSrc~" -o "~curObj;
+                version (LDC) if (!objC) command ~= " -std=c++11";
             }
         }
         else
@@ -657,7 +658,7 @@ int tryMain(string[] args)
             return 1;
     }
     //prepare objc extra sources
-    if (!collectExtraSources(input_dir, output_dir, testArgs.objcSources, testArgs.sources, envData, "clang"))
+    if (!collectExtraSources(input_dir, output_dir, testArgs.objcSources, testArgs.sources, envData, "clang", /*objC=*/true))
         return 1;
 
     writef(" ... %-30s %s%s(%s)",
