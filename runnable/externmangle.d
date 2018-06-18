@@ -133,6 +133,11 @@ version (OSX_X86)
 else
     size_t testCppSizeTMangle(ptrdiff_t a, size_t b);
 
+import core.stdc.config;
+cpp_ulong testCppLongMangle(cpp_long a, cpp_ulong b);
+cpp_ulonglong testCppLongLongMangle(cpp_longlong a, cpp_ulonglong b);
+cpp_size_t testCppSizeTMangle(cpp_ptrdiff_t a, cpp_size_t b);
+
 __gshared extern int[2][2][2] test31;
 __gshared extern int* test32;
 
