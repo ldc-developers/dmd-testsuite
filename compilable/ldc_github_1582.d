@@ -6,5 +6,5 @@ void foo() {
         return;
         return;
         dummy("foo bar");
-    } catch {}
+    } catch (Throwable) {}
 }

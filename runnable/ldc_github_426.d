@@ -15,14 +15,14 @@ void test1()
     dtor = 0;
     try {
         foreach (item; DestroyMe()) {}
-    } catch {}
+    } catch (Exception) {}
     assert(dtor == 1);
 
     dtor = 0;
     try {
         auto lvalue = DestroyMe();
         foreach (item; lvalue) {}
-    } catch {}
+    } catch (Exception) {}
     assert(dtor == 1);
 }
 
@@ -46,7 +46,7 @@ void fun(E)(lazy E exp)
 {
     try {
       exp();
-    } catch {}
+    } catch (Exception) {}
 }
 
 void test2()
