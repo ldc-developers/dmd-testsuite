@@ -1,8 +1,5 @@
 // EXTRA_CPP_SOURCES: cpp_nonpod_byval.cpp
 
-// TODO: only working for Windows MSVC targets so far
-// DISABLED: linux osx freebsd dragonflybsd
-
 extern (C) int printf(const(char)*, ...);
 
 extern (C++):
@@ -33,10 +30,14 @@ void test(T)()
 
     static if (__traits(hasMember, T, "numDtor"))
     {
-        // fooCpp param + fooD param + result => 3 T instances.
-        // There may be an additional destruction of the moved-from T literal
-        // in fooCpp, depending on in-place construction vs. move.
-        assert(T.numDtor == 3 || T.numDtor == 4);
+        // TODO: fix for Posix targets (issue #2702)
+        version (CRuntime_Microsoft)
+        {
+            // fooCpp param + fooD param + result => 3 T instances.
+            // There may be an additional destruction of the moved-from T literal
+            // in fooCpp, depending on in-place construction vs. move.
+            assert(T.numDtor == 3 || T.numDtor == 4);
+        }
     }
 }
 
