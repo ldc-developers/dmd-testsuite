@@ -122,16 +122,13 @@ interface Module
     public static int dim(Array!Module*);
 };
 
-import core.stdc.config; // for cpp_(u)long(long)
-import core.stdc.stdint : int64_t, uint64_t;
-uint64_t testlongmangle(int a, uint b, int64_t c, uint64_t d);
-cpp_ulong testCppLongMangle(cpp_long a, cpp_ulong b);
-cpp_ulonglong testCppLongLongMangle(cpp_longlong a, cpp_ulonglong b);
-version (OSX) version (X86) version = OSX_X86;
-version (OSX_X86)
-    cpp_size_t testCppSizeTMangle(cpp_ptrdiff_t a, cpp_size_t b);
+version (LDC)
+{
+    import core.stdc.stdint : int64_t, uint64_t;
+    ulong testlongmangle(int a, uint b, int64_t c, uint64_t d);
+}
 else
-    size_t testCppSizeTMangle(ptrdiff_t a, size_t b);
+    ulong testlongmangle(int a, uint b, long c, ulong d);
 
 import core.stdc.config;
 cpp_ulong testCppLongMangle(cpp_long a, cpp_ulong b);
