@@ -1,6 +1,9 @@
 // DFLAGS:
 // REQUIRED_ARGS: -defaultlib= runnable/extra-files/minimal/object.d
 
+// LDC: not implemented yet
+// DISABLED: LDC
+
 // This test ensures that interfaces and classes can be used in a minimal
 // runtime as long as they only contain static members.
 
