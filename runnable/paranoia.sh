@@ -9,11 +9,11 @@ ${OUTPUT_BASE}_2${EXE}
 
 if [ "${OS}" == "win64" -o "${MODEL}" == "32mscoff" ]; then
     echo ======== Testing Extended Precision ========
-    $DMD -m${MODEL} ${EXTRA_FILES}/paranoia.d -version=Extended ../src/dmd/root/longdouble.d -of${OUTPUT_BASE}_3${EXE}
+    $DMD -m${MODEL} ${EXTRA_FILES}/paranoia.d -version=Extended ../../../dmd/root/longdouble.d -of${OUTPUT_BASE}_3${EXE}
     ${OUTPUT_BASE}_3${EXE}
 
     echo ======== Testing ExtendedSoft Precision ========
-    $DMD -m${MODEL} ${EXTRA_FILES}/paranoia.d -version=ExtendedSoft ../src/dmd/root/longdouble.d -of${OUTPUT_BASE}_4${EXE}
+    $DMD -m${MODEL} ${EXTRA_FILES}/paranoia.d -version=ExtendedSoft ../../../dmd/root/longdouble.d -of${OUTPUT_BASE}_4${EXE}
     ${OUTPUT_BASE}_4${EXE}
 else
     echo ======== Testing Extended Precision ========
