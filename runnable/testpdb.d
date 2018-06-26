@@ -136,6 +136,13 @@ S18984 test18984(IDiaSession session, IDiaSymbol globals)
     IDiaEnumSymbols enumSymbols;
     HRESULT hr = funcsym.findChildren(SymTagEnum.SymTagNull, "s", NameSearchOptions.nsfCaseSensitive, &enumSymbols);
     enumSymbols || assert(false, funcName ~ " no children");
+  version(LDC)
+  {
+    // invalid debuginfo for NRVO variable `s`
+    // TODO: revise with LLVM 7 and llvm.dbg.addr()
+  }
+  else
+  {
     ULONG fetched;
     IDiaSymbol symbol;
     enumSymbols.Next(1, &symbol, &fetched) == S_OK || assert(false, funcName ~ " no children");
@@ -152,6 +159,7 @@ S18984 test18984(IDiaSession session, IDiaSymbol globals)
         offset == -4 || assert(false, funcName ~ " 's' not pointing to hidden argument");
 
     symbol.Release();
+  }
     enumSymbols.Release();
 
     S18984 s = S18984(1, 2, 3);
