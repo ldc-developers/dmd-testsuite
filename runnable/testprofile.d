@@ -63,6 +63,10 @@ class D10953 : C10953
 
 // ------------------
 
+version(D_InlineAsm_X86)    version = InlineAsm_X86_Any;
+version(D_InlineAsm_X86_64) version = InlineAsm_X86_Any;
+
+version(InlineAsm_X86_Any)
 void test13331() {asm {naked; ret;}}
 
 // ------------------
@@ -71,5 +75,7 @@ void main()
 {
     test1();
     test5689();
+
+    version(InlineAsm_X86_Any)
     test13331();
 }
