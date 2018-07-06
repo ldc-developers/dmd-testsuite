@@ -291,7 +291,7 @@ ifeq ($(OS),linux)
         DISABLED_FAIL_TESTS += deprecate12979d    # dmd inline asm
         DISABLED_FAIL_TESTS += fail12635          # dmd inline asm
         DISABLED_FAIL_TESTS += fail13434_m64      # no -m64
-        DISABLED_FAIL_TESTS += fail14009          # dmd inline asm
+        # already disabled above: DISABLED_FAIL_TESTS += fail14009          # dmd inline asm
         DISABLED_FAIL_TESTS += fail2350           # dmd inline asm
         DISABLED_FAIL_TESTS += fail238_m64        # no -m64
         DISABLED_FAIL_TESTS += fail327            # dmd inline asm
