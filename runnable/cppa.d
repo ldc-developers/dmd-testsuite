@@ -1561,17 +1561,11 @@ void test18966()
     i.vf();
     assert(i.x == 300);
 
-    // TODO: Allocating + constructing a C++ class with the D GC is not
-    //       supported on Posix. The returned pointer (probably from C++ ctor)
-    //       seems to be an offset and not the actual object address.
-    version (Windows)
-    {
-        auto a = new A18966;
-        assert(a.calledOverloads[0..2] == "A\0");
+    auto a = new A18966;
+    assert(a.calledOverloads[0..2] == "A\0");
 
-        auto b = new B18966;
-        assert(b.calledOverloads[0..3] == "AB\0");
-    }
+    auto b = new B18966;
+    assert(b.calledOverloads[0..3] == "AB\0");
 
     auto c = new C18966;
     assert(c.calledOverloads[0..4] == "ABC\0");
