@@ -274,6 +274,9 @@ DISABLED_SH_TESTS += test13742
 # LDC doesn't print the DFLAGS environment variable as part of -v output
 DISABLED_COMPILE_SH_TESTS += testclidflags
 
+# LDC: this test would require -link-defaultlib-shared, which isn't available with BUILD_SHARED_LIBS=OFF
+DISABLED_COMPILE_SH_TESTS += issue19243
+
 # disable tests based on arch
 ifeq ($(OS),linux)
     ARCH:=$(shell uname -m)
