@@ -936,7 +936,8 @@ void A18966::foo() { calledOverloads[i++] = 'A'; }
 B18966::B18966() { foo(); }
 void B18966::foo() { calledOverloads[i++] = 'B'; }
 
-#if _WIN32 // otherwise defined in C header files!
+// LDC: apparently defined in MSVC headers too, so disabled
+#if 0 && _WIN32 // otherwise defined in C header files!
 // https://issues.dlang.org/show_bug.cgi?id=18955
 namespace std
 {
