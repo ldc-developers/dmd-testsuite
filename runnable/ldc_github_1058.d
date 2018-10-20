@@ -1,4 +1,4 @@
-﻿align(1) struct vec3
+align(1) struct vec3
 {
     float x, y, z;
 }

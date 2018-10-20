@@ -1,4 +1,4 @@
-﻿int main() {
+int main() {
     import core.simd;
     float[16] a = 1.0;
     float4 t = 0, k = 2;

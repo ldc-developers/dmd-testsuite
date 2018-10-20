@@ -1,4 +1,4 @@
-﻿struct sockaddr
+struct sockaddr
 {
     ushort   sa_family;
     byte[14] sa_data;
@@ -39,7 +39,7 @@ struct NetworkAddress {
         sockaddr_in addr_ip4;
         sockaddr_in6 addr_ip6;
     }
-} 
+}
 
 interface InputStream { }
 
@@ -52,13 +52,13 @@ interface Stream : InputStream, OutputStream { }
 interface TCPConnection : Stream { }
 
 class Libevent2TCPConnection : TCPConnection {
-    // if m_localAddress or m_removeAddress is removed, 
+    // if m_localAddress or m_removeAddress is removed,
     //  the segfault disappears
     NetworkAddress m_localAddress, m_remoteAddress;
 }
 
 void main() {
-    // use auto or Libevent2TCPConnection instead of TCPConnection 
+    // use auto or Libevent2TCPConnection instead of TCPConnection
     //  and the segfault disappears.
     TCPConnection conn = new Libevent2TCPConnection();
     Stream s = conn;

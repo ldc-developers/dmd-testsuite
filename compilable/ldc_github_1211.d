@@ -1,4 +1,4 @@
-﻿struct Foo
+struct Foo
 {
     long baz;
 }
