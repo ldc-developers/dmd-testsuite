@@ -38,23 +38,16 @@ void main(string[] args)
 
       version(LDC)
       {
-        IDiaSymbol excsym = searchSymbol(globals, "object::Exception");
-        testSymbolHasChildren(excsym, "object::Exception");
+        IDiaSymbol excsym = searchSymbol(globals, "object.Exception");
+        testSymbolHasChildren(excsym, "object.Exception");
         excsym.Release();
-
-        IDiaSymbol ticksym = searchSymbol(globals, "core.time::TickDuration");
-        testSymbolHasChildren(ticksym, "core.time::TickDuration");
-        ticksym.Release();
-
-        IDiaSymbol ctsym = searchSymbol(globals, "core.time::ClockType");
-        testSymbolHasChildren(ctsym, "core.time::ClockType");
-        ctsym.Release();
       }
       else
       {
         IDiaSymbol objsym = searchSymbol(globals, "object.Object");
         testSymbolHasChildren(objsym, "object.Object");
         objsym.Release();
+      }
 
         IDiaSymbol ticksym = searchSymbol(globals, "core.time.TickDuration");
         testSymbolHasChildren(ticksym, "core.time.TickDuration");
@@ -63,7 +56,6 @@ void main(string[] args)
         IDiaSymbol ctsym = searchSymbol(globals, "core.time.ClockType");
         testSymbolHasChildren(ctsym, "core.time.ClockType");
         ctsym.Release();
-      }
 
         testLineNumbers(session, globals);
 
@@ -138,14 +130,7 @@ struct S18984
 
 S18984 test18984(IDiaSession session, IDiaSymbol globals)
 {
-  version(LDC)
-  {
-    enum funcName = "testpdb::test18984";
-  }
-  else
-  {
     enum funcName = "testpdb.test18984";
-  }
     IDiaSymbol funcsym = searchSymbol(globals, funcName);
     funcsym || assert(false, funcName ~ " not found");
     IDiaEnumSymbols enumSymbols;
