@@ -157,13 +157,19 @@ version (Posix_X86_64)
 
         chkArgTypes!(int[3], long, int)();
 
+        struct S12 { align(16) int a; }
+        version (DigitalMars)
+            chkArgTypes!(S12, int)();
+        else
+            chkArgTypes!(S12, long)();
+
         version (DigitalMars)
         {
         }
         else
         {
-            struct S12 { short a; cfloat b; }
-            chkArgTypes!(S12, long, float)();
+            struct S13 { short a; cfloat b; }
+            chkArgTypes!(S13, long, float)();
 
             struct S13957 { double a; ulong b; }
             chkArgTypes!(S13957, double, long)();
