@@ -691,7 +691,6 @@ int tryMain(string[] args)
     // allows partial matching, e.g. win for both win32 and win64
     if (testArgs.disabled)
         writefln("!!! [DISABLED on %s]", envData.os);
-    }
     // LDC-specific: support `DISABLED: LDC` for tests not suited for LDC
     else if (testArgs.disabledPlatforms.canFind("LDC"))
     {
