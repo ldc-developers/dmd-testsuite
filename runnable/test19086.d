@@ -5,6 +5,7 @@
 
 void run19086()
 {
+	version (LDC) pragma(inline, false);
 	long x = 1;
 	int y = 0;
 #line 20
