@@ -10,7 +10,7 @@ void main(string[] args)
 {
     // https://issues.dlang.org/show_bug.cgi?id=4014
     // -gf should drag in full definitions of Object, TickDuration and ClockType
-  version(LDC)
+  version (LDC)
   {
     // `Object` has no explicit fields; DMD emits debuginfos about methods which LDC doesn't.
     // So use `Exception` with fields instead.
@@ -36,7 +36,7 @@ void main(string[] args)
 
         // dumpSymbols(globals, SymTagEnum.SymTagNull, null, 0);
 
-      version(LDC)
+      version (LDC)
       {
         IDiaSymbol excsym = searchSymbol(globals, "object.Exception");
         testSymbolHasChildren(excsym, "object.Exception");
@@ -98,7 +98,7 @@ void testSymbolHasChildren(IDiaSymbol sym, string name)
 
 void testLineNumbers(IDiaSession session, IDiaSymbol globals)
 {
-  version(LDC)
+  version (LDC)
   {
     // The function's pretty name (LLVM DI name) shows up instead of its mangled
     // name (LLVM DI linkage name).
@@ -138,7 +138,7 @@ S18984 test18984(IDiaSession session, IDiaSymbol globals)
     IDiaEnumSymbols enumSymbols;
     HRESULT hr = funcsym.findChildren(SymTagEnum.SymTagNull, "s", NameSearchOptions.nsfCaseSensitive, &enumSymbols);
     enumSymbols || assert(false, funcName ~ " no children");
-  version(LDC)
+  version (LDC)
   {
     // invalid debuginfo for NRVO variable `s`
   }
@@ -241,6 +241,12 @@ void test19307(IDiaSession session, IDiaSymbol globals)
 {
     foo19307();
 
+  version (LDC)
+  {
+    // different debuginfo emission
+  }
+  else
+  {
     testClosureVar(globals, "testpdb.foo19307", "__closptr", "x");
     testClosureVar(globals, "testpdb.foo19307.nested", "__capture", "x");
     testClosureVar(globals, "testpdb.foo19307.nested", "__closptr", "y");
@@ -249,6 +255,7 @@ void test19307(IDiaSession session, IDiaSymbol globals)
     testClosureVar(globals, "testpdb.Struct.foo", "__closptr", "this", "member");
     testClosureVar(globals, "testpdb.Struct.foo.nested", "__capture", "localOfMethod");
     testClosureVar(globals, "testpdb.Struct.foo.nested", "__capture", "__chain", "member");
+  }
 }
 
 ///////////////////////////////////////////////
@@ -272,11 +279,18 @@ void test19318(IDiaSession session, IDiaSymbol globals)
 {
     foo19318(5);
 
+  version (LDC)
+  {
+    // different debuginfo emission
+  }
+  else
+  {
     testClosureVar(globals, "testpdb.foo19318", "x");
     testClosureVar(globals, "testpdb.foo19318.nested", "__capture", "x");
     testClosureVar(globals, "testpdb.foo19318.nested", "__capture", "z");
     testClosureVar(globals, "testpdb.foo19318.nested.nested2", "__capture", "x");
     testClosureVar(globals, "testpdb.foo19318.nested.nested2", "__capture", "z");
+  }
 }
 
 ///////////////////////////////////////////////
