@@ -260,9 +260,8 @@ DISABLED_SH_TESTS += test17619
 # - Windows: Visual C++ runtime apparently doesn't like stdout output in crt_destructor
 ifeq ($(findstring win,$(OS)),win)
     DISABLED_TESTS += test17868
+    DISABLED_TESTS += test17868b
 endif
-# - unsupported advanced usages
-DISABLED_TESTS += test17868b
 # - different error messages (as LDC allows for a single optional integer argument (priority))
 DISABLED_FAIL_TESTS += test17868
 # - slightly different requirements/semantics make LDC pass the tests
