@@ -291,7 +291,8 @@ class C19318
             x++;
             C19318_px = &x;
             y++;
-            version(D_InlineAsm_X86_64)
+            version (LDC) {}
+            else version(D_InlineAsm_X86_64)
                 asm
                 {
                     mov RAX,__capture;
