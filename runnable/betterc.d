@@ -23,7 +23,12 @@ void test1()
 
 void test2(int[] a1, int[] a2)
 {
-    a1[] = a2[];
+    version (LDC)
+    {
+        // FIXME: _d_array_slice_copy druntime call
+    }
+    else
+        a1[] = a2[];
 }
 
 /*******************************************/
