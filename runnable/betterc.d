@@ -1,4 +1,5 @@
-/* REQUIRED_ARGS: -betterC
+/* LDC: additional -disable-linker-strip-dead, as not all functions are called
+   REQUIRED_ARGS: -betterC -disable-linker-strip-dead
    PERMUTE_ARGS:
  */
 
