@@ -2,6 +2,7 @@
 // EXTRA_CPP_SOURCES: cpp_stdlib.cpp
 // CXXFLAGS: -std=c++11
 // CXXFLAGS(osx): -stdlib=libc++
+// REQUIRED_ARGS(osx): -L-lc++
 import core.stdc.stdio;
 
 // Disabled on windows because it needs bindings
