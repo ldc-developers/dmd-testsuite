@@ -695,31 +695,20 @@ void test34()
 
 /************************************************/
 
-version(D_InlineAsm_X86_64) version = DMD_InlineAsm;
-version(D_InlineAsm_X86) version = DMD_InlineAsm;
-
 void foo35()
 {
-        uint a;
-        uint b;
-        uint c;
-        extern (Windows) int function(int i, int j, int k) xxx;
+    uint a;
+    uint b;
+    uint c;
+    extern (Windows) int function(int i, int j, int k) xxx;
 
-        a = 1;
-        b = 2;
-        c = 3;
+    a = 1;
+    b = 2;
+    c = 3;
 
-        xxx = cast(typeof(xxx))(a + b);
-	version (DMD_InlineAsm)
-        asm { int 3; }
-        else version (LDC)
-        {
-            import ldc.intrinsics;
-            llvm_debugtrap();
-        }
-        else
-            assert(false);
-        xxx( 4, 5, 6 );
+    xxx = cast(typeof(xxx))(a + b);
+    throw new Exception("xxx");
+    xxx( 4, 5, 6 );
 }
 
 void test35()
