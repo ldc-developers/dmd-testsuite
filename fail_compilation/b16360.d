@@ -1,4 +1,5 @@
 /*
+DISABLED: LDC
 REQUIRED_ARGS: -inline
 
 TEST_OUTPUT:
