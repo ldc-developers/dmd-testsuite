@@ -375,7 +375,8 @@ $(RESULTS_DIR)/.created:
 	$(QUIET)if [ ! -d $(RESULTS_DIR)/fail_compilation ]; then mkdir $(RESULTS_DIR)/fail_compilation; fi
 	$(QUIET)touch $(RESULTS_DIR)/.created
 
-run_tests: unit_tests start_runnable_tests start_compilable_tests start_fail_compilation_tests
+# LDC FIXME: Omit unit_tests, the runner isn't flexible enough yet to be run outside the DMD src tree
+run_tests: start_runnable_tests start_compilable_tests start_fail_compilation_tests
 
 unit_tests: $(RESULTS_DIR)/unit_test_runner$(EXE)
 	@echo "Running unit tests"
