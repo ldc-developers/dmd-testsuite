@@ -321,7 +321,7 @@ runnable_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(runnable_te
 compilable_tests=$(wildcard compilable/*.d) $(wildcard compilable/*.sh)
 compilable_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(compilable_tests)))
 
-fail_compilation_tests=$(wildcard fail_compilation/*.d) $(wildcard fail_compilation/*.html)
+fail_compilation_tests=$(wildcard fail_compilation/*.d) $(wildcard fail_compilation/*.sh) $(wildcard fail_compilation/*.html)
 fail_compilation_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(fail_compilation_tests)))
 
 all: run_tests
@@ -363,8 +363,8 @@ $(RESULTS_DIR)/.created:
 
 run_tests: start_runnable_tests start_compilable_tests start_fail_compilation_tests
 
-# LDC: Try to test long-running runnable/xtest46.d as soon as possible for better parallelization
-run_runnable_tests: $(RESULTS_DIR)/runnable/xtest46.d.out $(runnable_test_results)
+# start long-running tests as soon as possible for better parallelization
+run_runnable_tests: $(RESULTS_DIR)/runnable/sdtor.d.out $(RESULTS_DIR)/runnable/xtest46.d.out $(RESULTS_DIR)/runnable/test9259.d.out $(RESULTS_DIR)/runnable/test12.d.out $(RESULTS_DIR)/runnable/test17338.d.out $(RESULTS_DIR)/runnable/link2644.d.out $(runnable_test_results)
 
 start_runnable_tests: $(RESULTS_DIR)/.created $(test_tools)
 	@echo "Running runnable tests"
@@ -376,11 +376,17 @@ start_compilable_tests: $(RESULTS_DIR)/.created $(test_tools)
 	@echo "Running compilable tests"
 	$(QUIET)$(MAKE) $(DMD_TESTSUITE_MAKE_ARGS) --no-print-directory run_compilable_tests
 
-run_fail_compilation_tests: $(fail_compilation_test_results)
+run_fail_compilation_tests: $(RESULTS_DIR)/fail_compilation/fail12485.sh.out $(fail_compilation_test_results)
 
 start_fail_compilation_tests: $(RESULTS_DIR)/.created $(test_tools)
 	@echo "Running fail compilation tests"
 	$(QUIET)$(MAKE) $(DMD_TESTSUITE_MAKE_ARGS) --no-print-directory run_fail_compilation_tests
+
+run_all_tests: run_runnable_tests run_compilable_tests run_fail_compilation_tests
+
+start_all_tests: $(RESULTS_DIR)/.created $(test_tools)
+	@echo "Running all tests"
+	$(QUIET)$(MAKE) $(DMD_TESTSUITE_MAKE_ARGS) --no-print-directory run_all_tests
 
 $(RESULTS_DIR)/d_do_test$(EXE): tools/d_do_test.d $(RESULTS_DIR)/.created
 	@echo "Building d_do_test tool"
