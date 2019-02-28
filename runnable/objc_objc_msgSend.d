@@ -1,3 +1,4 @@
+// DISABLED: LDC
 // EXTRA_OBJC_SOURCES: objc_objc_msgSend.m
 // REQUIRED_ARGS: -L-framework -LFoundation
 
