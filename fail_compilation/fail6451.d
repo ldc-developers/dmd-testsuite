@@ -1,20 +1,9 @@
-version(Win64)
-{
-    static assert(0);
-}
-else version(DigitalMars)
-{
-    version(X86_64)
-    {
-        void error(...){}
-    }
-    else
-    {
-        static assert(0);
-    }
-}
-else
-{
-    static assert(0);
-}
+/*
+DISABLED: win32 win64 linux32 osx32 freebsd32 LDC
+TEST_OUTPUT:
+---
+fail_compilation/fail6451.d(9): Error: `__va_list_tag` is not defined, perhaps `import core.stdc.stdarg;` ?
+---
+*/
 
+void error(...){}

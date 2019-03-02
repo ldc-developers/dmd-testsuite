@@ -1,8 +1,13 @@
 
 // REQUIRED_ARGS: -m64
-// fail_compilation/test13698.d(12): Error: constant expression expected, not cast(void)b
-
 // https://issues.dlang.org/show_bug.cgi?id=13698
+/*
+DISABLED: LDC
+TEST_OUTPUT:
+---
+fail_compilation/test13698.d(16): Error: constant expression expected, not `cast(void)b`
+---
+*/
 
 import core.simd;
 

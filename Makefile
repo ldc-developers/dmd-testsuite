@@ -273,6 +273,9 @@ DISABLED_SH_TESTS += test13742
 # LDC doesn't print the DFLAGS environment variable as part of -v output
 DISABLED_COMPILE_SH_TESTS += testclidflags
 
+# LDC: these advanced CLI tests are too DMD-specific for LDMD
+DISABLED_COMPILE_SH_TESTS += dmdcliflags
+
 # LDC: this test would require -link-defaultlib-shared, which isn't available with BUILD_SHARED_LIBS=OFF
 DISABLED_COMPILE_SH_TESTS += issue19243
 
@@ -315,13 +318,33 @@ DEBUG_FLAGS=$(PIC_FLAG) -g
 
 export DMD_TEST_COVERAGE=
 
-runnable_tests=$(wildcard runnable/*.d) $(wildcard runnable/*.sh)
+# List the tests that take longest to run first, so that parallel make
+# will test them sooner, because they are large, have many test
+# permutations, or typically are the last tests to finish.
+runnable_tests_long=runnable/test42.d \
+		    runnable/xtest46.d \
+		    runnable/test34.d \
+		    runnable/test23.d \
+		    runnable/hospital.d \
+		    runnable/testsignals.d \
+		    runnable/interpret.d \
+		    runnable/sdtor.d \
+		    runnable/test9259.d \
+		    runnable/test12.d \
+		    runnable/test17338.d \
+		    runnable/link2644.d
+
+runnable_tests=$(runnable_tests_long) $(wildcard runnable/*.d) $(wildcard runnable/*.sh)
 runnable_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(runnable_tests)))
 
 compilable_tests=$(wildcard compilable/*.d) $(wildcard compilable/*.sh)
 compilable_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(compilable_tests)))
 
-fail_compilation_tests=$(wildcard fail_compilation/*.d) $(wildcard fail_compilation/*.sh) $(wildcard fail_compilation/*.html)
+fail_compilation_tests_long=fail_compilation/fail12485.sh
+fail_compilation_tests=$(fail_compilation_tests_long) \
+		    $(wildcard fail_compilation/*.d) \
+		    $(wildcard fail_compilation/*.sh) \
+		    $(wildcard fail_compilation/*.html)
 fail_compilation_test_results=$(addsuffix .out,$(addprefix $(RESULTS_DIR)/,$(fail_compilation_tests)))
 
 all: run_tests
@@ -361,10 +384,14 @@ $(RESULTS_DIR)/.created:
 	$(QUIET)if [ ! -d $(RESULTS_DIR)/fail_compilation ]; then mkdir $(RESULTS_DIR)/fail_compilation; fi
 	$(QUIET)touch $(RESULTS_DIR)/.created
 
+# LDC FIXME: Omit unit_tests, the runner isn't flexible enough yet to be run outside the DMD src tree
 run_tests: start_runnable_tests start_compilable_tests start_fail_compilation_tests
 
-# start long-running tests as soon as possible for better parallelization
-run_runnable_tests: $(RESULTS_DIR)/runnable/sdtor.d.out $(RESULTS_DIR)/runnable/xtest46.d.out $(RESULTS_DIR)/runnable/test9259.d.out $(RESULTS_DIR)/runnable/test12.d.out $(RESULTS_DIR)/runnable/test17338.d.out $(RESULTS_DIR)/runnable/link2644.d.out $(runnable_test_results)
+unit_tests: $(RESULTS_DIR)/unit_test_runner$(EXE)
+	@echo "Running unit tests"
+	$<
+
+run_runnable_tests: $(runnable_test_results)
 
 start_runnable_tests: $(RESULTS_DIR)/.created $(test_tools)
 	@echo "Running runnable tests"
@@ -376,12 +403,13 @@ start_compilable_tests: $(RESULTS_DIR)/.created $(test_tools)
 	@echo "Running compilable tests"
 	$(QUIET)$(MAKE) $(DMD_TESTSUITE_MAKE_ARGS) --no-print-directory run_compilable_tests
 
-run_fail_compilation_tests: $(RESULTS_DIR)/fail_compilation/fail12485.sh.out $(fail_compilation_test_results)
+run_fail_compilation_tests: $(fail_compilation_test_results)
 
 start_fail_compilation_tests: $(RESULTS_DIR)/.created $(test_tools)
 	@echo "Running fail compilation tests"
 	$(QUIET)$(MAKE) $(DMD_TESTSUITE_MAKE_ARGS) --no-print-directory run_fail_compilation_tests
 
+# LDC FIXME: Omit unit_tests, the runner isn't flexible enough yet to be run outside the DMD src tree
 run_all_tests: run_runnable_tests run_compilable_tests run_fail_compilation_tests
 
 start_all_tests: $(RESULTS_DIR)/.created $(test_tools)
@@ -403,3 +431,9 @@ $(RESULTS_DIR)/sanitize_json$(EXE): tools/sanitize_json.d $(RESULTS_DIR)/.create
 	@echo "PIC: '$(PIC_FLAG)'"
 	$(DMD) -conf= $(MODEL_FLAG) $(DEBUG_FLAGS) -od$(RESULTS_DIR) -of$(RESULTS_DIR)$(DSEP)sanitize_json$(EXE) -i $<
 
+$(RESULTS_DIR)/unit_test_runner$(EXE): tools/unit_test_runner.d $(RESULTS_DIR)/.created | $(DMD)
+	@echo "Building unit_test_runner tool"
+	@echo "OS: '$(OS)'"
+	@echo "MODEL: '$(MODEL)'"
+	@echo "PIC: '$(PIC_FLAG)'"
+	$(DMD) -conf= $(MODEL_FLAG) $(DEBUG_FLAGS) -od$(RESULTS_DIR) -of$(RESULTS_DIR)$(DSEP)unit_test_runner$(EXE) -i $<

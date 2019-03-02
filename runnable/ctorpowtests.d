@@ -1,36 +1,20 @@
 // PERMUTE_ARGS:
 
-version (D_InlineAsm_X86)
-    version = DMD_InlineAsm;
-else version (D_InlineAsm_X86_64)
-    version = DMD_InlineAsm;
-else
-{
-   version = LDC_InlineAsm;
-   import ldc.llvmasm;
-}
-
-
 int magicVariable()
 {
-  if (__ctfe)
-   return 3;
+    if (__ctfe)
+        return 3;
 
-  version (DMD_InlineAsm)
-  asm { nop; }
-  else version (LDC_InlineAsm)
-      __asm("", "");
-  else
-    static assert(0, "Unsupported platform");
-  return 2;
+    shared int var = 2;
+    return var;
 }
 
 static assert(magicVariable()==3);
 
 void main()
 {
-  assert(!__ctfe);
-  assert(magicVariable()==2);
+    assert(!__ctfe);
+    assert(magicVariable()==2);
 }
 
 // https://issues.dlang.org/show_bug.cgi?id=991 -- invalid.
@@ -128,15 +112,19 @@ struct StructWithCtor
     float x;
 }
 
-int containsAsm() {
-       version (DMD_InlineAsm)
-       asm { nop; }
-       else version (LDC_InlineAsm)
-           __asm("", "");
-       else
-           static assert(0, "Unsupported inline asm");
-       return 0;
+int containsAsm()
+{
+    version (D_InlineAsm_X86)
+        asm { nop; }
+    else version (D_InlineAsm_X86_64)
+        asm { nop; }
+    else version (LDC)
+    {
+        import ldc.llvmasm;
+        __asm("", "");
     }
+    return 0;
+}
 
 enum A = StructWithCtor(1);
 enum B = StructWithCtor(7, 2.3);

@@ -1,5 +1,5 @@
 /*
-LDC: 2nd output line (`run 'dmd -man' to open browser on manual`) removed
+LDC: no additional output lines (`run `dmd` to print the compiler manual`, `run 'dmd -man' to open browser on manual`)
 REQUIRED_ARGS: -run test.exe
 TEST_OUTPUT:
 ---

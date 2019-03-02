@@ -1,3 +1,4 @@
+// DISABLED: LDC
 // EXTRA_OBJC_SOURCES: objc_objc_msgSend.m
 // REQUIRED_ARGS: -L-framework -LFoundation
 
@@ -9,7 +10,7 @@ struct Struct
 }
 
 extern (Objective-C)
-interface Class
+class Class
 {
     stret alloc_stret() @selector("alloc");
     fp2ret alloc_fp2ret() @selector("alloc");
@@ -19,7 +20,7 @@ interface Class
 }
 
 extern (Objective-C)
-interface stret
+class stret
 {
     stret init() @selector("init");
     Struct getValue() @selector("getValue");
@@ -27,7 +28,7 @@ interface stret
 }
 
 extern (Objective-C)
-interface fp2ret
+class fp2ret
 {
     fp2ret init() @selector("init");
     creal getValue() @selector("getValue");
@@ -35,7 +36,7 @@ interface fp2ret
 }
 
 extern (Objective-C)
-interface fpret
+class fpret
 {
     fpret init() @selector("init");
     real getValue() @selector("getValue");
@@ -43,7 +44,7 @@ interface fpret
 }
 
 extern (Objective-C)
-interface float32
+class float32
 {
     float32 init() @selector("init");
     float getValue() @selector("getValue");
@@ -51,7 +52,7 @@ interface float32
 }
 
 extern (Objective-C)
-interface double64
+class double64
 {
     double64 init() @selector("init");
     double getValue() @selector("getValue");
