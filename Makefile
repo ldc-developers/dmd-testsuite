@@ -243,6 +243,7 @@ DISABLED_FAIL_TESTS += fix17751
 # LDC: Windows-specific test relying on DMD section-bracketing symbols
 ifeq ($(findstring win,$(OS)),win)
     DISABLED_TESTS += testptrref
+    DISABLED_TESTS += testptrref_gc
 endif
 
 # LDC doesn't define D_SIMD and wouldn't deprecate 256-bit vector types for missing `-mcpu=avx`
