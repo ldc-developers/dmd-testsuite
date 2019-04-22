@@ -6,6 +6,7 @@ version(LDC) version(CRuntime_Microsoft) version = LDC_MSVC;
 import std.algorithm;
 import std.array;
 import std.conv;
+import std.datetime.stopwatch;
 import std.exception;
 import std.file;
 import std.format;
@@ -43,6 +44,7 @@ void usage()
           ~ "      RESULTS_DIR:   base directory for test results\n"
           ~ "      MODEL:         32 or 64 (required)\n"
           ~ "      AUTO_UPDATE:   set to 1 to auto-update mismatching test output\n"
+          ~ "      PRINT_RUNTIME: set to 1 to print test runtime\n"
           ~ "\n"
           ~ "   windows vs non-windows portability env vars:\n"
           ~ "      DSEP:          \\\\ or /\n"
@@ -142,8 +144,13 @@ bool findTestParameter(const ref EnvData envData, string file, string token, ref
     string result2;
     if (findTestParameter(envData, file[tokenStart+lineEnd..$], token, result2, multiLineDelimiter))
     {
-        if(result2.length > 0)
-            result ~= multiLineDelimiter ~ result2;
+        if (result2.length > 0)
+        {
+            if (result.length == 0)
+                result = result2;
+            else
+                result ~= multiLineDelimiter ~ result2;
+        }
     }
 
     // fix-up separators
@@ -483,7 +490,7 @@ bool collectExtraSources (in string input_dir, in string output_dir, in string[]
                 command ~= " -m"~envData.model;
             command ~= " -c "~curSrc~" -o "~curObj;
         }
-        if (compiler == "c++" && cxxflags)
+        if (cxxflags)
             command ~= " " ~ cxxflags;
 
         auto rc = system(command);
@@ -637,6 +644,11 @@ int tryMain(string[] args)
 
     envData.usingMicrosoftCompiler = envData.ccompiler.toLower.endsWith("cl.exe");
 
+    const printRuntime = environment.get("PRINT_RUNTIME", "") == "1";
+    auto stopWatch = StopWatch(AutoStart.no);
+    if (printRuntime)
+        stopWatch.start();
+
     if (!gatherTestParameters(testArgs, input_dir, input_file, envData))
         return 0;
 
@@ -697,23 +709,18 @@ int tryMain(string[] args)
     {
         // DragonFlyBSD is x86_64 only, instead of adding DISABLED to a lot of tests, just exclude them from running
         if (testArgs.requiredArgs.canFind("-m32"))
-        {
             testArgs.disabled = true;
-            writefln("!!! [Skipping -m32 on %s]", envData.os);
-        }
     }
 
     // allows partial matching, e.g. win for both win32 and win64
     if (testArgs.disabled)
-        writefln("!!! [DISABLED on %s]", envData.os);
+        writef("!!! [DISABLED on %s]", envData.os);
     // LDC-specific: support `DISABLED: LDC` for tests not suited for LDC
     else if (testArgs.disabledPlatforms.canFind("LDC"))
     {
         testArgs.disabled = true;
-        writeln("!!! [DISABLED for LDC]");
+        write("!!! [DISABLED for LDC]");
     }
-    else
-        write("\n");
 
     removeIfExists(output_file);
 
@@ -879,7 +886,10 @@ int tryMain(string[] args)
         {
             // it failed but it was disabled, exit as if it was successful
             if (testArgs.disabled)
+            {
+                writeln();
                 return Result.return0;
+            }
 
             if (envData.autoUpdate)
             if (auto ce = cast(CompareException) e)
@@ -892,11 +902,11 @@ int tryMain(string[] args)
                 if (existingText != updatedText)
                 {
                     std.file.write(input_file, updatedText);
-                    writefln("==> `TEST_OUTPUT` of %s has been updated", input_file);
+                    writefln("\n==> `TEST_OUTPUT` of %s has been updated", input_file);
                 }
                 else
                 {
-                    writefln("WARNING: %s has multiple `TEST_OUTPUT` blocks and can't be auto-updated", input_file);
+                    writefln("\nWARNING: %s has multiple `TEST_OUTPUT` blocks and can't be auto-updated", input_file);
                 }
                 return Result.return0;
             }
@@ -906,7 +916,7 @@ int tryMain(string[] args)
             f.writeln(e.msg);
             f.close();
 
-            writefln("Test %s failed.  The logged output:", input_file);
+            writefln("\nTest %s failed.  The logged output:", input_file);
             auto outputText = output_file.readText;
             writeln(outputText);
             output_file.remove();
@@ -956,6 +966,14 @@ int tryMain(string[] args)
         if(autoCompileImports || testArgs.compiledImports.length == 0)
             break;
     }
+
+    if (printRuntime)
+    {
+        const long ms = stopWatch.peek.total!"msecs";
+        writefln("   [%.3f secs]", ms / 1000.0);
+    }
+    else
+        writeln();
 
     // it was disabled but it passed! print an informational message
     if (testArgs.disabled)
