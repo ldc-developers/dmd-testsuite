@@ -2,7 +2,7 @@
 REQUIRED_ARGS: -o-
 PERMUTE_ARGS:
 TEST_OUTPUT:
-DISABLED: freebsd32 linux32 osx32 win32
+DISABLED: LDC freebsd32 linux32 osx32 win32
 ---
 fail_compilation/vector_types.d(16): Error: 32 byte vector type `__vector(double[4])` is not supported on this platform
 fail_compilation/vector_types.d(17): Error: 32 byte vector type `__vector(float[8])` is not supported on this platform
