@@ -136,6 +136,8 @@ void testLineNumbers15432(IDiaSession session, IDiaSymbol globals)
 
 void testLineNumbers19747(IDiaSession session, IDiaSymbol globals)
 {
+  version (LDC) {} else
+  {
     IDiaSymbol funcsym = searchSymbol(globals, cPrefix ~ test19747.mangleof);
     assert(funcsym, "symbol test19747 not found");
     ubyte[] funcRange;
@@ -147,6 +149,7 @@ void testLineNumbers19747(IDiaSession session, IDiaSymbol globals)
     foreach(ln; lines)
         found = found || ln.line == lineScopeExitTest19747;
     assert(found);
+  }
 }
 
 int test19719()
@@ -166,12 +169,19 @@ void testLineNumbers19719(IDiaSession session, IDiaSymbol globals)
 
     test19719();
 
+  version (LDC)
+  {
+    // LDC_FIXME: issue #3015
+  }
+  else
+  {
     //dumpLineNumbers(lines, funcRange);
     wstring mixinfile = "testpdb.mixin";
     bool found = false;
     foreach(ln; lines)
         found = found || (ln.srcfile.length >= mixinfile.length && ln.srcfile[$-mixinfile.length .. $] == mixinfile);
     assert(found);
+  }
 }
 
 
