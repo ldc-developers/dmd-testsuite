@@ -1,4 +1,5 @@
-// REQUIRED_ARGS: -gf -mixin=${RESULTS_DIR}/runnable/testpdb.mixin
+// LDC: add -disable-linker-strip-dead
+// REQUIRED_ARGS: -gf -mixin=${RESULTS_DIR}/runnable/testpdb.mixin -disable-linker-strip-dead
 // PERMUTE_ARGS:
 
 import core.time;
@@ -111,15 +112,6 @@ void testSymbolHasChildren(IDiaSymbol sym, string name)
 
 void testLineNumbers15432(IDiaSession session, IDiaSymbol globals)
 {
-  version (LDC)
-  {
-    // The function's pretty name (LLVM DI name) shows up instead of its mangled
-    // name (LLVM DI linkage name).
-    // The code below doesn't find the symbol even when using the pretty name;
-    // the code byte tests are DMD-specific.
-  }
-  else
-  {
     IDiaSymbol funcsym = searchSymbol(globals, cPrefix ~ test15432.mangleof);
     assert(funcsym, "symbol test15432 not found");
     ubyte[] funcRange;
@@ -128,6 +120,8 @@ void testLineNumbers15432(IDiaSession session, IDiaSymbol globals)
 
     //dumpLineNumbers(lines, funcRange);
 
+  version (LDC) {} else
+  {
     assert (lines[$-1].line == lineAfterTest15432 - 1);
     ubyte codeByte = lines[$-1].addr[0];
     assert(codeByte == 0x48 || codeByte == 0x5d || codeByte == 0xc3); // should be one of "mov rsp,rbp", "pop rbp" or "ret"
@@ -136,8 +130,6 @@ void testLineNumbers15432(IDiaSession session, IDiaSymbol globals)
 
 void testLineNumbers19747(IDiaSession session, IDiaSymbol globals)
 {
-  version (LDC) {} else
-  {
     IDiaSymbol funcsym = searchSymbol(globals, cPrefix ~ test19747.mangleof);
     assert(funcsym, "symbol test19747 not found");
     ubyte[] funcRange;
@@ -145,6 +137,8 @@ void testLineNumbers19747(IDiaSession session, IDiaSymbol globals)
     assert(lines, "no line number info for test19747");
 
     //dumpLineNumbers(lines, funcRange);
+  version (LDC) {} else
+  {
     bool found = false;
     foreach(ln; lines)
         found = found || ln.line == lineScopeExitTest19747;
