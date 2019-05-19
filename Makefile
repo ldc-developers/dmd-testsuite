@@ -164,11 +164,6 @@ DISABLED_FAIL_TESTS += ice15239
 # the first one. Not a bug.
 DISABLED_FAIL_TESTS += fail9418
 
-# LDC: These tests fail due to a slight difference in the reported error message
-# caused by the different contract invocation scheme used in LDC.
-DISABLED_FAIL_TESTS += fail9414a
-DISABLED_FAIL_TESTS += fail9414b
-
 # LDC_FIXME: Don't disable whole asm tests, only DMD-specific parts.
 DISABLED_TESTS += iasm
 DISABLED_TESTS += iasm64
