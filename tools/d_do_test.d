@@ -681,11 +681,9 @@ int tryMain(string[] args)
         switch (envData.compiler)
         {
             case "dmd":
+            case "ldc":
                 if(envData.os != "windows")
                    testArgs.requiredArgs ~= " -L-lstdc++ -L--no-demangle";
-                break;
-            case "ldc":
-                testArgs.requiredArgs ~= " -L-lstdc++ -L--no-demangle";
                 break;
             case "gdc":
                 testArgs.requiredArgs ~= "-Xlinker -lstdc++ -Xlinker --no-demangle";
