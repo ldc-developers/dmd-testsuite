@@ -14,5 +14,5 @@ if [[ "$OS" == win* ]]; then
     $DMD -m${MODEL} -I${EXTRA_FILES} -of${OUTPUT_BASE}link${EXE} ${EXTRA_FILES}${SEP}link13774.d ${OUTPUT_BASE}b${LIBEXT}
 fi
 
-rm ${OUTPUT_BASE}{a${LIBEXT},b${LIBEXT}}
-if [[ "$OS" == win* ]]; then rm ${OUTPUT_BASE}link${EXE}; fi
+rm_retry ${OUTPUT_BASE}{a${LIBEXT},b${LIBEXT}}
+if [[ "$OS" == win* ]]; then rm_retry ${OUTPUT_BASE}link${EXE}; fi
