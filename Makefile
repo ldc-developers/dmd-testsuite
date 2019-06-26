@@ -247,7 +247,7 @@ DISABLED_COMPILE_TESTS += vector_types
 # LDC: This tests the vector codegen of DMD's backend. Unnecessarily brittle
 # (depends on objdump, etc.) and assumes that AVX/AVX2 are available on the
 # system running the tests. Covered by LLVM's CodeGen tests.
-DISABLED_TESTS += test_cdvecfill
+DISABLED_SH_TESTS += cdvecfill
 
 # LDC: disable DMD codegen test failing on linux-x86 with non-eliminated frame pointers
 DISABLED_SH_TESTS += test17619
