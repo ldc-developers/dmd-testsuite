@@ -1,13 +1,16 @@
 /*
 DISABLED: win32 win64 osx32 linux32 freebsd32
+TEST_OUTPUT:
+---
+---
 */
 
 void chkArgTypes(S, V...)()
 {
-    pragma(msg, S);
+    //pragma(msg, S);
     static if (is(S U == __argTypes))
     {
-        foreach (T; U) { pragma(msg, T); }
+        //foreach (T; U) { pragma(msg, T); }
         static assert(U.length == V.length);
         foreach (i, T; U)
             static assert(is(V[i] == T));
