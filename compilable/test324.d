@@ -1,3 +1,5 @@
+// DISABLED: LDC
+
 struct Foo
 {
     void doStuff(alias fun)() {}

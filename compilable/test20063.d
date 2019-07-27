@@ -1,3 +1,4 @@
+// DISABLED: LDC
 
 struct S
 {
