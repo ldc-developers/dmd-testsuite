@@ -481,8 +481,15 @@ extern(C++)
 {
     // Nspace
     std.allocator!int func_18957_1(std.allocator!(int)* v);
+  version (LDC)
+  {
+    // see below
+  }
+  else
+  {
     // CPPNamespaceAttribute
     allocator!int func_18957_2(allocator!(int)* v);
+  }
     X func_18957_2(X)(X* v);
 }
 
@@ -501,7 +508,15 @@ version (Posix)
     static assert(func_18957_1.mangleof == `_Z12func_18957_1PSaIiE`);
     static assert(func_18957_2!(std.allocator!int).mangleof == `_Z12func_18957_2ISaIiEET_PS1_`);
 
-
+  version (LDC)
+  {
+    /* Cannot instantiate templates in `extern(C++, "std")`, as the mangled function names
+     * collide with those from `extern(C++, std)` (with different struct types).
+     * See https://github.com/ldc-developers/ldc/issues/2782.
+     */
+  }
+  else
+  {
     static assert(pair!(void*, void*).swap.mangleof == "_ZNSt4pairIPvS0_E4swapERS1_");
     static assert(allocator!int.fooa.mangleof == "_ZNKSaIiE4fooaEv");
     static assert(allocator!int.foob.mangleof == "_ZNSaIiE4foobEv");
@@ -513,6 +528,7 @@ version (Posix)
 
     static assert(func_18957_2.mangleof == `_Z12func_18957_2PSaIiE`);
     static assert(func_18957_2!(allocator!int).mangleof == `_Z12func_18957_2ISaIiEET_PS1_`);
+  }
 }
 
 /**************************************/
