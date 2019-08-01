@@ -1,6 +1,6 @@
 // REQUIRED_ARGS: -g
 // REQUIRED_ARGS(linux freebsd dragonflybsd): -L-export-dynamic
-// REQUIRED_ARGS(win32): -link-debuglib
+// LDC (required for Win32 and -O): REQUIRED_ARGS(windows): -link-debuglib
 // PERMUTE_ARGS:
 // DISABLED: osx
 
