@@ -24,6 +24,8 @@ void test1()
         }
       version(D_PIC)
       {}
+      else version (D_PIE)
+      {}
       else
       {
         asm
