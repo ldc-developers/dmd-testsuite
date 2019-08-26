@@ -1,7 +1,7 @@
 /*
 TEST_OUTPUT:
 ---
-fail_compilation/test20096.d(15): Error: `goto` into `try`/`finally` scope is not allowed
+fail_compilation/test20096.d(15): Error: cannot `goto` into `try` block
 ---
 */
 // https://issues.dlang.org/show_bug.cgi?id=20096

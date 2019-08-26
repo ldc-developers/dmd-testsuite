@@ -1,6 +1,6 @@
 /* TEST_OUTPUT:
 ---
-fail_compilation/goto5.d(17): Error: delegate `goto5.main.__foreachbody1` label `L1` is undefined
+fail_compilation/goto5.d(19): Error: the label `L1` does not exist
 ---
 */
 
