@@ -1,6 +1,8 @@
 import dshell;
 void main()
 {
+    version (LDC) return; // requires shared libs
+
     if (OS != "linux")
     {
         writefln("Skipping shared library test on %s.", OS);
