@@ -1,8 +1,8 @@
 module object;
 
-extern(C) void _Dmain();
+extern(C) int _Dmain(char[][]);
 
 extern(C) void main()
 {
-    _Dmain();
+    _Dmain(null);
 }
