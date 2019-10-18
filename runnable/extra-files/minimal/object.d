@@ -2,7 +2,7 @@ module object;
 
 extern(C) int _Dmain(char[][]);
 
-extern(C) void main()
+extern(C) int main(int, char**)
 {
-    _Dmain(null);
+    return _Dmain(null);
 }
