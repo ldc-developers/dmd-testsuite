@@ -1,5 +1,5 @@
 import dshell;
-import std.algorithm : find;
+import std.algorithm : canFind, find;
 
 void main()
 {
@@ -25,7 +25,8 @@ void main()
 
     // due to `-v` the last line should be the command past to the linker driver; probably `cc`
     immutable lines = result.output.split("\n");
-    auto ccLine = lines.find!(a => a.startsWith("cc"))[0];
+    const outputFilePath = shellExpand("$OUTPUT_BASE/main$EXE");
+    auto ccLine = lines.find!(a => a.canFind(outputFilePath))[0];
 
     // The arguments prefixed with `-Xcc` should not have an
     // additional `-Xlinker` prepended to them
