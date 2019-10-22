@@ -122,31 +122,16 @@ void sanitizeBuildInfo(ref JSONValue[string] buildInfo)
     removeString(&buildInfo["argv0"]);
     removeString(&buildInfo["config"]);
     removeString(&buildInfo["libName"]);
+    version (LDC)
+    {
+        removeArray(&buildInfo["importPaths"]);
+    }
+    else
     {
         auto importPaths = buildInfo["importPaths"].array;
-        version (LDC)
+        foreach(ref path; importPaths)
         {
-            import std.algorithm.mutation : remove;
-            import std.string : endsWith;
-
-            foreach(ref path; importPaths)
-            {
-                path = JSONValue(normalizeFile(path.str));
-                if (path.str.endsWith("runtime/druntime/src"))
-                    path = "../../druntime/import";
-                else if (path.str.endsWith("runtime/phobos"))
-                    path = "../../phobos";
-            }
-
-            importPaths = importPaths.remove!(p => p.str.endsWith("runtime/jit-rt/d"));
-            buildInfo["importPaths"] = importPaths;
-        }
-        else
-        {
-            foreach(ref path; importPaths)
-            {
-                path = JSONValue(normalizeFile(path.str));
-            }
+            path = JSONValue(normalizeFile(path.str));
         }
     }
     removeArray(&buildInfo["objectFiles"]);
