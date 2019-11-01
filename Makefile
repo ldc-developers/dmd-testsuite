@@ -282,6 +282,7 @@ ifeq ($(OS),linux)
     # disable invalid tests on arm, aarch64, mips, ppc
     ifneq (,$(filter arm% aarch64% mips% ppc%,$(ARCH)))
         DISABLED_COMPILE_TESTS += deprecate12979a # dmd inline asm
+        DISABLED_COMPILE_SH_TESTS += issue15574   # no -m64
         DISABLED_COMPILE_TESTS += ldc_github_791  # dmd inline asm
         DISABLED_COMPILE_TESTS += ldc_github_1292 # dmd inline asm
         DISABLED_COMPILE_TESTS += test11471       # dmd inline asm
@@ -298,6 +299,8 @@ ifeq ($(OS),linux)
         DISABLED_FAIL_TESTS += fail327            # dmd inline asm
         DISABLED_FAIL_TESTS += fail37_m64         # no -m64
         DISABLED_FAIL_TESTS += fail80_m64         # no -m64
+        DISABLED_FAIL_TESTS += goto4              # dmd inline asm
+        DISABLED_FAIL_TESTS += goto5              # dmd inline asm
         DISABLED_FAIL_TESTS += ldc_diag8425       # no -m64
         DISABLED_TESTS += test36                  # dmd inline asm/Windows
     endif
