@@ -493,6 +493,19 @@ extern(C++)
     X func_18957_2(X)(X* v);
 }
 
+extern (C++)
+{
+  version (LDC)
+  {
+    // see below
+    void func_20413(std.pair!(int, float), std.pair!(float, int));
+  }
+  else
+  {
+    void func_20413(pair!(int, float), pair!(float, int));
+  }
+}
+
 version (Posix)
 {
     // https://issues.dlang.org/show_bug.cgi?id=17947
@@ -529,6 +542,8 @@ version (Posix)
     static assert(func_18957_2.mangleof == `_Z12func_18957_2PSaIiE`);
     static assert(func_18957_2!(allocator!int).mangleof == `_Z12func_18957_2ISaIiEET_PS1_`);
   }
+
+    static assert(func_20413.mangleof == `_Z10func_20413St4pairIifES_IfiE`);
 }
 
 /**************************************/
