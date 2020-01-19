@@ -240,7 +240,27 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     // remove permute args enforced as required anyway
     if (testArgs.requiredArgs.length && testArgs.permuteArgs.length)
     {
-        const required = split(testArgs.requiredArgs);
+        version (LDC)
+        {
+            /*
+             * Additionally exclude some permute args which are uninteresting
+             * for LDC due to the split in
+             *
+             * * dmd-testsuite, requiring `-O`, which basically implies `-inline`
+             *   too (except for a here irrelevant header generation detail), and
+             * * dmd-testsuite-debug, requiring `-g -link-defaultlib-debug`.
+             *
+             * In case the original permute args specify both `-O` and `-g`, only
+             * 2 of 4 combinations will be tested (`-O` and `-g`), excluding the
+             * rather uninteresting `-O -g` (which would otherwise be tested twice)
+             * and `` (which is untestable anyway).
+             * Similarly, a `-inline` alone without `-O` isn't interesting for
+             * additional test coverage, as it just controls an LLVM optimization
+             * pass.
+             */
+            static immutable permuteArgsExcludedByLDC = ["-O", "-inline", "-g"];
+        }
+        const required = split(testArgs.requiredArgs) ~ permuteArgsExcludedByLDC;
         const newPermuteArgs = split(testArgs.permuteArgs)
             .filter!(a => !required.canFind(a))
             .join(" ");
