@@ -399,7 +399,8 @@ unit_tests: $(RESULTS_DIR)/unit_test_runner$(EXE)
 
 run_runnable_tests: $(runnable_test_results)
 
-start_runnable_tests: $(RESULTS_DIR)/.created $(test_tools)
+start_runnable_tests: $(RESULTS_DIR)/.created
+	$(QUIET)$(MAKE) $(DMD_TESTSUITE_MAKE_ARGS) --no-print-directory $(test_tools)
 	@echo "Running runnable tests"
 	$(QUIET)$(MAKE) $(DMD_TESTSUITE_MAKE_ARGS) --no-print-directory run_runnable_tests
 
