@@ -86,7 +86,8 @@ Options:
     args2Environment(args);
 
     // allow overwrites from the environment
-    hostDMD = environment.get("HOST_DMD", "dmd");
+    version (LDC) hostDMD = environment.get("DMD", "ldmd2");
+    else          hostDMD = environment.get("HOST_DMD", "dmd");
     unitTestRunnerCommand = resultsDir.buildPath("unit_test_runner");
 
     // bootstrap all needed environment variables
@@ -197,6 +198,7 @@ void ensureToolsExists(string[string] env, const TestTool[] tools ...)
             }
 
             writefln("Executing: %-(%s %)", command);
+            stdout.flush();
             if (spawnProcess(command, commandEnv).wait)
             {
                 stderr.writefln("failed to build '%s'", targetBin);
@@ -311,6 +313,7 @@ auto predefinedTargets(string[] targets)
                 break;
 
             case "all":
+                version (LDC) { /* unit_tests not supported yet */ } else
                 newTargets ~= createUnitTestTarget();
                 foreach (testDir; testDirs)
                     newTargets.put(findFiles(testDir).map!createTestTarget);
@@ -360,11 +363,11 @@ void args2Environment(ref string[] args)
 {
     bool tryToAdd(string arg)
     {
-        if (!arg.canFind("="))
+        const sep = arg.indexOf('=');
+        if (sep == -1)
             return false;
 
-        auto sp = arg.splitter("=");
-        environment[sp.front] = sp.dropOne.front;
+        environment[arg[0 .. sep]] = arg[sep+1 .. $];
         return true;
     }
     args = args.filter!(a => !tryToAdd(a)).array;
@@ -398,12 +401,14 @@ string[string] getEnvironment()
     env["RESULTS_DIR"] = resultsDir;
     env["OS"] = os;
     env["MODEL"] = model;
+    version (LDC) {} else
     env["DMD_MODEL"] = dmdModel;
     env["BUILD"] = build;
     env["EXE"] = exeExtension;
     env["DMD"] = dmdPath;
     env.getDefault("DMD_TEST_COVERAGE", "0");
 
+    version (LDC) {} else
     const generatedSuffix = "generated/%s/%s/%s".format(os, build, dmdModel);
 
     version(Windows)
@@ -412,10 +417,13 @@ string[string] getEnvironment()
         env["OBJ"] = ".obj";
         env["DSEP"] = `\\`;
         env["SEP"] = `\`;
+      version (LDC) {} else
+      {
         auto druntimePath = environment.get("DRUNTIME_PATH", testPath(`..\..\druntime`));
         auto phobosPath = environment.get("PHOBOS_PATH", testPath(`..\..\phobos`));
         env["DFLAGS"] = `-I%s\import -I%s`.format(druntimePath, phobosPath);
         env["LIB"] = phobosPath;
+      }
     }
     else
     {
@@ -423,6 +431,9 @@ string[string] getEnvironment()
         env["OBJ"] = ".o";
         env["DSEP"] = "/";
         env["SEP"] = "/";
+
+      version (LDC) {} else
+      {
         auto druntimePath = environment.get("DRUNTIME_PATH", testPath(`../../druntime`));
         auto phobosPath = environment.get("PHOBOS_PATH", testPath(`../../phobos`));
 
@@ -443,7 +454,9 @@ string[string] getEnvironment()
         if (isShared)
             env["DFLAGS"] = env["DFLAGS"] ~ " -defaultlib=libphobos2.so -L-rpath=%s/%s".format(phobosPath, generatedSuffix);
 
-        env["REQUIRED_ARGS"] = environment.get("REQUIRED_ARGS") ~ " " ~ env["PIC_FLAG"];
+        if (pic)
+            env["REQUIRED_ARGS"] = strip(environment.get("REQUIRED_ARGS") ~ " " ~ env["PIC_FLAG"]);
+      }
 
         version(OSX)
             version(X86_64)

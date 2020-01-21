@@ -1,3 +1,5 @@
+// DISABLED: LDC_not_x86
+
 void main()
 {
     fun();

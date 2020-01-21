@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# LDC doesn't print the DFLAGS environment variable as part of -v output
+# DISABLED: LDC
+
 unset DFLAGS
 
 # Force DMD to print the -v menu by passing an invalid object file

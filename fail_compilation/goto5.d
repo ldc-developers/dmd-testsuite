@@ -3,7 +3,7 @@
 fail_compilation/goto5.d(19): Error: the label `L1` does not exist
 ---
 */
-
+// DISABLED: LDC_not_x86
 struct S
 {
     static int opApply(int delegate(ref int) dg)

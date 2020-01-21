@@ -1,4 +1,4 @@
-/*
+/* DISABLED: LDC_not_x86 LDC // differing output
 TEST_OUTPUT:
 ---
 fail_compilation/fail14009.d(12): Error: expression expected not `:`

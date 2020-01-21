@@ -30,18 +30,48 @@ else version (SunOS)
 else
     static assert(0, "Unrecognized or unsupported OS.");
 
-enum projectRootDir = __FILE_FULL_PATH__.dirName.buildNormalizedPath("..", "..");
-enum generatedDir = projectRootDir.buildPath("generated");
+version (LDC)
+{
+    enum dmdTestsuitePath = __FILE_FULL_PATH__.dirName.dirName;
+    // LDC src dir
+    enum projectRootDir = dmdTestsuitePath.dirName.dirName.dirName;
 
-enum dmdFilename = "dmd".setExtension(exeExtension);
+    alias testPath = path => dmdTestsuitePath.buildPath(path);
+}
+else
+{
+    enum projectRootDir = __FILE_FULL_PATH__.dirName.buildNormalizedPath("..", "..");
+    enum generatedDir = projectRootDir.buildPath("generated");
 
-alias testPath = path => projectRootDir.buildPath("test", path);
+    enum dmdFilename = "dmd".setExtension(exeExtension);
+
+    alias testPath = path => projectRootDir.buildPath("test", path);
+}
 
 string build()
 {
     static string build;
     return build = build ? build : environment.get("BUILD", "release");
 }
+
+version (LDC)
+{
+    string model()
+    {
+        static string model;
+        version (D_LP64) enum def = "64";
+        else             enum def = "32";
+        return model ? model : (model = environment.get("MODEL", def));
+    }
+
+    string dmdPath()
+    {
+        static string dmdPath;
+        return dmdPath ? dmdPath : (dmdPath = environment.get("DMD", "ldmd2"));
+    }
+}
+else
+{
 
 string buildOutputPath()
 {
@@ -74,6 +104,8 @@ string dmdPath()
     static string dmdPath;
     return  dmdPath ? dmdPath : (dmdPath = buildOutputPath.buildPath(dmdFilename));
 }
+
+} // !LDC
 
 string resultsDir()
 {

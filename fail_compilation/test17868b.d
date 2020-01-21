@@ -1,4 +1,4 @@
-/*
+/* DISABLED: LDC // passes due to slightly different semantics
 TEST_OUTPUT:
 ----
 fail_compilation/test17868b.d(10): Error: function `test17868b.foo` must be `extern(C)` for `pragma(crt_constructor)`
