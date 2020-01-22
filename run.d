@@ -51,6 +51,15 @@ immutable struct TestTool
 
 int main(string[] args)
 {
+    version (LDC)
+    {
+        // Append any space-separated extra arguments in env var DMD_TESTSUITE_MAKE_ARGS.
+        // Primarily used to limit the number of parallel jobs (`-j<N>`).
+        const makeArgs = environment.get("DMD_TESTSUITE_MAKE_ARGS");
+        if (makeArgs.length)
+            args ~= split(makeArgs);
+    }
+
     bool runUnitTests;
     int jobs = totalCPUs;
     auto res = getopt(args,
@@ -432,7 +441,11 @@ string[string] getEnvironment()
         env["DSEP"] = "/";
         env["SEP"] = "/";
 
-      version (LDC) {} else
+      version (LDC)
+      {
+        env["PIC_FLAG"] = "";
+      }
+      else
       {
         auto druntimePath = environment.get("DRUNTIME_PATH", testPath(`../../druntime`));
         auto phobosPath = environment.get("PHOBOS_PATH", testPath(`../../phobos`));
