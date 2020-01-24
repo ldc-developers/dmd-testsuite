@@ -301,8 +301,9 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
              * Similarly, a `-inline` alone without `-O` isn't interesting for
              * additional test coverage, as it just controls an LLVM optimization
              * pass.
+             * Ditto for `-fPIC`, which is enabled by default for most targets.
              */
-            static immutable permuteArgsExcludedByLDC = ["-O", "-inline", "-g"];
+            static immutable permuteArgsExcludedByLDC = ["-O", "-inline", "-g", "-fPIC"];
         }
         const required = split(testArgs.requiredArgs) ~ permuteArgsExcludedByLDC;
         const newPermuteArgs = split(testArgs.permuteArgs)
