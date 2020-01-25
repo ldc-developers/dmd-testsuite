@@ -83,7 +83,6 @@ struct TestArgs
     string   postScript;
     string   requiredArgs;
     string   requiredArgsForLink;
-    string[] disabledPlatforms;
     string   disabledReason; // if empty, the test is not disabled
 
     bool isDisabled() const { return disabledReason.length != 0; }
@@ -181,8 +180,6 @@ bool findOutputParameter(string file, string token, out string result, string se
         found = true;
 
         file = file[istart + token.length .. $];
-        if (file.startsWith(":"))
-            file = file[1 .. $];
 
         enum embed_sep = "---";
         auto n = std.string.indexOf(file, embed_sep);
@@ -226,7 +223,7 @@ string getDisabledReason(string[] disabledPlatforms, const ref EnvData envData)
 
     const target = ((envData.os == "windows") ? "win" : envData.os) ~ envData.model;
 
-    // allows partial matching, e.g. win for both win32 and win64
+    // allow partial matching, e.g. `win` to disable both win32 and win64
     const i = disabledPlatforms.countUntil!(p => target.canFind(p));
     if (i != -1)
         return "on " ~ disabledPlatforms[i];
@@ -385,7 +382,6 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
 
     string disabledPlatformsStr;
     findTestParameter(envData, file, "DISABLED", disabledPlatformsStr);
-    testArgs.disabledPlatforms = split(disabledPlatformsStr);
 
     version (DragonFlyBSD)
     {
@@ -406,7 +402,7 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     }
 
     if (!testArgs.isDisabled)
-        testArgs.disabledReason = getDisabledReason(testArgs.disabledPlatforms, envData);
+        testArgs.disabledReason = getDisabledReason(split(disabledPlatformsStr), envData);
 
     findOutputParameter(file, "TEST_OUTPUT", testArgs.compileOutput, envData.sep);
 
@@ -735,7 +731,7 @@ int tryMain(string[] args)
         if (findTestParameter(envData, file, "DISABLED", disabledPlatforms))
         {
             const reason = getDisabledReason(split(disabledPlatforms), envData);
-            if (reason.length > 0)
+            if (reason.length != 0)
             {
                 writefln(" ... %-30s [DISABLED %s]", input_file, reason);
                 return 0;
