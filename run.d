@@ -456,8 +456,21 @@ string[string] getEnvironment()
     env["DMD"] = dmdPath;
     env.getDefault("DMD_TEST_COVERAGE", "0");
 
-    version (LDC) {} else
+  version (LDC)
+  {
+    version (X86)         enum X86_Any = true;
+    else version (X86_64) enum X86_Any = true;
+    else                  enum X86_Any = false;
+
+    // Don't specify -m<model> for C(++) compiler for non-x86 targets,
+    // it's mostly unsupported.
+    static if (!X86_Any)
+        env["NO_ARCH_VARIANT"] = "1";
+  }
+  else
+  {
     const generatedSuffix = "generated/%s/%s/%s".format(os, build, dmdModel);
+  }
 
     version(Windows)
     {
