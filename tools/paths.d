@@ -4,6 +4,8 @@ import std.file : exists;
 import std.path : buildNormalizedPath, buildPath, dirName, setExtension;
 import std.process : environment;
 
+version (LDC) version = IN_LLVM;
+
 version (Posix)
     enum exeExtension = "";
 else version (Windows)
@@ -30,7 +32,7 @@ else version (SunOS)
 else
     static assert(0, "Unrecognized or unsupported OS.");
 
-version (LDC)
+version (IN_LLVM)
 {
     enum dmdTestsuitePath = __FILE_FULL_PATH__.dirName.dirName;
     // LDC src dir
@@ -54,7 +56,7 @@ string build()
     return build = build ? build : environment.get("BUILD", "release");
 }
 
-version (LDC)
+version (IN_LLVM)
 {
     string model()
     {
@@ -105,7 +107,7 @@ string dmdPath()
     return  dmdPath ? dmdPath : (dmdPath = buildOutputPath.buildPath(dmdFilename));
 }
 
-} // !LDC
+} // !IN_LLVM
 
 string resultsDir()
 {
