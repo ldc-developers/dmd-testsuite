@@ -926,7 +926,7 @@ in
 {
     assert(A.length > 0);
 }
-body
+do
 {
     version (LDC_NoX87)
     {
@@ -1093,7 +1093,7 @@ in
 {
     assert(A.length > 0);
 }
-body
+do
 {
     ptrdiff_t i = A.length - 1;
     real r = A[i];

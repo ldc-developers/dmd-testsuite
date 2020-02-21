@@ -603,31 +603,139 @@ bool collectExtraSources (in string input_dir, in string output_dir, in string[]
     return true;
 }
 
-// compare output string to reference string, but ignore places
-// marked by $n$ that contain compiler generated unique numbers
-bool compareOutput(string output, string refoutput)
-{
-    import std.ascii : digits;
-    import std.utf : byCodeUnit;
+/++
+Compares the output string to the reference string by character
+except parts marked with one of the following special sequences:
 
+$n$ = numbers (e.g. compiler generated unique identifiers)
+$p:<path>$ = real paths ending with <path>
+$?:<choices>$ = environment dependent content supplied as a list
+                choices (either <condition>=<content> or <default>),
+                separated by a '|'. Currently supported conditions are
+                OS and model as supplied from the environment
+
+Params:
+    output    = the real output
+    refoutput = the expected output
+    envData   = test environment
+
+Returns: whether output matches the expected refoutput
+++/
+bool compareOutput(string output, string refoutput, const ref EnvData envData)
+{
     // If no output is expected, only check that nothing was captured.
     if (refoutput.length == 0)
         return (output.length == 0) ? true : false;
 
     for ( ; ; )
     {
-        auto pos = refoutput.indexOf("$n$");
-        if (pos < 0)
+        auto special = refoutput.find("$n$", "$p:", "$?:").rename!("remainder", "id");
+
+        // Simple equality check if no special tokens remain
+        if (special.id == 0)
             return refoutput == output;
-        if (output.length < pos)
+
+        const expected = refoutput[0 .. $ - special.remainder.length];
+
+        // Check until the special token
+        if (!output.skipOver(expected))
             return false;
-        if (refoutput[0..pos] != output[0..pos])
+
+        // Discard the special token and progress output appropriately
+        refoutput = special.remainder[3 .. $];
+
+        if (special.id == 1) // $n$
+        {
+            import std.ascii : isDigit;
+            output.skipOver!isDigit();
+            continue;
+        }
+
+        // $<identifier>:<special content>$
+        /// ( special content, "$", remaining expected output )
+        auto refparts = refoutput.findSplit("$");
+        enforce(refparts, "Malformed special sequence!");
+        refoutput = refparts[2];
+
+        if (special.id == 2) // $p:<some path>$
+        {
+            // special content is the expected path tail
+            // Substitute / with the appropriate directory separator
+            auto pathEnd = refparts[0].replace("/", envData.sep);
+
+            /// ( whole path, remaining output )
+            auto parts = output.findSplitAfter(pathEnd);
+
+            if (!parts || !exists(parts[0]))
+                return false;
+
+            output = parts[1];
+            continue;
+        }
+
+        // $?:<predicate>=<content>(;<predicate>=<content>)*(;<default>)?$
+        string toSkip = null;
+
+        foreach (const chunk; refparts[0].splitter('|'))
+        {
+            // ( <predicate> , "=", <content> )
+            const conditional = chunk.findSplit("=");
+
+            if (!conditional) // <default>
+            {
+                toSkip = chunk;
+                break;
+            }
+            // Match against OS or model (accepts "32mscoff" as "32")
+            else if (conditional[0].among(envData.os, envData.model, envData.model[0 .. min(2, $)]))
+            {
+                toSkip = conditional[2];
+                break;
+            }
+        }
+
+        if (toSkip !is null && !output.skipOver(toSkip))
             return false;
-        refoutput = refoutput[pos + 3 ..$];
-        output = output[pos..$];
-        auto p = output.byCodeUnit.countUntil!(e => !digits.canFind(e));
-        output = output[p..$];
     }
+}
+
+unittest
+{
+    EnvData ed;
+    version (Windows)
+        ed.sep = `\`;
+    else
+        ed.sep = `/`;
+
+    assert( compareOutput(`Grass is green`, `Grass is green`, ed));
+    assert(!compareOutput(`Grass is green`, `Grass was green`, ed));
+
+    assert( compareOutput(`Bob took 12 apples`, `Bob took $n$ apples`, ed));
+    assert(!compareOutput(`Bob took abc apples`, `Bob took $n$ apples`, ed));
+    assert(!compareOutput(`Bob took 12 berries`, `Bob took $n$ apples`, ed));
+
+    assert( compareOutput(`HINT: ` ~ __FILE_FULL_PATH__ ~ ` is important`, `HINT: $p:d_do_test.d$ is important`, ed));
+    assert( compareOutput(`HINT: ` ~ __FILE_FULL_PATH__ ~ ` is important`, `HINT: $p:test/tools/d_do_test.d$ is important`, ed));
+
+    ed.sep = "/";
+    assert(!compareOutput(`See /path/to/druntime/import/object.d`, `See $p:druntime/import/object.d$`, ed));
+
+    assertThrown(compareOutput(`Path /a/b/c.d!`, `Path $p:c.d!`, ed)); // Missing closing $
+
+    const fmt = "This $?:windows=A|posix=B|C$ uses $?:64=1|32=2|3$ bytes";
+
+    assert( compareOutput("This C uses 3 bytes", fmt, ed));
+
+    ed.os = "posix";
+    ed.model = "64";
+    assert( compareOutput("This B uses 1 bytes", fmt, ed));
+    assert(!compareOutput("This C uses 3 bytes", fmt, ed));
+
+    const emptyFmt = "On <$?:windows=abc|$> use <$?:posix=$>!";
+    assert(compareOutput("On <> use <>!", emptyFmt, ed));
+
+    ed.model = "32mscoff";
+    assert(compareOutput("size_t is uint!", "size_t is $?:32=uint|64=ulong$!", ed));
 }
 
 string envGetRequired(in char[] name)
@@ -928,7 +1036,7 @@ int tryMain(string[] args)
             m = std.regex.match(compile_output, `core.exception.AssertError@dmd.*`);
             enforce(!m, m.hit);
 
-            if (!compareOutput(compile_output, testArgs.compileOutput))
+            if (!compareOutput(compile_output, testArgs.compileOutput, envData))
             {
                 // Allow any messages to come from tests if TEST_OUTPUT wasn't given.
                 // This will be removed in future once all tests have been updated.

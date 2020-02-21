@@ -771,7 +771,7 @@ in
 
     checkParameters();
 }
-body
+do
 {
 }
 

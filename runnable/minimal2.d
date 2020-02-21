@@ -26,20 +26,12 @@ class B : A
     }
 }
 
-version (LDC)
-{
-    pragma(LDC_intrinsic, "llvm.trap")
-    void llvm_trap();
-}
-
 void poorMansAssert(bool condition)
 {
     if (!condition)
     {
-        version (LDC)
-            llvm_trap();
-        else
-            asm {hlt;}
+        static char* hlt;
+        *hlt = 0;
     }
 }
 

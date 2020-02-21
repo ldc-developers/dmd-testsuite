@@ -5262,7 +5262,7 @@ public:
     {
         assert(isHage);
     }
-    body { }
+    do { }
 }
 
 class Child6859 : Parent6859
