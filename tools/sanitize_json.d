@@ -182,7 +182,7 @@ void sanitizeSemantics(ref JSONValue[string] semantics)
     {
         auto semanticModule = semanticModuleNode.object();
         auto moduleName = semanticModule.getOptionalString("name");
-        if(moduleName.startsWith("std.", "core.", "etc.", "rt.") || moduleName == "object")
+        if(moduleName.startsWith("std.", "core.", "etc.", "rt.", /*LDC*/ "ldc.") || moduleName == "object")
         {
            // remove druntime/phobos modules since they can change for each
            // platform
