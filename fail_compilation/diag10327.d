@@ -1,5 +1,6 @@
 /*
-TEST_OUTPUT:
+LDC: disable the output check due to additional import dirs
+TE ST_OUTPUT:
 ---
 fail_compilation/diag10327.d(11): Error: module `test10327` is in file 'imports/test10327.d' which cannot be read
 import path[0] = fail_compilation
