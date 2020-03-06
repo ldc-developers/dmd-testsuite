@@ -19,7 +19,7 @@ void main()
     Vars.set("HEADER_EXE",  "$OUTPUT_BASE/test");
 
     run("$DMD -m$MODEL -c -lib -of=$LIB -HCf=$OUTPUT_BASE/library.h $SOURCE_DIR/library.d");
-    run("$CC -m$MODEL -c -o $CPP_OBJ -I$OUTPUT_BASE -I$EXTRA_FILES/../../../src/dmd/root $SOURCE_DIR/app.cpp");
-    run("$DMD -m$MODEL -conf= -defaultlib= -of=$HEADER_EXE $LIB $CPP_OBJ");
+    run("$CC -m$MODEL -c -o $CPP_OBJ -I$OUTPUT_BASE -I$EXTRA_FILES/../../../../../dmd/root $SOURCE_DIR/app.cpp");
+    run("$DMD -m$MODEL -of=$HEADER_EXE $LIB $CPP_OBJ");
     run("$HEADER_EXE");
 }
