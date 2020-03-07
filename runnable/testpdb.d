@@ -503,6 +503,12 @@ mixin("struct Class18147 { int " ~ members18147 ~ "member10000;}");
 
 void test18147(IDiaSession session, IDiaSymbol globals)
 {
+  version (LDC)
+  {
+    // hitting CodeView-related assertions with LLVM 9...
+  }
+  else
+  {
     Enumerator18147 anE;
     Struct18147 aS;
     Class18147 aC;
@@ -545,7 +551,7 @@ void test18147(IDiaSession session, IDiaSymbol globals)
     classMember9999 || assert(false, "testpdb.Class18147.member9999 not found");
     classMember9999.get_offset(&off);
     off == Class18147.member9999.offsetof || assert(false, "testpdb.Class18147.member9999 bad offset");
-
+  } // !LDC
 }
 
 ///////////////////////////////////////////////
