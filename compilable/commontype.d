@@ -1,4 +1,5 @@
-// REQUIRED_ARGS: -mcpu=avx2
+// LDC: don't enforce -mcpu
+// required_args: -mcpu=avx2
 
 import core.simd;
 
@@ -455,7 +456,7 @@ static assert(is( X!( Si, Sl ) == long ));
  * Vectors
  */
 
-version(D_SIMD)
+static if (is(int4))
 {
 
 static assert(is( X!( int4, int4 ) == int4));
@@ -471,7 +472,7 @@ static assert(Error!( byte16, ubyte16 ));
 static assert(Error!( short8, ushort8 ));
 static assert(Error!( int4, uint4 ));
 static assert(Error!( int4, float4 ));
-version (D_AVX)
+static if (is(long4))
 {
 static assert(Error!( long4, ulong4 ));
 static assert(Error!( double4, float8 ));
