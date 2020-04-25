@@ -6,7 +6,7 @@
 // written by Walter Bright
 // http://www.digitalmars.com
 
-import std.stdio;
+import core.stdc.stdio;
 
 version (D_PIC)
 {
@@ -2776,7 +2776,7 @@ L1:
     /*
     for (;;)
     {
-        writef("");
+        printf("");
         asm { hlt; }
     }
     //*/
@@ -2785,7 +2785,7 @@ L1:
     for (;;)
     {
         asm { hlt; }
-        writef("");
+        printf("");
     }
     //*/
     /* The same loop that doesn't compile above
@@ -2794,7 +2794,7 @@ L1:
     //*
     for (;;)
     {
-        writef("");
+        printf("");
         asm { hlt; }
     }
     //*/

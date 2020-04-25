@@ -221,7 +221,7 @@ void test10()
 {
     auto i = 5u;
     auto s = typeid(typeof(i)).toString;
-    printf("%.*s\n", s.length, s.ptr);
+    printf("%.*s\n", cast(int)s.length, s.ptr);
     assert(typeid(typeof(i)) == typeid(uint));
 }
 
@@ -250,7 +250,7 @@ void assertEqual(real* a, real* b, string file = __FILE__, size_t line = __LINE_
     {
         if (x[i] != y[i])
         {
-            printf("%02d: %02x %02x\n", i, x[i], y[i]);
+            printf("%02zd: %02x %02x\n", i, x[i], y[i]);
             import core.exception;
             throw new AssertError(file, line);
         }
@@ -361,7 +361,7 @@ class Bar17
 
 class Foo17
 {
-        void opAdd (Bar17 b) {}
+        void opBinary(string op : "+") (Bar17 b) {}
 }
 
 void test17()
@@ -560,7 +560,7 @@ void test26()
   foreach( cdouble z; A )
   {
     s = toString26(z);
-    printf("%.*s  ", s.length, s.ptr);
+    printf("%.*s  ", cast(int)s.length, s.ptr);
   }
   printf("\n");
 
@@ -574,7 +574,7 @@ void test26()
   foreach( cdouble z; A )
   {
     s = toString26(z);
-    printf("%.*s  ", s.length, s.ptr);
+    printf("%.*s  ", cast(int)s.length, s.ptr);
   }
   printf("\n");
 }
@@ -585,7 +585,7 @@ void test27()
 {   int x;
 
     string s = (int*function(int ...)[]).mangleof;
-    printf("%.*s\n", s.length, s.ptr);
+    printf("%.*s\n", cast(int)s.length, s.ptr);
     assert((int*function(int ...)[]).mangleof == "APFiXPi");
     assert(typeof(x).mangleof == "i");
     assert(x.mangleof == "_D6test226test27FZ1xi");
@@ -606,7 +606,7 @@ void test29()
     ulong a = 10_000_000_000_000_000,
           b =  1_000_000_000_000_000;
 
-    printf("test29\n%lx\n%lx\n%lx\n", a, b, a / b);
+    printf("test29\n%llx\n%llx\n%llx\n", a, b, a / b);
     assert((a / b) == 10);
 }
 

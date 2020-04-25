@@ -36,7 +36,7 @@ extern (C) int getInstanceVariableC(Foo);
 // sets the a value for the instance variables `a`, `b` and `c`.
 extern (C) int setInstanceVariables(Foo);
 
-import std.stdio;
+import core.stdc.stdio;
 
 void main()
 {
