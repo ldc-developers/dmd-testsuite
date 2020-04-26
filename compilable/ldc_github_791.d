@@ -6,5 +6,5 @@ int crash()
   {
     naked;
     ret;
-  };
+  }
 }

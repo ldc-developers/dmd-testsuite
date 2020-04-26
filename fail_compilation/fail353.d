@@ -1,5 +1,4 @@
-// LDC_FIXME: DMD assembler restriction test - not clear how this applies to LDC.
-version (LDC) static assert(0);
+// DISABLED: LDC // DMD assembler restriction test - not clear how this applies to LDC.
 
 void foo()
 {

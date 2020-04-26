@@ -17,7 +17,8 @@ class A : I
     vec3 v;
 }
 
-pragma(msg, A.v.offsetof);
+// vptr, monitor, interface vptr, b, v
+static assert(A.v.offsetof == 3 * size_t.sizeof + 1);
 
 void main(string[]args)
 {

@@ -2,7 +2,7 @@ import dshell;
 
 int main()
 {
-    version (LDC) return; // requires shared libs
+    version (LDC) return 0; // requires shared libs
 
     if (OS != "linux")
     {

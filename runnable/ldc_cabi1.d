@@ -13,7 +13,7 @@ void test(bool b, string file = __FILE__, size_t line = __LINE__)
 {
     if (!b)
     {
-        printf("%.*s:%u: failed check\n", file.length, file.ptr, line);
+        printf("%.*s:%zu: failed check\n", cast(int) file.length, file.ptr, line);
         ++errors;
     }
 }
@@ -32,12 +32,10 @@ private bool testar(byte[] a, byte a0)
 int main()
 {
     enum a = D4.alignof;
-    pragma(msg, typeid(a));
-    pragma(msg, D4.alignof);
-    pragma(msg, F4.alignof);
-    pragma(msg, S9.alignof);
-    printf("%zu\n", a.sizeof);
-    printf("%u\n", a);
+    static assert(is(typeof(a) == size_t));
+    static assert(D4.alignof == double.alignof);
+    static assert(F4.alignof == float.alignof);
+    static assert(S9.alignof == double.alignof);
     dcall();
     ccall();
     return (errors != 0) ? 1 : 0;
