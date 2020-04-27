@@ -1,4 +1,4 @@
-/*
+/* DISABLED: LDC // no static array size limits
 PERMUTE_ARGS:
 TEST_OUTPUT:
 ---
