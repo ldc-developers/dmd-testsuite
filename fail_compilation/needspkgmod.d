@@ -13,10 +13,10 @@ varies A LOT between different linkers. Assume that there is no other cause
 of linking failure because then other tests would fail as well. Hence search
 for the linker failure message issued by DMD:
 
-TRANSFORM_OUTPUT: remove_lines("^(?!Error:).+$")
+LDC: additionally remove expected error line with variable linker/cc
+TRANSFORM_OUTPUT: remove_lines("^((?!Error:)|Error: .+ failed with status: )")
 TEST_OUTPUT:
 ----
-Error: linker exited with status $n$
 ----
 */
 import imports.pkgmod313.mod;
