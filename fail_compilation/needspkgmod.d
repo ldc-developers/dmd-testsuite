@@ -8,15 +8,10 @@
 // PERMUTE_ARGS:
 // LINK:
 /*
-Can't really check for the missing function bar here because the error message
-varies A LOT between different linkers. Assume that there is no other cause
-of linking failure because then other tests would fail as well. Hence search
-for the linker failure message issued by DMD:
-
-LDC: additionally remove expected error line with variable linker/cc
-TRANSFORM_OUTPUT: remove_lines("^((?!Error:)|Error: .+ failed with status: )")
 TEST_OUTPUT:
 ----
+$r:.+_D7imports9pkgmod3133mod3barFZv.*$
+Error: $r:.+$ failed with status: $n$
 ----
 */
 import imports.pkgmod313.mod;

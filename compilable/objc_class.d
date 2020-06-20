@@ -1,6 +1,8 @@
 // DISABLED: LDC
 // EXTRA_OBJC_SOURCES
 
+import core.attribute : selector;
+
 extern (Objective-C)
 extern class A
 {

@@ -1969,6 +1969,25 @@ void test20050()
 
 ////////////////////////////////////////////////////////////////////////
 
+// http://github.com/dlang/dmd/pull/11238
+
+int testCpStatic1(int y)
+{
+    __gshared int yyy = 7;
+    auto x = yyy; // no copy-propagation
+    if (y)
+        return x;
+    return x + 3;
+}
+
+void testCpStatic()
+{
+    assert(testCpStatic1(1) == 7);
+    assert(testCpStatic1(0) == 10);
+}
+
+////////////////////////////////////////////////////////////////////////
+
 int main()
 {
     testgoto();
@@ -2039,6 +2058,7 @@ int main()
     testfastpar();
     testNegConst();
     test20050();
+    testCpStatic();
 
     printf("Success\n");
     return 0;

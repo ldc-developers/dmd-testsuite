@@ -2,6 +2,8 @@
 // EXTRA_OBJC_SOURCES
 // REQUIRED_ARGS: -L-framework -LFoundation
 
+import core.attribute : selector;
+
 extern (Objective-C)
 extern class Class
 {
