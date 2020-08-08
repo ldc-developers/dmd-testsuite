@@ -965,12 +965,11 @@ void fuzz()
 
 version (LDC)
 {
-    version (OSX)
-    {
-        // FIXME: C++ exceptions not caught
-    }
-    else
+    version (CRuntime_Microsoft)
         version = LDC_CppEH;
+    else version (CppRuntime_Gcc)
+        version = LDC_CppEH;
+    // FIXME: support libc++ too
 }
 
 extern (C++)
