@@ -962,3 +962,15 @@ interface I15799
         assert(n);
     }; // Semicolon is not a part of function declaration. It's an empty declaration.
 }
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=21163
+
+struct B21163
+{
+    void function(scope int) fp;
+}
+
+B21163 b21163 = {
+    (scope int x){}
+};
