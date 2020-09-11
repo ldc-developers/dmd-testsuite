@@ -1,5 +1,4 @@
 /*
-PERMUTE_ARGS:
 LDC: just a different error msg
 DISABLED: LDC
 REQUIRED_ARGS: -Xi=UNKNOWN_FIELD_NAME

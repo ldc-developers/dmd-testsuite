@@ -2,7 +2,8 @@
 DISABLED: LDC
 TEST_OUTPUT:
 ---
-fail_compilation/fail3354.d(15): Error: 4 operands found for `fldz` instead of the expected 0
+fail_compilation/fail3354.d(16): Error: 4 operands found for `fldz` instead of the expected 0
+fail_compilation/fail3354.d(17): Error: 4 operands found for `fld` instead of the expected 1
 ---
 */
 

@@ -71,11 +71,36 @@ void test13331() {asm {naked; ret;}}
 
 // ------------------
 
-void main()
+// https://issues.dlang.org/show_bug.cgi?id=15745
+
+ubyte LS1B(uint board)
+{
+    asm
+    {
+        bsf EAX, board;
+    }
+}
+
+void test15754()
+{
+
+    for (int i = 0; i < 31; ++i)
+    {
+        auto slide = (1U << i);
+        auto ls1b = slide.LS1B;
+        assert(ls1b == i);
+    }
+}
+
+// ------------------
+
+int main()
 {
     test1();
     test5689();
 
     version(InlineAsm_X86_Any)
     test13331();
+    test15754();
+    return 0;
 }
