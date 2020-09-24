@@ -1,4 +1,4 @@
-/* DISABLED: LDC // this tests a glue layer error message, where DMD emits two but we exit after the first one; not a bug
+/*
 TEST_OUTPUT:
 ---
 fail_compilation/fail120.d(12): Error: need `this` for `nodes` of type `int[2]`
