@@ -248,6 +248,7 @@ void writeCmdfile(string path, string runnerPath, string outputPath,
         "-version=GC",
         "-version=NoMain",
         "-version=MARS",
+        "-version=DMDLIB",
         "-unittest",
         // LDC: no `"-J" ~ buildOutputPath,`
         "-J" ~ projectRootDir.buildPath("dmd/res"), // LDC: was `~ projectRootDir.buildPath("src/dmd/res")`
