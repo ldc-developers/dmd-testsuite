@@ -34,10 +34,10 @@ int main()
 
     version (Windows)
         run([CC, "/c", "/Fo" ~ Vars.CPP_OBJ, "/I" ~ OUTPUT_BASE, "/I" ~ EXTRA_FILES ~"/../../../../../dmd/root", Vars.SOURCE_DIR ~ "/app.cpp"]);
-    static if (X86_Any)
-        run("$CC -m$MODEL -c -o $CPP_OBJ -I$OUTPUT_BASE -I$EXTRA_FILES/../../../../../dmd/root $SOURCE_DIR/app.cpp");
+    else static if (X86_Any)
+        run("$CC -std=c++11 -m$MODEL -c -o $CPP_OBJ -I$OUTPUT_BASE -I$EXTRA_FILES/../../../../../dmd/root $SOURCE_DIR/app.cpp");
     else
-        run("$CC -c -o $CPP_OBJ -I$OUTPUT_BASE -I$EXTRA_FILES/../../../../../dmd/root $SOURCE_DIR/app.cpp");
+        run("$CC -std=c++11 -c -o $CPP_OBJ -I$OUTPUT_BASE -I$EXTRA_FILES/../../../../../dmd/root $SOURCE_DIR/app.cpp");
     run("$DMD -m$MODEL -of=$HEADER_EXE $LIB $CPP_OBJ");
     run("$HEADER_EXE");
 

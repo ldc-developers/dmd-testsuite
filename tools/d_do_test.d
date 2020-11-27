@@ -1873,7 +1873,12 @@ static this()
     {
         const runTest = [testScriptExe];
         outfile.writeln("[RUN_TEST] ", escapeShellCommand(runTest));
-        auto runTestProc = std.process.spawnProcess(runTest, stdin, outfile, outfile, null, keepFilesOpen);
+        // LDC: propagate C(++) compiler from envData as CC env var (required by cpp_header_gen test)
+        version (LDC)
+            const string[string] runEnv = ["CC": envData.ccompiler];
+        else
+            const string[string] runEnv = null;
+        auto runTestProc = std.process.spawnProcess(runTest, stdin, outfile, outfile, runEnv, keepFilesOpen);
         const exitCode = wait(runTestProc);
 
         if (exitCode == 125) // = DISABLED from tools/dshell_prebuilt.d
