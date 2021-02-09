@@ -1462,24 +1462,27 @@ int tryMain(string[] args)
                 {
                     /**
                      * HACK: Some tests use -lib. For a relative output_dir, it is required to
-                     * pass -of=<name_without_path>.o[bj] for the static library (!) to end up
-                     * in the output_dir specified via -od, as a relative -of path for static
-                     * libs (and static libs only!) is treated as relative to the -od dir.
+                     * pass -of=<filename_without_path> for the static library to end up in
+                     * the output_dir specified via -od, as (L)DMD treats relative -of paths
+                     * for static libs (and static libs only!) as relative to the -od dir.
+                     *
+                     * E.g., `ldmd2 -lib -od=../obj -of=../obj/mylib.a` generates
+                     * `../obj/../obj/mylib.a` => change to `ldmd2 -lib -od=../obj -of=mylib.a`.
                      */
-                    string objfilename = test_name ~ "_" ~ to!string(permuteIndex) ~ envData.obj;
-                    string objfilepath = output_dir ~ envData.sep ~ objfilename;
-                    toCleanup ~= objfilepath;
-                    string objfile = testArgs.requiredArgs.canFind("-lib ") || testArgs.requiredArgs.endsWith("-lib") ? objfilename : objfilepath;
+                    string fixupOf(string of)
+                    {
+                        return (" " ~ testArgs.requiredArgs ~ " ").canFind(" -lib ")
+                            ? baseName(of)
+                            : of;
+                    }
                 }
-                else
-                {
-                    string objfile = output_dir ~ envData.sep ~ test_name ~ "_" ~ to!string(permuteIndex) ~ envData.obj;
-                    toCleanup ~= objfile;
-                }
+
+                string objfile = output_dir ~ envData.sep ~ test_name ~ "_" ~ to!string(permuteIndex) ~ envData.obj;
+                toCleanup ~= objfile;
 
                 command = format("%s -conf= -m%s -I%s %s %s -od%s -of%s %s %s%s %s", envData.dmd, envData.model, input_dir,
                         testArgs.requiredArgs, permutedArgs, output_dir,
-                        (testArgs.mode == TestMode.RUN || testArgs.link ? test_app_dmd : objfile),
+                        fixupOf(testArgs.mode == TestMode.RUN || testArgs.link ? test_app_dmd : objfile),
                         argSet,
                         (testArgs.mode == TestMode.RUN || testArgs.link ? "" : "-c "),
                         join(testArgs.sources, " "),
