@@ -146,7 +146,16 @@ Options:
     unitTestRunnerCommand = resultsDir.buildPath("unit_test_runner").exeName;
 
     // bootstrap all needed environment variables
-    auto env = getEnvironment;
+    const env = getEnvironment();
+
+    // Dump environnment
+    if (verbose || dumpEnvironment)
+    {
+        writefln("================================================================================");
+        foreach (key, value; env)
+            writefln("%s=%s", key, value);
+        writefln("================================================================================");
+    }
 
     if (runUnitTests)
     {
@@ -196,14 +205,6 @@ Options:
     {
         verifyCompilerExists(env);
 
-        if (verbose || dumpEnvironment)
-        {
-            writefln("================================================================================");
-            foreach (key, value; env)
-                writefln("%s=%s", key, value);
-            writefln("================================================================================");
-        }
-
         string[] failedTargets;
         ensureToolsExists(env, EnumMembers!TestTools);
         foreach (target; parallel(targets, 1))
@@ -230,7 +231,7 @@ Options:
 }
 
 /// Verify that the compiler has been built.
-void verifyCompilerExists(string[string] env)
+void verifyCompilerExists(const string[string] env)
 {
     if (!env["DMD"].exists)
     {
@@ -243,7 +244,7 @@ void verifyCompilerExists(string[string] env)
 Builds the binary of the tools required by the testsuite.
 Does nothing if the tools already exist and are newer than their source.
 */
-void ensureToolsExists(string[string] env, const TestTool[] tools ...)
+void ensureToolsExists(const string[string] env, const TestTool[] tools ...)
 {
     resultsDir.mkdirRecurse;
 
@@ -267,7 +268,7 @@ void ensureToolsExists(string[string] env, const TestTool[] tools ...)
         else
         {
             string[] command;
-            string[string] commandEnv = null;
+            bool overrideEnv;
             if (tool.linksWithTests)
             {
                 // This will compile the dshell library thus needs the actual
@@ -280,7 +281,7 @@ void ensureToolsExists(string[string] env, const TestTool[] tools ...)
                     "-c",
                     sourceFile
                 ] ~ getPicFlags(env);
-                commandEnv = env;
+                overrideEnv = true;
             }
             else
             {
@@ -294,7 +295,7 @@ void ensureToolsExists(string[string] env, const TestTool[] tools ...)
 
             writefln("Executing: %-(%s %)", command);
             stdout.flush();
-            if (spawnProcess(command, commandEnv).wait)
+            if (spawnProcess(command, overrideEnv ? env : null).wait)
             {
                 stderr.writefln("failed to build '%s'", targetBin);
                 atomicOp!"+="(failCount, 1);
@@ -430,7 +431,7 @@ auto predefinedTargets(string[] targets)
 }
 
 // Removes targets that do not need updating (i.e. their .out file exists and is newer than the source file)
-auto filterTargets(Target[] targets, string[string] env)
+auto filterTargets(Target[] targets, const string[string] env)
 {
     bool error;
     foreach (target; targets)
@@ -608,7 +609,7 @@ auto objName(T)(T name)
 }
 
 /// Return the correct pic flags as an array of strings
-string[] getPicFlags(string[string] env)
+string[] getPicFlags(const string[string] env)
 {
     version(Windows) {} else
     {
