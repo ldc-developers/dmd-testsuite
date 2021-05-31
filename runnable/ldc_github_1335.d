@@ -14,14 +14,14 @@ struct Bar
 
 Bar rvalue()
 out { assert(__result.v == 1); }
-body
+do
 {
     return Bar(1);
 }
 
 Bar nrvo()
 out { assert(__result.v == 2); }
-body
+do
 {
     Bar b = Bar(2);
     return b;

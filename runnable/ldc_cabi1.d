@@ -1,4 +1,6 @@
 // EXTRA_CPP_SOURCES: ldc_cabi2.cpp
+// disable deprecations (for imaginary and complex types)
+// REQUIRED_ARGS: -d
 
 import core.stdc.stdarg;
 import core.stdc.stdio;
