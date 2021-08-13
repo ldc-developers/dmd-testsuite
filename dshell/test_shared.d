@@ -2,7 +2,7 @@ import dshell;
 
 int main()
 {
-    version (LDC) return 0; // requires shared libs
+    version (LDC) return DISABLED; // requires shared libs and a patched cmdline below; hardly worth it
 
     if (OS != "linux")
     {

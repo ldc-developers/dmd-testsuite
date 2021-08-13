@@ -520,6 +520,8 @@ string[string] getEnvironment()
     // it's mostly unsupported.
     static if (!X86_Any)
         env["NO_ARCH_VARIANT"] = "1";
+
+    env.setDefault("BUILD_SHARED_LIBS", "OFF"); // passed through from CMake
   }
   else
   {
