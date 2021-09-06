@@ -197,11 +197,6 @@ void safeexception()
         try {}
         catch(Throwable e) {}
     }));
-
-    static assert(!__traits(compiles, () @safe {
-        try {}
-        catch {}
-    }));
 }
 
 version (D_InlineAsm_X86) version = DMD_InlineAsm;
@@ -511,4 +506,3 @@ void main()
 {
     test14162();
 }
-
