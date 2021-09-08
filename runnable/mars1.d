@@ -2272,6 +2272,13 @@ void test21325() @safe
 ////////////////////////////////////////////////////////////////////////
 // https://issues.dlang.org/show_bug.cgi?id=16274
 
+version (LDC)
+{
+    // LDC doesn't accept such signature hacks
+    void test16274() {}
+}
+else
+{
 extern(C) int pair(short a, ushort b, byte c, ubyte d);
 
 struct S
@@ -2295,6 +2302,7 @@ void test16274()
     version (X86)
         pair(-1, 2, -3, 4);
 }
+} // !LDC
 
 ////////////////////////////////////////////////////////////////////////
 // https://issues.dlang.org/show_bug.cgi?id=16268
