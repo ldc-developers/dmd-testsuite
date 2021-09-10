@@ -1,3 +1,4 @@
+// DISABLED: LDC
 int printf(const char *fmt, ...);
 void exit(int);
 

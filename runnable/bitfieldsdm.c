@@ -5,7 +5,7 @@
  * Fixing the test runner so -win32mscoff can be DISABLED would be nice,
  * so then this test can be run.
  * REQUIRED_ARGS:
- * DISABLED: win32 win64 linux32 freebsd32 osx32 linux64 freebsd64 osx64
+ * DISABLED: win32 win64 linux32 freebsd32 osx32 linux64 freebsd64 osx64 LDC
  * RUN_OUTPUT:
 ---
                 DM |   MS |  P32 |  P64
