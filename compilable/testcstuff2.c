@@ -460,6 +460,61 @@ static const S22375 s22375[10] =
 };
 
 /***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22399
+
+struct S22399a
+{
+    unsigned short f1;
+};
+
+struct S22399b
+{
+    const struct S22399a *f1;
+};
+
+const struct S22399a C22399[1] = { {12} };
+const struct S22399b C22399b = {C22399};
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22400
+
+typedef struct S22400
+{
+    unsigned short f1;
+} S22400_t;
+
+struct S22400b
+{
+    const S22400_t *f1;
+};
+
+const S22400_t C22400[1] = { {12} };
+const struct S22400b C22400b = {C22400};
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22406
+
+int test22406(int a)
+{
+  switch (a)
+  {
+      case 1: return -1;
+      case 2: return -2;
+      case 3: return -3;
+  }
+  return 0;
+}
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22407
+
+typedef int (*T22407) (int a);
+
+int test22407(int a);
+
+T22407 table22407[1] = { test22407 };
+
+/***************************************************/
 
 int test(char *dest)
 {

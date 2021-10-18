@@ -50,7 +50,11 @@ static assert((noreturn*).sizeof == (int*).sizeof);
 static assert((noreturn[]).sizeof == (int[]).sizeof);
 
 version (DigitalMars)
-    noreturn exits(int* p) { *p = 3; }
+    noreturn exits(int* p)
+    {
+        *p = 3;
+        assert(false); // *p could be valid
+    }
 
 noreturn exit();
 
@@ -84,4 +88,21 @@ int test1(int i)
     if (exit())
         return i + 1;
     return i - 1;
+}
+
+noreturn tlsNoreturn;
+__gshared noreturn globalNoreturn;
+
+template CreateTLS(A)
+{
+    A a;
+}
+
+void* useTls()
+{
+    alias Tnr = CreateTLS!noreturn;
+    void* a1 = &Tnr.a;
+    void* a2 = &tlsNoreturn;
+    void* a3 = &globalNoreturn;
+    return a1 < a2 ? a2 : a3;
 }
