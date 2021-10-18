@@ -2,6 +2,9 @@ import dshell;
 
 import std.stdio;
 
+version (LDC) enum isLDC = true;
+else          enum isLDC = false;
+
 int main()
 {
     // Only run this test, if CC has been set.
@@ -28,7 +31,7 @@ int main()
     version (Windows)
     {
         Vars.set(`DLL_LIB`, `$OUTPUT_BASE${SEP}mydll.lib`);
-        if (Vars.MODEL == "32")
+        if (Vars.MODEL == "32" && !isLDC)
         {
             // CC should be dmc for win32.
             dllCmd ~= [`-mn`, `-L/implib:` ~ Vars.DLL_LIB, `-WD`, `-o` ~ Vars.DLL, `kernel32.lib`, `user32.lib`];
@@ -50,6 +53,8 @@ int main()
     {
         dllCmd ~= [`-shared`, `-fPIC`, `-o`, Vars.DLL];
         mainExtra = `-fPIC -L-L$OUTPUT_BASE -L$DLL -L-lstdc++ -L--no-demangle`;
+        if (environment.get("NO_ARCH_VARIANT", "") != "1")
+            dllCmd ~= `-m` ~ Vars.MODEL;
     }
 
     dllCmd ~= Vars.SRC ~ Vars.SEP ~ `mydll.cpp`;
