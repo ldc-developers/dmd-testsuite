@@ -378,7 +378,7 @@ typedef struct S22182 { int x; } S22182;
 
 int test22182b(S22182* b)
 {
-  return ((S22182*)(b))->x;
+    return ((S22182*)(b))->x;
 }
 
 /***************************************************/
@@ -405,14 +405,14 @@ int test22245()
 
 void test22262(unsigned char *buf)
 {
-  if (buf == 0)
-    return;
-  if (0 == buf)
-    return;
-  if (buf == 1)
-    return;
-  if (2 == buf)
-    return;
+    if (buf == 0)
+        return;
+    if (0 == buf)
+        return;
+    if (buf == 1)
+        return;
+    if (2 == buf)
+        return;
 }
 
 /***************************************************/
@@ -492,17 +492,84 @@ const S22400_t C22400[1] = { {12} };
 const struct S22400b C22400b = {C22400};
 
 /***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22402
+
+typedef struct {
+    short c;
+} S22402a;
+
+typedef struct {
+    S22402a *a;
+    S22402a b[1];
+} S22402b;
+
+int test22402a(S22402a *a, S22402a b[1])
+{
+    return a - b;
+}
+
+int test22402b(S22402b *s)
+{
+    return s->a - s->b;
+}
+
+int test22402c(S22402a *a)
+{
+    S22402a b[1];
+    return a - b;
+}
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22403
+
+extern unsigned test22403a(const char *p);
+
+void test22403()
+{
+    test22403a(0);
+}
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22404
+
+typedef enum
+{
+    E22404_FLAG
+} E22404;
+
+int test22404a(E22404 e);
+
+int test22404()
+{
+    test22404a(E22404_FLAG);
+}
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22405
+
+struct S22405
+{
+    int const * p;
+    int *q;
+};
+
+void test22405(struct S22405 *s)
+{
+    s->p = (const int *)(s->q);
+}
+
+/***************************************************/
 // https://issues.dlang.org/show_bug.cgi?id=22406
 
 int test22406(int a)
 {
-  switch (a)
-  {
-      case 1: return -1;
-      case 2: return -2;
-      case 3: return -3;
-  }
-  return 0;
+    switch (a)
+    {
+        case 1: return -1;
+        case 2: return -2;
+        case 3: return -3;
+    }
+    return 0;
 }
 
 /***************************************************/
@@ -513,6 +580,25 @@ typedef int (*T22407) (int a);
 int test22407(int a);
 
 T22407 table22407[1] = { test22407 };
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22409
+
+struct S22409;
+
+typedef struct S22409
+{
+    int f1;
+} S22409_t;
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22413
+
+int test22413(void)
+{
+    char msg[] = "ok";
+    return msg[0] | msg[1];
+}
 
 /***************************************************/
 
