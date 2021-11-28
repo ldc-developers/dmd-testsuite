@@ -299,7 +299,7 @@ S9 crets9(S9 x)
 {
     TEST(x.a == a);
     TEST(x.b == b);
-    S9 r = {++a, (double)(++b)};
+    S9 r = {(char)(++a), (double)(++b)};
     return r;
 }
 
