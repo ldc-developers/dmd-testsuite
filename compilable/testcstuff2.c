@@ -592,6 +592,32 @@ typedef struct S22409
 } S22409_t;
 
 /***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22411
+
+extern char * const var22411[10];
+
+void test22411()
+{
+    char *cptr;
+    int *iptr;
+    float *fptr;
+    struct { int f1; int f2; } *sptr;
+    void (*fnptr)(void);
+
+    cptr = var22411[0];
+    iptr = var22411[1];
+    fptr = var22411[2];
+    sptr = var22411[3];
+    fnptr = var22411[4];
+
+    iptr = cptr;
+    fptr = sptr;
+    fnptr = iptr;
+    cptr = fptr;
+    sptr = fnptr;
+}
+
+/***************************************************/
 // https://issues.dlang.org/show_bug.cgi?id=22413
 
 int test22413(void)
@@ -609,4 +635,25 @@ int test(char *dest)
 }
 
 /***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22512
 
+extern char *tzname[];
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22584
+
+long test22584(long, long);
+
+long test22584(long a, long b)
+{
+    return a + b;
+}
+
+/***************************************************/
+// https://issues.dlang.org/show_bug.cgi?id=22602
+
+void test22602()
+{
+    unsigned char *data;
+    data = (void *)"\0\0\xff\xff";
+}
