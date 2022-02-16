@@ -4,7 +4,8 @@
 TRANSFORM_OUTPUT: remove_lines("^import path")
 TEST_OUTPUT:
 ----
-fail_compilation/fail21091b.d(13): Error: module `Tid` is in file 'Tid.d' which cannot be read
+fail_compilation/fail21091b.d(14): Error: unable to read module `Tid`
+fail_compilation/fail21091b.d(14):        Expected 'Tid.d' or 'Tid/package.d' in one of the following import paths:
 ----
 */
 

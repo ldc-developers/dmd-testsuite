@@ -3,6 +3,9 @@
 # LDC doesn't print the DFLAGS environment variable as part of -v output
 # DISABLED: LDC
 
+# Windows-WSL: Export DFLAGS s.t. the windows executable sees the required changes
+export WSLENV="DFLAGS"
+
 unset DFLAGS
 
 # Force DMD to print the -v menu by passing an invalid object file

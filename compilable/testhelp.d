@@ -21,7 +21,7 @@ Where:
   @<cmdfile>       read arguments from cmdfile
 $r:.*$
   -m64              generate 64 bit code
-  -main             add default main() (e.g. for unittesting)
+  -main             add default main() if not present already (e.g. for unittesting)
 $r:.*$
 ----
 */

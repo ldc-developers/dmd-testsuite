@@ -2,7 +2,8 @@
 TRANSFORM_OUTPUT: remove_lines("^import path")
 TEST_OUTPUT:
 ---
-fail_compilation/diag10327.d(9): Error: module `test10327` is in file 'imports/test10327.d' which cannot be read
+fail_compilation/diag10327.d(10): Error: unable to read module `test10327`
+fail_compilation/diag10327.d(10):        Expected 'imports/test10327.d' or 'imports/test10327/package.d' in one of the following import paths:
 ---
 */
 
