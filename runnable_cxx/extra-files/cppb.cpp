@@ -4,7 +4,8 @@
 #include <exception>
 #include <cstdarg>
 
-#if _WIN32 // otherwise defined in C header files!
+// LDC: apparently defined in MSVC headers too, so disabled
+#if 0 && _WIN32 // otherwise defined in C header files!
 // https://issues.dlang.org/show_bug.cgi?id=18955
 namespace std
 {
