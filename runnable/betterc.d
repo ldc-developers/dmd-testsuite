@@ -205,4 +205,3 @@ void test18457()
     }
     assert(dtor == 1);
 }
-
