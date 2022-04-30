@@ -741,6 +741,19 @@ bool gatherTestParameters(ref TestArgs testArgs, string input_dir, string input_
     if (testArgs.mode == TestMode.FAIL_COMPILE)
         testArgs.requiredArgs = "-verrors=0 " ~ testArgs.requiredArgs;
 
+    version (LDC)
+    {
+        // *.c tests: make sure not to pull in ldc_rt.dso.o for BUILD_SHARED_LIBS=ON builds
+        // (with implicit -link-defaultlib-shared)
+        if (input_file.extension() == ".c")
+        {
+            if (testArgs.requiredArgs.length)
+                testArgs.requiredArgs ~= " -defaultlib=";
+            else
+                testArgs.requiredArgs = "-defaultlib=";
+        }
+    }
+
     {
         string argSetsStr;
         findTestParameter(envData, file, "ARG_SETS", argSetsStr, ";");
