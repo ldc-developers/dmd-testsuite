@@ -1,5 +1,5 @@
 /* test bitfields for Microsoft C
- * DISABLED: win32 linux32 freebsd32 osx32 linux64 freebsd64 osx64 LDC
+ * DISABLED: win32 linux32 freebsd32 osx32 linux64 freebsd64 osx64
  * RUN_OUTPUT:
 ---
                 DM |   MS |  P32 |  P64
