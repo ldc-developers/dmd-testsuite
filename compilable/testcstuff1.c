@@ -213,7 +213,6 @@ _Static_assert(u'a' == 0x61, "ok");
 _Static_assert(u'ab' == 0x610062, "ok");
 _Static_assert(U'a' == 0x61, "ok");
 _Static_assert(u'\u1234' == 0x1234, "ok");
-_Static_assert(U'\U00011234' == 0x11234, "ok");
 _Static_assert(L'\u1234' == 0x1234, "ok");
 
 /********************************/
@@ -487,24 +486,35 @@ void testoverflow()
 
 /********************************/
 
+int testregister(register int x)
+{
+  register int y = x * 2;
+  register int z[] = {x, y};
+
+  return y + sizeof z;
+}
+
+int testregisterptr()
+{
+    register struct
+    {
+        int i;
+        int a[1];
+    } *regptr1;
+    int a = regptr1->i;
+    int *b = &regptr1->i;
+    int *c = regptr1->a;
+    int d = regptr1->a[0];
+
+    register int *regptr2;
+    return regptr2[0];
+}
+
+/********************************/
+
 int printf(const char*, ...);
 
 int main()
 {
     printf("hello world\n");
 }
-
-#line 1000
-%:line 1010
-
-# 1020 "cstuff1.c" 1 2 3 4
-# 1030
-struct S21944
-{
-    int var;
-#1040 "cstuff1.c" 3 4
-};
-
-/********************************/
-
-#line 1050 "cstuff1.c" extra tokens ignored (should warn?)

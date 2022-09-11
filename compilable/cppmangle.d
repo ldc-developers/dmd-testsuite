@@ -1350,3 +1350,8 @@ extern (C++)
             static assert(funccpp.mangleof == "?funccpp@@YAHP6AXXZ@Z");
     }
 }
+
+/*****************************************/
+
+extern(C++) enum _LIBNAME = "library";
+extern(C++) enum _DEBUG = _LIBNAME.length && 'd' == _LIBNAME[$-1];

@@ -10,6 +10,10 @@ int main()
     else version (Windows) if (Vars.MODEL == "32omf") // Avoid optlink
         return DISABLED;
 
+    version (DigitalMars)
+        version (OSX) // Shared libraries are not yet supported on OSX
+            return DISABLED;
+
     Vars.set(`SRC`, `$EXTRA_FILES/dll`);
     Vars.set(`EXE_NAME`, `$OUTPUT_BASE/testdll$EXE`);
     Vars.set(`DLL`, `$OUTPUT_BASE/mydll$SOEXT`);

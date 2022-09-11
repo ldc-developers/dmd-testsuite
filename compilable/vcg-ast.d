@@ -8,6 +8,9 @@ TEST_OUTPUT_FILE: extra-files/vcg-ast.d.cg
 
 module vcg;
 
+alias xyz = __traits(parent, {});
+alias named = vcg;
+
 template Seq(A...)
 {
     alias Seq = A;
@@ -53,8 +56,7 @@ alias wchar_t = __c_wchar_t;
 
 T[] values(T)()
 {
-    T[] values;
-    values ~= T();
+    T[] values = [T()];
     return values;
 }
 

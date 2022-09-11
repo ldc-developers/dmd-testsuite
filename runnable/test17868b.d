@@ -12,8 +12,6 @@ fini
 
 import core.stdc.stdio;
 
-extern(C):
-
 pragma(crt_constructor)
 pragma(crt_destructor)
 void ctor_dtor_1()
@@ -52,7 +50,7 @@ template fini()
 
 alias instantiate = fini!();
 
-int main()
+extern(C) int main()
 {
     puts("main");
     return 0;
